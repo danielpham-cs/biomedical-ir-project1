@@ -1,0 +1,602 @@
+[
+  {
+    "pmcid": "13570720",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570720.xml"
+  },
+  {
+    "pmcid": "13570800",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570800.xml"
+  },
+  {
+    "pmcid": "13570699",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570699.xml"
+  },
+  {
+    "pmcid": "13570704",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570704.xml"
+  },
+  {
+    "pmcid": "13570660",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570660.xml"
+  },
+  {
+    "pmcid": "13570627",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570627.xml"
+  },
+  {
+    "pmcid": "13570628",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570628.xml"
+  },
+  {
+    "pmcid": "13570643",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570643.xml"
+  },
+  {
+    "pmcid": "13570581",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570581.xml"
+  },
+  {
+    "pmcid": "13570621",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570621.xml"
+  },
+  {
+    "pmcid": "13570610",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570610.xml"
+  },
+  {
+    "pmcid": "13570605",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570605.xml"
+  },
+  {
+    "pmcid": "13570492",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570492.xml"
+  },
+  {
+    "pmcid": "13570415",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570415.xml"
+  },
+  {
+    "pmcid": "13570559",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570559.xml"
+  },
+  {
+    "pmcid": "13570727",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570727.xml"
+  },
+  {
+    "pmcid": "13570443",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570443.xml"
+  },
+  {
+    "pmcid": "13570561",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570561.xml"
+  },
+  {
+    "pmcid": "13570783",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570783.xml"
+  },
+  {
+    "pmcid": "13570702",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570702.xml"
+  },
+  {
+    "pmcid": "13570715",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570715.xml"
+  },
+  {
+    "pmcid": "13570706",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570706.xml"
+  },
+  {
+    "pmcid": "13570285",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570285.xml"
+  },
+  {
+    "pmcid": "13570604",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570604.xml"
+  },
+  {
+    "pmcid": "13570631",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570631.xml"
+  },
+  {
+    "pmcid": "13570638",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570638.xml"
+  },
+  {
+    "pmcid": "13569996",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569996.xml"
+  },
+  {
+    "pmcid": "13570080",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570080.xml"
+  },
+  {
+    "pmcid": "13570576",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570576.xml"
+  },
+  {
+    "pmcid": "13570031",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570031.xml"
+  },
+  {
+    "pmcid": "13570005",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570005.xml"
+  },
+  {
+    "pmcid": "13570448",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570448.xml"
+  },
+  {
+    "pmcid": "13569997",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569997.xml"
+  },
+  {
+    "pmcid": "13570441",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570441.xml"
+  },
+  {
+    "pmcid": "13569923",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569923.xml"
+  },
+  {
+    "pmcid": "13570284",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570284.xml"
+  },
+  {
+    "pmcid": "13569877",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569877.xml"
+  },
+  {
+    "pmcid": "13570190",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570190.xml"
+  },
+  {
+    "pmcid": "13570000",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570000.xml"
+  },
+  {
+    "pmcid": "13569876",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569876.xml"
+  },
+  {
+    "pmcid": "13569978",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569978.xml"
+  },
+  {
+    "pmcid": "13570417",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570417.xml"
+  },
+  {
+    "pmcid": "13570198",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570198.xml"
+  },
+  {
+    "pmcid": "13570333",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570333.xml"
+  },
+  {
+    "pmcid": "13570371",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570371.xml"
+  },
+  {
+    "pmcid": "13570329",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570329.xml"
+  },
+  {
+    "pmcid": "13569415",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569415.xml"
+  },
+  {
+    "pmcid": "13570051",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570051.xml"
+  },
+  {
+    "pmcid": "13570006",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570006.xml"
+  },
+  {
+    "pmcid": "13569999",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569999.xml"
+  },
+  {
+    "pmcid": "13569519",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569519.xml"
+  },
+  {
+    "pmcid": "13569807",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569807.xml"
+  },
+  {
+    "pmcid": "13569602",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569602.xml"
+  },
+  {
+    "pmcid": "13569818",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569818.xml"
+  },
+  {
+    "pmcid": "13569603",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569603.xml"
+  },
+  {
+    "pmcid": "13570026",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570026.xml"
+  },
+  {
+    "pmcid": "13570003",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570003.xml"
+  },
+  {
+    "pmcid": "13570428",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570428.xml"
+  },
+  {
+    "pmcid": "13570575",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570575.xml"
+  },
+  {
+    "pmcid": "13569773",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569773.xml"
+  },
+  {
+    "pmcid": "13570302",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570302.xml"
+  },
+  {
+    "pmcid": "13570239",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570239.xml"
+  },
+  {
+    "pmcid": "13569549",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569549.xml"
+  },
+  {
+    "pmcid": "13570337",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570337.xml"
+  },
+  {
+    "pmcid": "13569909",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569909.xml"
+  },
+  {
+    "pmcid": "13569606",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569606.xml"
+  },
+  {
+    "pmcid": "13570543",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570543.xml"
+  },
+  {
+    "pmcid": "13569504",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569504.xml"
+  },
+  {
+    "pmcid": "13569788",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569788.xml"
+  },
+  {
+    "pmcid": "13570130",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570130.xml"
+  },
+  {
+    "pmcid": "13570533",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570533.xml"
+  },
+  {
+    "pmcid": "13569523",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569523.xml"
+  },
+  {
+    "pmcid": "13569608",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569608.xml"
+  },
+  {
+    "pmcid": "13569573",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569573.xml"
+  },
+  {
+    "pmcid": "13569784",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569784.xml"
+  },
+  {
+    "pmcid": "13570531",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570531.xml"
+  },
+  {
+    "pmcid": "13570635",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570635.xml"
+  },
+  {
+    "pmcid": "13570663",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570663.xml"
+  },
+  {
+    "pmcid": "13570245",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570245.xml"
+  },
+  {
+    "pmcid": "13569649",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569649.xml"
+  },
+  {
+    "pmcid": "13570504",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570504.xml"
+  },
+  {
+    "pmcid": "13570505",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570505.xml"
+  },
+  {
+    "pmcid": "13570501",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570501.xml"
+  },
+  {
+    "pmcid": "13570509",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570509.xml"
+  },
+  {
+    "pmcid": "13570511",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570511.xml"
+  },
+  {
+    "pmcid": "13570698",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570698.xml"
+  },
+  {
+    "pmcid": "13570528",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570528.xml"
+  },
+  {
+    "pmcid": "13570550",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570550.xml"
+  },
+  {
+    "pmcid": "13570546",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570546.xml"
+  },
+  {
+    "pmcid": "13570684",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570684.xml"
+  },
+  {
+    "pmcid": "13570686",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13570686.xml"
+  },
+  {
+    "pmcid": "13569977",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13569977.xml"
+  },
+  {
+    "pmcid": "13563016",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13563016.xml"
+  },
+  {
+    "pmcid": "13562970",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13562970.xml"
+  },
+  {
+    "pmcid": "13568767",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568767.xml"
+  },
+  {
+    "pmcid": "13568769",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568769.xml"
+  },
+  {
+    "pmcid": "13568778",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568778.xml"
+  },
+  {
+    "pmcid": "13568770",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568770.xml"
+  },
+  {
+    "pmcid": "13568774",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568774.xml"
+  },
+  {
+    "pmcid": "13568788",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568788.xml"
+  },
+  {
+    "pmcid": "13568731",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568731.xml"
+  },
+  {
+    "pmcid": "13568784",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568784.xml"
+  },
+  {
+    "pmcid": "13568716",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568716.xml"
+  },
+  {
+    "pmcid": "13568718",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568718.xml"
+  },
+  {
+    "pmcid": "13568712",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568712.xml"
+  },
+  {
+    "pmcid": "13568733",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568733.xml"
+  },
+  {
+    "pmcid": "13568817",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568817.xml"
+  },
+  {
+    "pmcid": "13568761",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568761.xml"
+  },
+  {
+    "pmcid": "13568746",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568746.xml"
+  },
+  {
+    "pmcid": "13568748",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568748.xml"
+  },
+  {
+    "pmcid": "13568787",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568787.xml"
+  },
+  {
+    "pmcid": "13568742",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568742.xml"
+  },
+  {
+    "pmcid": "13568487",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568487.xml"
+  },
+  {
+    "pmcid": "13568753",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568753.xml"
+  },
+  {
+    "pmcid": "13568739",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568739.xml"
+  },
+  {
+    "pmcid": "13568468",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568468.xml"
+  },
+  {
+    "pmcid": "13567800",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13567800.xml"
+  },
+  {
+    "pmcid": "13568094",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568094.xml"
+  },
+  {
+    "pmcid": "13564984",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13564984.xml"
+  },
+  {
+    "pmcid": "13566064",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13566064.xml"
+  },
+  {
+    "pmcid": "13568100",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568100.xml"
+  },
+  {
+    "pmcid": "13564914",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13564914.xml"
+  },
+  {
+    "pmcid": "13564261",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13564261.xml"
+  },
+  {
+    "pmcid": "13564929",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13564929.xml"
+  },
+  {
+    "pmcid": "13564254",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13564254.xml"
+  },
+  {
+    "pmcid": "13564404",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13564404.xml"
+  },
+  {
+    "pmcid": "13564386",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13564386.xml"
+  },
+  {
+    "pmcid": "13564146",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13564146.xml"
+  },
+  {
+    "pmcid": "13564047",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13564047.xml"
+  },
+  {
+    "pmcid": "13564219",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13564219.xml"
+  },
+  {
+    "pmcid": "13564056",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13564056.xml"
+  },
+  {
+    "pmcid": "13568776",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568776.xml"
+  },
+  {
+    "pmcid": "13564021",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13564021.xml"
+  },
+  {
+    "pmcid": "13568775",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568775.xml"
+  },
+  {
+    "pmcid": "13568714",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568714.xml"
+  },
+  {
+    "pmcid": "13568719",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568719.xml"
+  },
+  {
+    "pmcid": "13564015",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13564015.xml"
+  },
+  {
+    "pmcid": "13568734",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568734.xml"
+  },
+  {
+    "pmcid": "13563654",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13563654.xml"
+  },
+  {
+    "pmcid": "13568752",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568752.xml"
+  },
+  {
+    "pmcid": "13568389",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568389.xml"
+  },
+  {
+    "pmcid": "13568754",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568754.xml"
+  },
+  {
+    "pmcid": "13568709",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568709.xml"
+  },
+  {
+    "pmcid": "13568708",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568708.xml"
+  },
+  {
+    "pmcid": "13568249",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568249.xml"
+  },
+  {
+    "pmcid": "13568165",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568165.xml"
+  },
+  {
+    "pmcid": "13568056",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13568056.xml"
+  },
+  {
+    "pmcid": "13565380",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13565380.xml"
+  },
+  {
+    "pmcid": "13565390",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13565390.xml"
+  },
+  {
+    "pmcid": "13563548",
+    "path": "/Users/daniel/projects/IIR/biomedical-ir-project1/data/raw/PMC13563548.xml"
+  }
+]
