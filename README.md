@@ -34,6 +34,20 @@ streamlit run app.py
 
 Opens the **Helix** homepage. Use **Start searching** to enter the retrieval workspace.
 
+## Deploy on Streamlit Community Cloud (via GitHub)
+
+Repo: [danielpham-cs/biomedical-ir-project1](https://github.com/danielpham-cs/biomedical-ir-project1)
+
+1. Push this project to GitHub (already configured as `origin`).
+2. Open [share.streamlit.io](https://share.streamlit.io) → **New app**.
+3. Connect the GitHub repo `danielpham-cs/biomedical-ir-project1`.
+4. Set:
+   - **Branch:** `main`
+   - **Main file path:** `app.py`
+5. Click **Deploy**.
+
+The processed corpus (`data/processed/docs.jsonl` + `index.pkl`) is included so the cloud app can search without re-downloading PMC XML.
+
 Re-run with another topic:
 
 ```bash

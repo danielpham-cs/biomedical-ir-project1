@@ -4,6 +4,8 @@ __pycache__/
 .DS_Store
 data/raw/*.xml
 data/processed/*
-!data/raw/.gitkeep
 !data/processed/.gitkeep
-.streamlit/
+!data/processed/docs.jsonl
+!data/processed/index.pkl
+.streamlit/*
+!.streamlit/config.toml

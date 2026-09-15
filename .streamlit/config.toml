@@ -1,0 +1,16 @@
+# Runtime config for Streamlit Community Cloud / local
+
+[theme]
+base = "light"
+primaryColor = "#0f766e"
+backgroundColor = "#f4f8f7"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#071412"
+font = "sans serif"
+
+[client]
+toolbarMode = "minimal"
+showSidebarNavigation = false
+
+[server]
+headless = true
