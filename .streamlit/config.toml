@@ -1,0 +1,16 @@
+[server]
+fileWatcherType = "poll"
+address = "0.0.0.0"
+port = 8501
+headless = true
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "light"
+primaryColor = "#087f78"
+backgroundColor = "#f5f8fa"
+secondaryBackgroundColor = "#edf3f5"
+textColor = "#152e3a"
+font = "sans serif"

@@ -30,6 +30,7 @@ class InvertedIndex:
     doc_token_counts: dict[str, dict[str, int]] = field(default_factory=dict)
     N: int = 0
     idf: dict[str, float] = field(default_factory=dict)
+    avg_doc_length: float = 0.0
     stem: bool = True
     remove_stopwords: bool = True
 
@@ -53,7 +54,7 @@ def build_index(
 
     for doc in docs:
         tokens = preprocess(
-            doc.full_text,
+            doc.search_text,
             remove_stopwords=remove_stopwords,
             stem=stem,
         )
@@ -67,8 +68,9 @@ def build_index(
             raw[term].append(Posting(doc.doc_id, len(positions), positions))
 
     N = len(docs)
+    # Robertson/Sparck Jones BM25 IDF.
     idf = {
-        term: math.log((N + 1) / (len(posts) + 1)) + 1.0
+        term: math.log(1 + (N - len(posts) + 0.5) / (len(posts) + 0.5))
         for term, posts in raw.items()
     }
     return InvertedIndex(
@@ -77,6 +79,7 @@ def build_index(
         doc_token_counts=doc_token_counts,
         N=N,
         idf=idf,
+        avg_doc_length=(sum(doc_lengths.values()) / N) if N else 0.0,
         stem=stem,
         remove_stopwords=remove_stopwords,
     )
@@ -119,6 +122,46 @@ def index_summary(index: InvertedIndex) -> dict[str, Any]:
         "stem": index.stem,
         "remove_stopwords": index.remove_stopwords,
         "avg_doc_length": (
-            round(sum(index.doc_lengths.values()) / index.N, 2) if index.N else 0
+            round(index.avg_doc_length, 2) if index.N else 0
         ),
     }
+
+
+def rebuild_local_index(raw_dir: Path, processed_dir: Path, *,
+                        stem: bool | None = None, remove_stopwords: bool | None = None) -> int:
+    """Merge saved XMLs into the collection while preserving existing settings."""
+    from .parse_pmc import parse_directory
+
+    docs_path = processed_dir / "docs.jsonl"
+    index_path = processed_dir / "index.pkl"
+    existing = load_index(index_path) if index_path.exists() else None
+    docs = {doc.doc_id: doc for doc in load_docs(docs_path)} if docs_path.exists() else {}
+    for doc in parse_directory(raw_dir):
+        if not doc.pmid and doc.pmcid:
+            known = next((value for value in docs.values()
+                          if value.pmcid == doc.pmcid and value.pmid), None)
+            if known is not None:
+                doc.doc_id = doc.pmid = known.pmid
+        # A previously indexed PMC-only document may now have a known PMID.
+        aliases = [key for key, value in docs.items()
+                   if key != doc.doc_id and doc.pmcid and value.pmcid == doc.pmcid]
+        for key in aliases:
+            previous_alias = docs.pop(key)
+            if len(previous_alias.body) > len(doc.body):
+                previous_alias.doc_id = previous_alias.pmid = doc.doc_id
+                doc = previous_alias
+        previous = docs.get(doc.doc_id)
+        if previous is None or len(doc.body) >= len(previous.body):
+            docs[doc.doc_id] = doc
+    if not docs:
+        raise ValueError("No readable article XML files were found.")
+    documents = list(docs.values())
+    index = build_index(
+        documents,
+        stem=stem if stem is not None else (existing.stem if existing else True),
+        remove_stopwords=remove_stopwords if remove_stopwords is not None else (existing.remove_stopwords if existing else True),
+    )
+    # Complete parsing and preprocessing before replacing either output file.
+    save_docs(documents, docs_path)
+    save_index(index, index_path)
+    return len(documents)

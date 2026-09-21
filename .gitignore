@@ -3,7 +3,12 @@ __pycache__/
 *.pyc
 .DS_Store
 data/raw/*.xml
+data/raw/PMID*.json
+data/library.sqlite3
+data/library.sqlite3-shm
+data/library.sqlite3-wal
 data/processed/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
-.streamlit/
+.streamlit/*
+!.streamlit/config.toml

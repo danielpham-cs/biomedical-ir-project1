@@ -1,367 +1,222 @@
-"""Helix Search — keyword retrieval workspace."""
+"""Local abstract/body search using the final AND, OR, PHRASE and BM25 rules."""
 
 from __future__ import annotations
 
 import sys
+from collections import Counter
+from html import escape
 from pathlib import Path
+from time import perf_counter
+from urllib.parse import quote
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src.index import index_summary, load_docs, load_index
-from src.preprocess import ensure_nltk_data, preprocess
-from src.search import highlight, search
+from src.preprocess import preprocess, tokenize
+from src.search import build_spelling_vocabulary, highlight_text, search, suggest_query_correction
 from src.stats import compute_stats
-from ui.brand import BRAND, TAGLINE, inject_css
+from ui.brand import (
+    BRAND,
+    chips,
+    empty_state,
+    footer,
+    inject_css,
+    intro,
+    masthead,
+    pubmed_abstract,
+    reading_text,
+    sidebar_nav,
+)
+from ui.ghost_search import ghost_search
+from ui.i18n import dark_mode, t
 
 DOCS_PATH = ROOT / "data" / "processed" / "docs.jsonl"
 INDEX_PATH = ROOT / "data" / "processed" / "index.pkl"
 
-SAMPLE_QUERIES = [
-    "diabetes insulin treatment",
-    "glucose blood pressure",
-    "metformin type 2",
-    "inflammation cytokine",
-]
-
 
 @st.cache_resource
-def load_resources():
-    ensure_nltk_data()
-    if not DOCS_PATH.exists() or not INDEX_PATH.exists():
-        return None, None
-    return load_docs(DOCS_PATH), load_index(INDEX_PATH)
+def load_resources(docs_version: int, index_version: int):
+    docs = load_docs(DOCS_PATH)
+    return docs, load_index(INDEX_PATH), build_spelling_vocabulary(docs)
 
 
-def pubmed_url(pmid: str) -> str:
-    if pmid:
-        return f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/"
-    return "https://pmc.ncbi.nlm.nih.gov/"
+def open_document(doc_id: str) -> None:
+    st.session_state.reader_doc = doc_id
 
 
-def _apply_sample_query(q: str) -> None:
-    st.session_state.query = q
-    st.session_state.view = "Search"
+def close_document() -> None:
+    st.session_state.pop("reader_doc", None)
 
 
-def _open_document(doc_id: str) -> None:
-    st.session_state.selected_doc = doc_id
-    st.session_state.view = "Document"
+def autocomplete_vocabulary(vocabulary: dict[str, int]) -> list[str]:
+    """Most frequent English corpus terms are preferred for ghost completion."""
+    return [word for word, _ in sorted(vocabulary.items(), key=lambda item: (-item[1], len(item[0]), item[0]))]
 
 
-st.set_page_config(
-    page_title=f"{BRAND} Search",
-    page_icon="H",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-inject_css()
-
-st.markdown(
-    """
-    <style>
-      /* —— Streamlit chrome: no empty header strip —— */
-      header[data-testid="stHeader"],
-      .stAppHeader {
-        background: transparent !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        height: 0 !important;
-        min-height: 0 !important;
-        border: none !important;
-        z-index: 99990 !important;
-      }
-      .stAppToolbar,
-      [data-testid="stToolbar"] {
-        background: transparent !important;
-        height: 0 !important;
-        min-height: 0 !important;
-      }
-      /* Remove Deploy + hamburger menu */
-      .stAppDeployButton,
-      [data-testid="stAppDeployButton"],
-      #MainMenu,
-      [data-testid="stMainMenu"],
-      [data-testid="stToolbarActions"],
-      .stToolbarActions {
-        display: none !important;
-        width: 0 !important;
-        height: 0 !important;
-        overflow: hidden !important;
-      }
-      /* Sidebar open control = floating chip on the nav, not a header row */
-      [data-testid="stExpandSidebarButton"],
-      button[data-testid="stExpandSidebarButton"] {
-        position: fixed !important;
-        top: 14px !important;
-        left: 14px !important;
-        z-index: 100000 !important;
-        background: rgba(255, 255, 255, 0.96) !important;
-        border: 1px solid #c5d5d1 !important;
-        border-radius: 8px !important;
-        box-shadow: 0 4px 14px rgba(7, 20, 18, 0.14) !important;
-        color: #071412 !important;
-      }
-      [data-testid="stSidebarCollapsedControl"],
-      [data-testid="collapsedControl"] {
-        display: flex !important;
-        visibility: visible !important;
-        position: fixed !important;
-        top: 14px !important;
-        left: 14px !important;
-        z-index: 100000 !important;
-        background: rgba(255, 255, 255, 0.96) !important;
-        border: 1px solid #c5d5d1 !important;
-        border-radius: 8px !important;
-        padding: 0.2rem !important;
-        box-shadow: 0 4px 14px rgba(7, 20, 18, 0.14) !important;
-      }
-
-      /* Full-width page canvas */
-      section.main > div.block-container {
-        max-width: 100% !important;
-        padding: 0 !important;
-      }
-
-      /* Full-bleed nav iframe */
-      div[data-testid="stElementContainer"]:has(iframe) {
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-      }
-      div[data-testid="stElementContainer"]:has(iframe) iframe {
-        display: block !important;
-        width: 100% !important;
-      }
-
-      /* Section 2 — centered white panel under full-width nav */
-      .block-container > div > div > div[data-testid="stVerticalBlockBorderWrapper"] {
-        background: #ffffff !important;
-        border: 1px solid rgba(15, 118, 110, 0.18) !important;
-        border-radius: 12px !important;
-        box-shadow: 0 8px 24px rgba(7, 20, 18, 0.06) !important;
-        padding: 0.5rem 0.35rem 0.75rem !important;
-        margin: 1rem auto 1.5rem !important;
-        max-width: 1100px !important;
-        width: calc(100% - 2rem) !important;
-      }
-      div[data-testid="stVerticalBlockBorderWrapper"]
-        div[data-testid="stVerticalBlockBorderWrapper"] {
-        box-shadow: none !important;
-        background: #fafcfb !important;
-        border-radius: 8px !important;
-        padding: 0 !important;
-        margin: 0.35rem 0 !important;
-        max-width: none !important;
-        width: auto !important;
-      }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-docs, index = load_resources()
-if docs is None or index is None:
-    st.error(
-        "Index not found. Run `python scripts/download_sample.py` then "
-        "`python scripts/build_index.py`."
+def render_document(document) -> None:
+    st.button("Back to results", on_click=close_document)
+    intro("Document analysis", document.title, "Abstract statistics follow the final course specification.")
+    abstract, search_scope, statistics, sentences = st.tabs(
+        ["Abstract", "Search scope", "Statistics", "Sentences and EOS"]
     )
-    st.stop()
-
-doc_by_id = {d.doc_id: d for d in docs}
-summary = index_summary(index)
-
-if "view" not in st.session_state:
-    st.session_state.view = "Search"
-if "query" not in st.session_state:
-    st.session_state.query = "diabetes insulin"
-
-with st.sidebar:
-    st.markdown(f"### {BRAND}")
-    st.caption("Corpus & matching")
-    st.metric("Documents", summary["num_documents"])
-    st.metric("Vocabulary", summary["vocabulary_size"])
-    st.metric("Avg doc length", summary["avg_doc_length"])
-    st.write(
-        f"Stemming: **{'on' if index.stem else 'off'}** · "
-        f"Stop-words: **{'removed' if index.remove_stopwords else 'kept'}**"
-    )
-    st.divider()
-    st.radio("Workspace", ["Search", "Document"], key="view")
-    st.divider()
-    st.page_link("app.py", label="← Home")
-    st.divider()
-    st.markdown("**Try a query**")
-    for i, q in enumerate(SAMPLE_QUERIES):
-        st.button(
-            q,
-            key=f"sq_{i}",
-            on_click=_apply_sample_query,
-            args=(q,),
-            use_container_width=True,
-        )
-
-# Section 1 — full-width top nav
-components.html(
-    f"""
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
-    <div style="
-      width: 100%;
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px 20px;
-      flex-wrap: wrap;
-      padding: 18px 28px 18px 64px;
-      margin: 0;
-      border-radius: 0;
-      background: linear-gradient(115deg, #061614 0%, #0d221f 48%, #0f766e 130%);
-      border-bottom: 1px solid rgba(20, 184, 166, 0.22);
-      font-family: 'Source Sans 3', sans-serif;
-    ">
-      <div style="
-        font-family: Syne, sans-serif;
-        font-weight: 800;
-        font-size: 22px;
-        letter-spacing: -0.03em;
-        color: #f4f8f7;
-        line-height: 1.1;
-      ">{BRAND}</div>
-      <div style="
-        display: flex;
-        align-items: baseline;
-        flex-wrap: wrap;
-        gap: 6px 8px;
-        font-size: 15px;
-        color: rgba(244, 248, 247, 0.78);
-        line-height: 1.35;
-      ">
-        <span style="font-family: Syne, sans-serif; font-weight: 600; color: #f4f8f7;">Search workspace</span>
-        <span style="opacity: 0.45;">·</span>
-        <span style="color: rgba(244, 248, 247, 0.58);">{TAGLINE}</span>
-      </div>
-    </div>
-    """,
-    height=64,
-    scrolling=False,
-)
-
-# Section 2 — content panel (Streamlit native bordered container)
-with st.container(border=True):
-    if st.session_state.view == "Search":
-        st.markdown("### Find papers")
-        st.caption("Keyword retrieval over PMC open-access articles.")
-
-        col_q, col_m, col_k = st.columns([3, 1, 1])
-        with col_q:
-            query = st.text_input("Keywords", key="query")
-        with col_m:
-            method = st.selectbox("Matching", ["TF-IDF", "Boolean"])
-        with col_k:
-            top_k = st.number_input("Top-k", min_value=5, max_value=50, value=10)
-
-        boolean_mode = "AND"
-        if method == "Boolean":
-            boolean_mode = st.radio("Boolean mode", ["AND", "OR"], horizontal=True)
-
-        hits = search(
-            query,
-            index,
-            docs,
-            method="boolean" if method == "Boolean" else "tfidf",
-            boolean_mode=boolean_mode,
-            top_k=int(top_k),
-        )
-        processed = preprocess(
-            query,
-            remove_stopwords=index.remove_stopwords,
-            stem=index.stem,
-        )
-        st.write(
-            f"**{len(hits)}** results · preprocessed terms: "
-            f"`{'`, `'.join(processed) if processed else '(none)'}`"
-        )
-
-        if not hits:
-            st.warning("No matching documents. Try OR mode or broader keywords.")
+    abstract_text = document.abstract
+    stats = compute_stats(abstract_text)
+    with abstract:
+        if abstract_text:
+            pubmed_abstract(abstract_text)
         else:
-            for i, hit in enumerate(hits, 1):
-                with st.container(border=True):
-                    c1, c2 = st.columns([4, 1])
-                    with c1:
-                        st.markdown(f"**{i}. {hit.title}**")
-                        link = pubmed_url(hit.pmid)
-                        st.caption(
-                            f"doc_id={hit.doc_id} · PMID [{hit.pmid or 'n/a'}]({link}) · "
-                            f"matched: {', '.join(hit.matched_terms) or '—'}"
-                        )
-                        st.markdown(highlight(hit.snippet, query.split()))
-                    with c2:
-                        st.markdown("**Score**")
-                        st.markdown(f"### {hit.score}")
-                        st.button(
-                            "Open",
-                            key=f"open_{hit.doc_id}_{i}",
-                            on_click=_open_document,
-                            args=(hit.doc_id,),
-                            use_container_width=True,
-                            type="secondary",
-                        )
-    else:
-        st.markdown("### Document")
-        st.caption("Full text, statistics, and rule-based sentence segmentation.")
-
-        options = {f"{d.doc_id} — {d.title[:80]}": d.doc_id for d in docs}
-        default_id = st.session_state.get("selected_doc")
-        keys = list(options.keys())
-        default_idx = 0
-        if default_id:
-            for i, k in enumerate(keys):
-                if options[k] == default_id:
-                    default_idx = i
-                    break
-
-        choice = st.selectbox("Select document", keys, index=default_idx)
-        doc_id = options[choice]
-        st.session_state.selected_doc = doc_id
-        doc = doc_by_id[doc_id]
-
-        st.subheader(doc.title)
-        meta_bits = []
-        if doc.pmid:
-            meta_bits.append(f"[PubMed {doc.pmid}]({pubmed_url(doc.pmid)})")
-        if doc.pmcid:
-            meta_bits.append(
-                f"[PMC{doc.pmcid}](https://pmc.ncbi.nlm.nih.gov/articles/PMC{doc.pmcid}/)"
+            st.info("This record has no abstract text.")
+    with search_scope:
+        st.caption("Search scope is abstract + keywords + body. The title is excluded.")
+        reading_text(document.search_text)
+    with statistics:
+        st.caption("Statistics cover the abstract and its final Keywords line. Characters use normalized whitespace.")
+        for column, label, value in zip(
+            st.columns(5),
+            ["Characters", "No-space chars", "Words", "Sentences", "Unique words"],
+            [stats.num_characters, stats.characters_no_space, stats.num_words, stats.num_sentences, stats.vocabulary_size],
+        ):
+            column.metric(label, f"{value:,}")
+        counts = Counter(tokenize(abstract_text)).most_common(20)
+        if counts:
+            st.dataframe(
+                [{"Term": term, "Occurrences": count} for term, count in counts],
+                hide_index=True,
+                use_container_width=True,
             )
-        if doc.journal:
-            meta_bits.append(doc.journal)
-        if doc.year:
-            meta_bits.append(doc.year)
-        st.caption(" · ".join(meta_bits))
+    with sentences:
+        if stats.sentences:
+            st.dataframe(
+                [{"Sentence": number, "Text": text} for number, text in enumerate(stats.sentences, 1)],
+                hide_index=True,
+                use_container_width=True,
+            )
+        else:
+            st.info("No sentences are available.")
 
-        stats = compute_stats(doc.full_text)
-        a, b, c, d, e = st.columns(5)
-        a.metric("Characters", stats.num_characters)
-        b.metric("Words", stats.num_words)
-        c.metric("Sentences (EOS)", stats.num_sentences)
-        d.metric("Vocabulary", stats.vocabulary_size)
-        e.metric("Avg sent. len", stats.avg_sentence_length)
 
-        tab_abs, tab_body, tab_sent = st.tabs(
-            ["Abstract", "Body / full text", "Sentences"]
+def main() -> None:
+    st.set_page_config(page_title=f"{BRAND} | Local search", page_icon="🔬", layout="wide")
+    inject_css()
+    sidebar_nav()
+    masthead(t("search_page_title"))
+
+    if not DOCS_PATH.exists() or not INDEX_PATH.exists():
+        intro(t("local_search"), t("no_saved"), t("lookup_page_body"))
+        st.page_link("pages/2_PubMed.py", label=t("lookup_action"))
+        footer()
+        return
+
+    docs, index, spelling_vocabulary = load_resources(DOCS_PATH.stat().st_mtime_ns, INDEX_PATH.stat().st_mtime_ns)
+    if not docs:
+        empty_state("No readable documents", "Rebuild the local index after saving XML files.")
+        footer()
+        return
+    by_id = {document.doc_id: document for document in docs}
+    summary = index_summary(index)
+
+    with st.sidebar:
+        st.divider()
+        mode = st.radio(t("query_mode"), ["AND", "OR", "PHRASE"], help=t("search_hint"))
+        st.metric(t("indexed_records"), summary["num_documents"])
+        st.metric(t("vocabulary"), summary["vocabulary_size"])
+        st.caption("Every candidate is ranked with BM25 (k1 = 1.2, b = 0.75).")
+
+    selected = st.session_state.get("reader_doc")
+    if selected in by_id:
+        render_document(by_id[selected])
+        footer()
+        return
+
+    intro(t("local_search"), t("search_heading"), t("search_body"))
+    requested_suggestion = st.query_params.get("suggestion")
+    if requested_suggestion:
+        st.session_state.search_query = requested_suggestion
+        st.session_state.run_local_search = True
+        del st.query_params["suggestion"]
+    if "home_query" in st.session_state:
+        st.session_state.search_query = st.session_state.pop("home_query")
+    elif "search_query" not in st.session_state:
+        st.session_state.search_query = ""
+    completion_event = ghost_search(
+        value=st.session_state.search_query,
+        vocabulary=autocomplete_vocabulary(spelling_vocabulary),
+        label=t("search_terms"),
+        placeholder="e.g. diabetes insulin treatment",
+        submit_label=t("search_button"),
+        dark=dark_mode(),
+        key="local_search_ghost",
+    )
+    query = st.session_state.search_query
+    submitted = st.session_state.pop("run_local_search", False)
+    if isinstance(completion_event, dict) and completion_event.get("nonce") != st.session_state.get("last_search_nonce"):
+        st.session_state.last_search_nonce = completion_event.get("nonce")
+        query = str(completion_event.get("value", "")).strip()
+        st.session_state.search_query = query
+        submitted = True
+    if not submitted:
+        footer()
+        return
+
+    terms = preprocess(query, remove_stopwords=mode != "PHRASE", stem=index.stem)
+    if not terms:
+        empty_state("No valid search terms", "Try a biomedical term, or use PHRASE to keep stopwords.")
+        footer()
+        return
+    started = perf_counter()
+    hits = search(query, index, docs, method=mode, top_k=len(docs))
+    elapsed = (perf_counter() - started) * 1000
+    suggestion = suggest_query_correction(query, index, spelling_vocabulary)
+    chips(list(dict.fromkeys(terms)))
+    st.caption(f"{len(hits)} match(es) in {elapsed:.1f} ms. Ranking: BM25.")
+    if suggestion:
+        st.markdown(
+            f'<p class="hx-suggestion">{escape(t("did_you_mean"))} '
+            f'<a href="?suggestion={quote(suggestion)}" target="_self">{escape(suggestion)}</a>?</p>',
+            unsafe_allow_html=True,
         )
-        with tab_abs:
-            st.write(doc.abstract or "(no abstract)")
-        with tab_body:
-            st.write(doc.body or doc.full_text or "(empty)")
-        with tab_sent:
-            st.caption("Rule-based EOS (abbreviation-aware)")
-            for i, s in enumerate(stats.sentences, 1):
-                st.markdown(f"**{i}.** {s}")
+    if not hits:
+        empty_state("No matching articles", "Try OR, fewer terms, or different wording.")
+        footer()
+        return
+    for rank, hit in enumerate(hits, 1):
+        with st.container(key=f"result_{rank}"):
+            left, right = st.columns([5, 1])
+            with left:
+                if hit.pmid:
+                    st.markdown(
+                        f'<h4 class="hx-result-title"><a href="https://pubmed.ncbi.nlm.nih.gov/{quote(hit.pmid)}/" '
+                        f'target="_blank" rel="noopener noreferrer" title="Open this article on PubMed">{rank}. {escape(hit.title)}</a></h4>',
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.markdown(f"#### {rank}. {escape(hit.title)}")
+                pmid = escape(hit.pmid or "—")
+                pmcid = escape(f"PMC{hit.pmcid}" if hit.pmcid and not hit.pmcid.upper().startswith("PMC") else (hit.pmcid or "—"))
+                st.markdown(
+                    f'<p class="hx-result-identifiers">PMID: {pmid}<span>•</span>PMCID: {pmcid}</p>',
+                    unsafe_allow_html=True,
+                )
+                st.markdown(
+                    f'<p class="hx-snippet">{highlight_text(hit.snippet, hit.matched_terms, index)}</p>',
+                    unsafe_allow_html=True,
+                )
+                chips(hit.matched_terms)
+            with right:
+                st.metric("BM25", f"{hit.score:.3f}")
+                st.button("Open", key=f"open_{hit.doc_id}", on_click=open_document, args=(hit.doc_id,), use_container_width=True)
+            rows = [
+                {"Term": term, "Abstract": counts["abstract"], "Body": counts["body"], "Full text": counts["full"]}
+                for term, counts in hit.term_counts.items()
+            ]
+            if rows:
+                with st.expander("Term occurrences by scope"):
+                    st.dataframe(rows, hide_index=True, use_container_width=True)
+    footer()
+
+
+if __name__ == "__main__":
+    main()

@@ -2,27 +2,27 @@
 
 from __future__ import annotations
 
-import re
 from functools import lru_cache
+from pathlib import Path
 
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 
-_TOKEN_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*", re.IGNORECASE)
+from .engine import tokenize_words
+
 
 
 def ensure_nltk_data() -> None:
-    """Download NLTK resources if missing."""
-    for resource, path in (
-        ("stopwords", "corpora/stopwords"),
-        ("punkt", "tokenizers/punkt"),
-        ("punkt_tab", "tokenizers/punkt_tab"),
-    ):
-        try:
-            nltk.data.find(path)
-        except LookupError:
-            nltk.download(resource, quiet=True)
+    """Only stopwords are needed: tokenization and EOS use our own rules."""
+    local_data = Path(__file__).resolve().parents[1] / ".venv" / "nltk_data"
+    if local_data.is_dir() and str(local_data) not in nltk.data.path:
+        nltk.data.path.insert(0, str(local_data))
+    try:
+        nltk.data.find("corpora/stopwords")
+    except LookupError:
+        if not nltk.download("stopwords", quiet=True):
+            raise LookupError("English stopwords could not be downloaded. Check your connection and rebuild the index.")
 
 
 @lru_cache(maxsize=1)
@@ -37,10 +37,8 @@ def _stop_words() -> frozenset[str]:
 
 
 def tokenize(text: str) -> list[str]:
-    """Lowercase and extract alphanumeric / hyphenated tokens."""
-    if not text:
-        return []
-    return _TOKEN_RE.findall(text.lower())
+    """Return final-specification tokens for statistics and retrieval."""
+    return tokenize_words(text)
 
 
 def preprocess(
@@ -58,9 +56,7 @@ def preprocess(
     tokens = tokenize(text)
     if remove_stopwords:
         stops = _stop_words()
-        tokens = [t for t in tokens if t not in stops and len(t) > 1]
-    else:
-        tokens = [t for t in tokens if len(t) > 1]
+        tokens = [t for t in tokens if t not in stops]
     if stem:
         stemmer = _stemmer()
         tokens = [stemmer.stem(t) for t in tokens]

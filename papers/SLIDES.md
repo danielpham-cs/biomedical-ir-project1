@@ -17,11 +17,11 @@ Your name · Due Sept 22, 2026
 
 ## Slide 3 — System pipeline
 PMC XML → Parse (title/abstract/body) → Preprocess → **Inverted index**  
-Query → same preprocess → **Boolean AND/OR** or **TF-IDF cosine** → Streamlit UI
+Query → same preprocess → **AND/OR/PHRASE selection** → **BM25 ranking** → Streamlit UI
 
 ## Slide 4 — Matching schemes
-- **Boolean:** set intersection (AND) / union (OR) on posting lists
-- **TF-IDF:** \((1+\log tf)\times idf\), cosine similarity for ranking
+- **Candidate selection:** AND intersects posting lists, OR unions them, and PHRASE requires adjacent stemmed terms in one paragraph
+- **BM25:** combines term frequency, inverse document frequency, and document-length normalization for ranking
 - Show one example query and top-3 titles + scores
 
 ## Slide 5 — Document stats & EOS
@@ -29,8 +29,8 @@ Query → same preprocess → **Boolean AND/OR** or **TF-IDF cosine** → Stream
 - Rule-based EOS: do not split on `Dr.`, `Fig.`, `et al.`, `i.e.`, decimals `1.2`
 
 ## Slide 6 — Live demo checklist
-1. Query: `diabetes insulin treatment` (TF-IDF)
-2. Same query with Boolean AND vs OR
+1. Query: `diabetes insulin treatment` (BM25)
+2. Same query with AND vs OR, then PHRASE
 3. Open a hit → show stats + sentence list
 4. Point to preprocessing terms in the UI
 

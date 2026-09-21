@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root { color-scheme: light; font-family: "Source Sans 3", Arial, sans-serif; }
+    body { margin: 0; background: transparent; color: #152e3a; }
+    body.dark { color-scheme: dark; color: #e8f0f2; }
+    label { display: block; margin: 0 0 .45rem; color: #566b76; font-size: .9rem; font-weight: 600; }
+    label:empty { display: none; }
+    .row { display: flex; gap: .65rem; align-items: stretch; }
+    .input-wrap { position: relative; flex: 1; min-width: 0; }
+    input, .ghost { box-sizing: border-box; width: 100%; height: 2.75rem; padding: 0 .85rem; border-radius: 10px;
+      font: 400 1rem/2.75rem "Source Sans 3", Arial, sans-serif; letter-spacing: normal; white-space: pre; }
+    input { position: relative; z-index: 2; background: transparent; color: inherit; border: 1px solid #b8cbd1; outline: none; }
+    input:focus { border-color: #087f78; box-shadow: 0 0 0 1px #087f78; }
+    .ghost { position: absolute; z-index: 1; top: 0; left: 0; overflow: hidden; pointer-events: none; color: transparent; }
+    .ghost-suffix { color: #99a8ae; }
+    button { border: 0; border-radius: 9px; min-width: 8.5rem; padding: 0 1rem; background: #087f78; color: white;
+      font: 600 .95rem "Source Sans 3", Arial, sans-serif; cursor: pointer; }
+    button:hover { background: #056b65; }
+    body.dark label { color: #aabdc4; }
+    body.dark input { border-color: #4e6771; background: #10191e; color: #e8f0f2; }
+    body.dark .ghost-suffix { color: #788f98; }
+    @media (max-width: 520px) { .row { flex-direction: column; } button { height: 2.75rem; } }
+  </style>
+</head>
+<body>
+  <label id="search-label" for="search-input"></label>
+  <div class="row">
+    <div class="input-wrap">
+      <div class="ghost" aria-hidden="true"><span id="ghost-prefix"></span><span id="ghost-suffix" class="ghost-suffix"></span></div>
+      <input id="search-input" type="text" autocomplete="off" spellcheck="false" aria-describedby="completion-help">
+    </div>
+    <button id="search-button" type="button"></button>
+  </div>
+  <span id="completion-help" hidden>Press Tab or the right arrow key to accept a suggested completion.</span>
+  <script>
+    const input = document.getElementById("search-input");
+    const label = document.getElementById("search-label");
+    const button = document.getElementById("search-button");
+    const prefix = document.getElementById("ghost-prefix");
+    const suffix = document.getElementById("ghost-suffix");
+    let vocabulary = [];
+    let currentSuffix = "";
+    let renderedValue = "";
+
+    function send(type, payload) {
+      window.parent.postMessage({ isStreamlitMessage: true, type, ...payload }, "*");
+    }
+
+    function completionFor(value) {
+      const match = value.match(/([A-Za-z]+)$/);
+      if (!match || match[1].length < 2) return "";
+      const typed = match[1].toLowerCase();
+      const candidate = vocabulary.find(word => word.length > typed.length && word.startsWith(typed));
+      return candidate ? candidate.slice(typed.length) : "";
+    }
+
+    function updateGhost() {
+      currentSuffix = completionFor(input.value);
+      prefix.textContent = input.value;
+      suffix.textContent = currentSuffix;
+    }
+
+    function acceptCompletion() {
+      if (!currentSuffix) return false;
+      input.value += currentSuffix;
+      input.setSelectionRange(input.value.length, input.value.length);
+      updateGhost();
+      return true;
+    }
+
+    function submit() {
+      send("streamlit:setComponentValue", { value: { value: input.value.trim(), nonce: Date.now() }, dataType: "json" });
+    }
+
+    input.addEventListener("input", updateGhost);
+    input.addEventListener("keydown", event => {
+      const atEnd = input.selectionStart === input.value.length && input.selectionEnd === input.value.length;
+      if ((event.key === "Tab" || event.key === "ArrowRight") && atEnd && acceptCompletion()) {
+        event.preventDefault();
+      } else if (event.key === "Enter") {
+        event.preventDefault();
+        submit();
+      }
+    });
+    button.addEventListener("click", submit);
+
+    window.addEventListener("message", event => {
+      if (event.data.type !== "streamlit:render") return;
+      const args = event.data.args || {};
+      vocabulary = Array.isArray(args.vocabulary) ? args.vocabulary : [];
+      label.textContent = args.label || "Search terms";
+      input.placeholder = args.placeholder || "Search";
+      button.textContent = args.submit_label || "Search";
+      document.body.classList.toggle("dark", Boolean(args.dark));
+      if (document.activeElement !== input && args.value !== renderedValue) input.value = args.value || "";
+      renderedValue = args.value || "";
+      updateGhost();
+      send("streamlit:setFrameHeight", { height: 78 });
+    });
+    send("streamlit:componentReady", { apiVersion: 1 });
+  </script>
+</body>
+</html>

@@ -20,4 +20,4 @@ Became a default baseline in classical IR for decades. Improves recall on many c
 
 ## Link to our system
 
-Our pipeline uses NLTK’s `PorterStemmer` on both documents and queries before indexing / matching, so Boolean and TF-IDF operate on stemmed terms (e.g. *treatment* → *treatment*/*treat* depending on rules). This directly implements the “public-domain stemming” requirement of Project #1.
+Our pipeline uses NLTK’s `PorterStemmer` on both documents and queries before indexing and matching, so AND, OR, PHRASE, and BM25 operate on stemmed terms (e.g. *treatment* → *treat*). This directly implements the “public-domain stemming” requirement of Project #1.

@@ -20,4 +20,4 @@ Authors report improved retrieval quality versus date-sorted baselines in online
 
 ## Link to our system
 
-Our demo focuses on the **classic IR core** that underpins tools like PubMed: inverted index, Boolean matching, and TF-IDF cosine ranking over PMC XML, plus visualization (snippets, scores, document stats). Best Match motivates *why* ranking beyond Boolean AND is useful — which we illustrate by comparing Boolean vs TF-IDF side-by-side in the Streamlit UI.
+Our demo focuses on the **classic IR core** that underpins tools like PubMed: an inverted index, AND/OR/PHRASE candidate selection, and BM25 ranking over PubMed/PMC XML, plus visualization through snippets, scores, and document statistics. Best Match motivates why ranking beyond Boolean eligibility is useful; Helix makes this visible through BM25-ranked results.

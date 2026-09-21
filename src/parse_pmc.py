@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Iterator
 from xml.etree import ElementTree as ET
 
+from .engine import compose_abstract
+
 
 @dataclass
 class Document:
@@ -24,6 +26,11 @@ class Document:
     def __post_init__(self) -> None:
         parts = [p for p in (self.title, self.abstract, self.body) if p]
         self.full_text = "\n\n".join(parts)
+
+    @property
+    def search_text(self) -> str:
+        """Final-specification retrieval scope: abstract + keywords + body."""
+        return "\n\n".join(part for part in (self.abstract, self.body) if part)
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -49,13 +56,30 @@ def _local(tag: str) -> str:
 def _text_of(elem: ET.Element | None) -> str:
     if elem is None:
         return ""
+    # Preserve mixed-content order while separating adjacent block elements.
     parts: list[str] = []
-    for node in elem.iter():
+    blocks = {"p", "sec", "title", "list-item", "table", "tr", "td", "break"}
+
+    def visit(node: ET.Element) -> None:
+        tag = _local(node.tag).lower()
+        if tag in {"sup", "sub"}:
+            parts.append(f"<{tag}>")
         if node.text:
             parts.append(node.text)
-        if node.tail:
-            parts.append(node.tail)
-    text = " ".join(parts)
+        for child in node:
+            block = _local(child.tag) in blocks
+            if block:
+                parts.append(" ")
+            visit(child)
+            if block:
+                parts.append(" ")
+            if child.tail:
+                parts.append(child.tail)
+        if tag in {"sup", "sub"}:
+            parts.append(f"</{tag}>")
+
+    visit(elem)
+    text = "".join(parts)
     return re.sub(r"\s+", " ", text).strip()
 
 
@@ -76,6 +100,27 @@ def _find_all_text(root: ET.Element, names: set[str]) -> str:
     return " ".join(chunks)
 
 
+def _main_pmc_abstract(article_meta: ET.Element) -> tuple[list[str], list[str]]:
+    """Read only the primary JATS abstract and article-level keywords."""
+    abstracts = [child for child in article_meta if _local(child.tag) == "abstract"]
+    normal = [
+        item for item in abstracts
+        if item.get("abstract-type", "").strip().lower() in {"", "normal"}
+    ]
+    chosen = normal[0] if normal else None
+    paragraphs: list[str] = []
+    if chosen is not None:
+        paragraphs = [_text_of(item) for item in chosen.iter() if _local(item.tag) == "p"]
+        if not paragraphs:
+            paragraphs = [_text_of(chosen)]
+    keywords: list[str] = []
+    for group in article_meta.iter():
+        if _local(group.tag) != "kwd-group":
+            continue
+        keywords.extend(_text_of(item) for item in group.iter() if _local(item.tag) == "kwd")
+    return paragraphs, keywords
+
+
 def parse_pmc_xml(path: Path | str) -> Document | None:
     """Parse a single PMC XML file into a Document."""
     path = Path(path)
@@ -83,7 +128,26 @@ def parse_pmc_xml(path: Path | str) -> Document | None:
         tree = ET.parse(path)
     except ET.ParseError:
         return None
-    root = tree.getroot()
+    return _parse_root(tree.getroot(), path.stem)
+
+
+def parse_xml_text(xml: str | bytes, fallback_id: str = "") -> Document | None:
+    """Parse downloaded XML without requiring an intermediate disk file."""
+    try:
+        root = ET.fromstring(xml)
+    except ET.ParseError:
+        return None
+    return _parse_root(root, fallback_id)
+
+
+def _parse_root(root: ET.Element, fallback_id: str) -> Document | None:
+    if _local(root.tag) in {"PubmedArticleSet", "PubmedArticle", "PubmedBookArticle"}:
+        from .pubmed import PubMedError, parse_pubmed_xml
+
+        try:
+            return parse_pubmed_xml(ET.tostring(root)).to_document()
+        except PubMedError:
+            return None
 
     article_meta = _find_first(root, {"article-meta"})
     journal_meta = _find_first(root, {"journal-meta"})
@@ -104,19 +168,15 @@ def parse_pmc_xml(path: Path | str) -> Document | None:
     title = _text_of(title_elem)
 
     abstract = ""
-    abs_elem = _find_first(search_root, {"abstract"})
-    if abs_elem is not None:
-        abstract = _text_of(abs_elem)
+    if article_meta is not None:
+        paragraphs, keywords = _main_pmc_abstract(article_meta)
+        abstract = compose_abstract(paragraphs, keywords)
 
     body = ""
     body_elem = _find_first(root, {"body"})
     if body_elem is not None:
-        # Prefer paragraph text to avoid captions/noise explosion
-        paras = _find_all_text(body_elem, {"p"})
-        body = paras if paras else _text_of(body_elem)
-        # Cap body length for demo corpus
-        if len(body) > 20000:
-            body = body[:20000] + "…"
+        # Search all body text, including section headings and table/caption text.
+        body = _text_of(body_elem)
 
     journal = ""
     if journal_meta is not None:
@@ -132,7 +192,7 @@ def parse_pmc_xml(path: Path | str) -> Document | None:
     if not title and not abstract:
         return None
 
-    doc_id = pmid or pmcid or path.stem
+    doc_id = pmid or pmcid or fallback_id
     return Document(
         doc_id=str(doc_id),
         pmid=pmid,
@@ -148,15 +208,22 @@ def parse_pmc_xml(path: Path | str) -> Document | None:
 def parse_directory(raw_dir: Path | str) -> list[Document]:
     """Parse all XML files under a directory."""
     raw_dir = Path(raw_dir)
-    docs: list[Document] = []
-    seen: set[str] = set()
+    parsed: list[Document] = []
     for path in sorted(raw_dir.glob("**/*.xml")):
         doc = parse_pmc_xml(path)
-        if doc is None or doc.doc_id in seen:
-            continue
-        seen.add(doc.doc_id)
-        docs.append(doc)
-    return docs
+        if doc is not None:
+            parsed.append(doc)
+    # PubMed can supply a PMID omitted by its corresponding PMC export.
+    pmids = {doc.pmcid: doc.pmid for doc in parsed if doc.pmcid and doc.pmid}
+    docs: dict[str, Document] = {}
+    for doc in parsed:
+        if not doc.pmid and doc.pmcid in pmids:
+            doc.doc_id = doc.pmid = pmids[doc.pmcid]
+        previous = docs.get(doc.doc_id)
+        # Prefer full text when both PubMed metadata and PMC XML were saved.
+        if previous is None or len(doc.body) > len(previous.body):
+            docs[doc.doc_id] = doc
+    return list(docs.values())
 
 
 def iter_docs(docs: list[Document]) -> Iterator[Document]:

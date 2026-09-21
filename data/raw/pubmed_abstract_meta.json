@@ -1,0 +1,506 @@
+{
+  "query": "diabetes mellitus[Title/Abstract] AND hasabstract[text]",
+  "requested": 100,
+  "saved": [
+    {
+      "pmid": "42763718",
+      "title": "Sex-Specific Predictive Value of Obesity-Related Indicators for Diabetic Kidney Disease in Type 2 Diabetes Mellitus.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42763718.xml"
+    },
+    {
+      "pmid": "42763716",
+      "title": "Comparative Incidence of Urinary Tract Infections in Diabetic Women Treated with Dapagliflozin Versus Empagliflozin: A Double-Blind Randomized Clinical Trial.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42763716.xml"
+    },
+    {
+      "pmid": "42763700",
+      "title": "Subclinical Diastolic Indices in Children with Type 1 Diabetes: A Cross-Sectional Comparative Study from Northern Iran.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42763700.xml"
+    },
+    {
+      "pmid": "42763696",
+      "title": "Artificial Intelligence-Driven Digital Tools for Diabetes Self-management in Children: A Scoping Review.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42763696.xml"
+    },
+    {
+      "pmid": "42763678",
+      "title": "Clinical and Genetic Factors Associated with Multivessel Coronary Artery Disease: A Cross-Sectional Study of CYP2C19 Polymorphisms and Metabolic Comorbidities.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42763678.xml"
+    },
+    {
+      "pmid": "42763677",
+      "title": "Effectiveness of Structured Education Programmes on Diet and Exercise for Preventing Type 2 Diabetes in Adults With Prediabetes: A Systematic Review.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42763677.xml"
+    },
+    {
+      "pmid": "42763671",
+      "title": "Metabolic Predictors and Diagnostic Performance of Fundus Autofluorescence for Diabetic Macular Edema: A Cross-Sectional Diagnostic Accuracy Study Using Swept-Source Optical Coherence Tomography as Reference Standard.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42763671.xml"
+    },
+    {
+      "pmid": "42763645",
+      "title": "ALDH1A3 Inhibition by Prosopis farcta Phytochemicals: A Computational Exploration of a Potential Antidiabetic Mechanism.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42763645.xml"
+    },
+    {
+      "pmid": "42763481",
+      "title": "Prevalence of overweight and obesity and the burden of high body-mass index in Latin America: a systematic analysis for the Global Burden of Disease Study 2023.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42763481.xml"
+    },
+    {
+      "pmid": "42763400",
+      "title": "Timing of surgery for a melioidosis-associated abdominal aortic pseudoaneurysm: a case report.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42763400.xml"
+    },
+    {
+      "pmid": "42763298",
+      "title": "Association between dietary folic acid intake and diabetic retinopathy among patients with diabetes: An analysis of 2005-2008 NHANES data.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42763298.xml"
+    },
+    {
+      "pmid": "42763210",
+      "title": "[Analysis of influencing factors and construction of a predictive model for cardiovascular autonomic neuropathy in type 2 diabetes mellitus].",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42763210.xml"
+    },
+    {
+      "pmid": "42763204",
+      "title": "[Progress in research of association between bone mineral density and fracture in patients with type 2 diabetes mellitus].",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42763204.xml"
+    },
+    {
+      "pmid": "42763076",
+      "title": "High BMI-attributable burden of eight diseases relevant to the CKM framework in China: GBD 2023 estimates and projections to 2050.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42763076.xml"
+    },
+    {
+      "pmid": "42762972",
+      "title": "Retinal Inflammation in Diabetes.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42762972.xml"
+    },
+    {
+      "pmid": "42762922",
+      "title": "Review of The relationship between deficiency of Glucose-6-phosphate dehydrogenase deficiency and diabetes and its complications.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42762922.xml"
+    },
+    {
+      "pmid": "42762921",
+      "title": "Type 2 diabetes mellitus is not associated with a clinically relevant exocrine pancreatic phenotype: A prospective multimodal assessor-blinded case-control study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42762921.xml"
+    },
+    {
+      "pmid": "42762920",
+      "title": "Effects of psychotherapy interventions on glycemic control and weight loss in adults with type 2 diabetes mellitus: a systematic review and meta-analysis.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42762920.xml"
+    },
+    {
+      "pmid": "42762771",
+      "title": "Three-year incidence and predictors of mortality and microvascular and macrovascular complications after newly diagnosed type 2 diabetes: A population-based cohort study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42762771.xml"
+    },
+    {
+      "pmid": "42762711",
+      "title": "Cord blood 25(OH)D in high-risk pregnancies: An ANCOVA-based analysis in hypertensive disorders, severe anaemia, and gestational diabetes.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42762711.xml"
+    },
+    {
+      "pmid": "42762680",
+      "title": "Clinical and radiological predictors of retropharyngeal abscesses in deep neck infections.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42762680.xml"
+    },
+    {
+      "pmid": "42762576",
+      "title": "Trimester-specific reference interval for glycated hemoglobin in non-diabetic pregnant women: A cross-sectional study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42762576.xml"
+    },
+    {
+      "pmid": "42762531",
+      "title": "Association of Oral Health Assessment Tool Findings With Periodontal Screening Outcomes in Adults With Diabetes.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42762531.xml"
+    },
+    {
+      "pmid": "42762505",
+      "title": "Efficacy of whole-body vibration on hormonal responses in individuals with hormonal disorders: A systematic review and meta-analysis.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42762505.xml"
+    },
+    {
+      "pmid": "42762423",
+      "title": "Prognostic impact of diabetes or hypertension in smokers with CRPC receiving enzalutamide or abiraterone.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42762423.xml"
+    },
+    {
+      "pmid": "42762056",
+      "title": "A Novel Dual Therapy for Diabetic Ischemic Heart Injury: Sinomenine and Liraglutide Restore Mitochondrial Homeostasis and Suppress Pyroptosis.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42762056.xml"
+    },
+    {
+      "pmid": "42762054",
+      "title": "Long-term effects of tofogliflozin on renal function in patients with type 2 diabetes: A retrospective multicenter study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42762054.xml"
+    },
+    {
+      "pmid": "42762026",
+      "title": "Incidence and Time to Onset of Pseudophakic Cystoid Macular Edema (Irvine-Gass Syndrome) After 1,325 Consecutive Cataract Surgeries Performed by a Single Surgeon Over Four Years.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42762026.xml"
+    },
+    {
+      "pmid": "42761974",
+      "title": "Incidence and Factors Associated With Development of Fistula-in-Ano After Drainage of Anorectal Abscess: A Prospective Observational Study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42761974.xml"
+    },
+    {
+      "pmid": "42761803",
+      "title": "Evaluation of Atherosclerotic Changes in the Superior Mesenteric Artery Using MDCT.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42761803.xml"
+    },
+    {
+      "pmid": "42761650",
+      "title": "Systemic comorbidities, seasonal onset, and antihypertensive medication use in primary angle-closure disease subtypes.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42761650.xml"
+    },
+    {
+      "pmid": "42761621",
+      "title": "Rupioid Porokeratosis on the Lower Leg: An Unprecedented Case Report.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42761621.xml"
+    },
+    {
+      "pmid": "42761404",
+      "title": "Real-World Outcomes of Telemedicine Shared Medical Appointments in Obesity Management.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42761404.xml"
+    },
+    {
+      "pmid": "42761395",
+      "title": "Cross-fusion of digital twins and artificial intelligence in diabetes: from mechanistic elucidation to full-cycle precision management.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42761395.xml"
+    },
+    {
+      "pmid": "42761384",
+      "title": "Perioperative carbohydrate loading improves comfort without adverse metabolic or neonatal effects in gestational diabetes mellitus.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42761384.xml"
+    },
+    {
+      "pmid": "42761348",
+      "title": "Necrotizing Fasciitis Outcomes in Diabetic vs Non-Diabetic Patients: A Systematic Review and Meta-Analysis.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42761348.xml"
+    },
+    {
+      "pmid": "42761292",
+      "title": "The Effect of Post-Traumatic Stress Disorder on Total Shoulder Arthroplasty Outcomes: A Retrospective Cohort Study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42761292.xml"
+    },
+    {
+      "pmid": "42761174",
+      "title": "Adverse event reporting signals for SGLT-2 inhibitor-metformin combination therapy: a disproportionality analysis of the FAERS database.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42761174.xml"
+    },
+    {
+      "pmid": "42761135",
+      "title": "Knowledge, attitudes, and practices regarding diabetic foot care among patients with diabetes in China: a systematic review and meta-analysis.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42761135.xml"
+    },
+    {
+      "pmid": "42761086",
+      "title": "SGLT2 versus DPP-4 inhibitors in type 2 diabetes: a meta-analysis of outcomes.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42761086.xml"
+    },
+    {
+      "pmid": "42760994",
+      "title": "The association between the triglyceride-glucose index and diabetic peripheral neuropathy: a systematic review and meta-analysis.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760994.xml"
+    },
+    {
+      "pmid": "42760811",
+      "title": "Association Between Albumin-Corrected Anion Gap and Prevalent Prediabetes or Diabetes Mellitus: A Cross-Sectional Analysis of NHANES 2005-2010.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760811.xml"
+    },
+    {
+      "pmid": "42760714",
+      "title": "Age- and sex-specific associations between thyroid function and diabetes in Korean adults: A nationwide cross-sectional study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760714.xml"
+    },
+    {
+      "pmid": "42760621",
+      "title": "Orforglipron: An Oral GLP-1 Receptor Agonist for Obesity Treatment.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760621.xml"
+    },
+    {
+      "pmid": "42760569",
+      "title": "Treatment, monitoring, and euthanasia in canine diabetes mellitus - a questionnaire-based survey among veterinarians in Norway.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760569.xml"
+    },
+    {
+      "pmid": "42760519",
+      "title": "Helcococcus kunzii as a rare etiological agent of spondylodiscitis partially managed with oral antibiotic therapy in a patient with diabetes mellitus: a case report.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760519.xml"
+    },
+    {
+      "pmid": "42760513",
+      "title": "Serum long noncoding RNA human plasmacytoma variant translocation 1 (PVT1) expression levels in Egyptians type 2 diabetic patients and its correlation with severity of diabetic nephropathy.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760513.xml"
+    },
+    {
+      "pmid": "42760378",
+      "title": "Nutrition transitions, obesity and T2DM in the Middle East and North Africa.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760378.xml"
+    },
+    {
+      "pmid": "42760363",
+      "title": "Impact of advanced age on quality of life and functional recovery trajectories following partial laryngectomy.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760363.xml"
+    },
+    {
+      "pmid": "42760247",
+      "title": "Executive summary of the Integrated Clinical care pathway for the detection and management of preclinical stages of type 1 diabetes: SED-SEEN-SEEP consensus.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760247.xml"
+    },
+    {
+      "pmid": "42760232",
+      "title": "Do single or clustered body composition parameters predict mortality? A multicenter Italian study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760232.xml"
+    },
+    {
+      "pmid": "42760231",
+      "title": "Maternal and neonatal outcomes in gestational diabetes mellitus: a retrospective cohort study stratified by fasting hyperglycemia phenotype.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760231.xml"
+    },
+    {
+      "pmid": "42760230",
+      "title": "Chronic coffee consumption and diabetogenic risk: data from the PAMELA study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760230.xml"
+    },
+    {
+      "pmid": "42760203",
+      "title": "Cardiovascular Risk, Comorbidity and Frailty in Patients Undergoing Sleeve Gastrectomy: A Population-Based Study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760203.xml"
+    },
+    {
+      "pmid": "42760197",
+      "title": "Short-Term Clinical Outcomes After Percutaneous Coronary Intervention Among Culturally and Linguistically Diverse (CALD) Patients in Australia.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760197.xml"
+    },
+    {
+      "pmid": "42760186",
+      "title": "Influence of GLP1R and TCF7L2 genetic variants on type 2 diabetes remission following Roux-en-Y gastric bypass.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760186.xml"
+    },
+    {
+      "pmid": "42760177",
+      "title": "Distinct pattern of reported adverse event with SGLT2 inhibitors in heart failure: A pharmacovigilance study using VigiBase data.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760177.xml"
+    },
+    {
+      "pmid": "42760138",
+      "title": "Genetically predicted GLP-1R expression and idiopathic pulmonary fibrosis: A Mendelian randomization mediation study of JAKMIP3 and pulmonary function.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760138.xml"
+    },
+    {
+      "pmid": "42760076",
+      "title": "Cultural adaptation and psychometric properties of health-related quality of life tools used in persons living with diabetes mellitus studies conducted in Ethiopia: a protocol for a scoping review.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42760076.xml"
+    },
+    {
+      "pmid": "42759670",
+      "title": "LncRNA NR2F1-AS1 serves as a diagnostic biomarker for diabetic peripheral neuropathy and promotes disease progression by regulating miR-150-5p.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42759670.xml"
+    },
+    {
+      "pmid": "42759652",
+      "title": "Exploring Virtual Care Experiences for Gestational Diabetes in Adults: A Qualitative Descriptive Study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42759652.xml"
+    },
+    {
+      "pmid": "42759614",
+      "title": "Progression to Insulin Requirement at One Year After Kidney-Alone Transplantation in Insulin-Independent Type 2 Diabetes: Implications for SPK Candidate Selection.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42759614.xml"
+    },
+    {
+      "pmid": "42759570",
+      "title": "The role of circulating secreted frizzled-related protein 4 (SFRP4) in type 2 diabetes mellitus: A systematic review and meta-analysis.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42759570.xml"
+    },
+    {
+      "pmid": "42759569",
+      "title": "Fatty-acid patterns and odds of incident type 2 diabetes in South Asians: a causal mediation analysis within the CARRS cohort.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42759569.xml"
+    },
+    {
+      "pmid": "42759555",
+      "title": "Aerobic physical activity and chronic diseases in Austrian adults aged 65 years and older: a model-based population attributable fraction study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42759555.xml"
+    },
+    {
+      "pmid": "42759395",
+      "title": "A dual-modal optical probe for photoacoustic and urine detection of NE activity in atherosclerosis and diabetic complications.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42759395.xml"
+    },
+    {
+      "pmid": "42759240",
+      "title": "The impact of maternal gestational diabetes mellitus on the microbiome of offspring: A systematic review.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42759240.xml"
+    },
+    {
+      "pmid": "42758908",
+      "title": "Legionella Myocarditis with Reversible Left Ventricular Dysfunction in a Patient Receiving Adalimumab: A Case Report.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42758908.xml"
+    },
+    {
+      "pmid": "42758780",
+      "title": "Exploring the link between asprosin and glucose and lipid dysregulation in offspring of diabetic mothers in a rat model.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42758780.xml"
+    },
+    {
+      "pmid": "42758775",
+      "title": "Association of type 2 diabetes mellitus with postoperative outcomes following single-level endoscopic lumbar interbody fusion through a posterior approach: A global propensity score-matched cohort study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42758775.xml"
+    },
+    {
+      "pmid": "42758599",
+      "title": "Longitudinal HbA1c trajectories and clinical prognosis in type 2 diabetes: a population-based cohort study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42758599.xml"
+    },
+    {
+      "pmid": "42758547",
+      "title": "Effect of manual diaphragmatic release technique on exercise capacity and sleep quality in older adults with Type II diabetes: A randomized controlled trial.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42758547.xml"
+    },
+    {
+      "pmid": "42758450",
+      "title": "Body roundness index shows a short-term, sex-specific advantage over body mass index in predicting incident diabetes: a longitudinal prospective cohort study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42758450.xml"
+    },
+    {
+      "pmid": "42758354",
+      "title": "CRISPR-Cas9 genome editing: technological advances, delivery strategies and precision engineering of primary cells for therapeutic application in genetic disorders and diabetes mellitus.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42758354.xml"
+    },
+    {
+      "pmid": "42758305",
+      "title": "Menopause hormone therapy and type 2 diabetes risk and prognosis: systematic review and meta-analyses.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42758305.xml"
+    },
+    {
+      "pmid": "42758261",
+      "title": "Small-Conductance Ca2+-Activated K+ Channels and Their Regulation of Excitability of Autonomic Neurons.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42758261.xml"
+    },
+    {
+      "pmid": "42757870",
+      "title": "Development and Validation of The Skin Graft Loss Risk Estimator: An Interpretable Machine Learning-Driven Tool for Individualized Assessment in Burn Patients.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42757870.xml"
+    },
+    {
+      "pmid": "42757795",
+      "title": "Evaluation of the pro-healing effect of a commercial formulation of aqueous extract of Triticum vulgare in hyperglycemic mice.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42757795.xml"
+    },
+    {
+      "pmid": "42757706",
+      "title": "Swallowable micro-/nanorobots for disease treatment.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42757706.xml"
+    },
+    {
+      "pmid": "42757591",
+      "title": "Association between endometriosis and cardiovascular disease: a population-based cohort study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42757591.xml"
+    },
+    {
+      "pmid": "42757583",
+      "title": "Maternal and perinatal outcomes across China's one-child, two-child, and three-child policy periods: a retrospective cohort analysis of 43,439 deliveries.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42757583.xml"
+    },
+    {
+      "pmid": "42757473",
+      "title": "Artemisinin and its derivatives for metabolic syndrome: From multi‑target mechanisms to translational opportunities (Review).",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42757473.xml"
+    },
+    {
+      "pmid": "42757390",
+      "title": "The impact of type 2 diabetes mellitus on anterior segment parameters.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42757390.xml"
+    },
+    {
+      "pmid": "42757279",
+      "title": "Clinical outcomes of insulin deintensification in a real-world primary care setting: A retrospective observational study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42757279.xml"
+    },
+    {
+      "pmid": "42757240",
+      "title": "AI Chatbots as a source of Ramadan medication management advice for patients with diabetes: a multilingual comparative evaluation.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42757240.xml"
+    },
+    {
+      "pmid": "42757205",
+      "title": "Ischemic Stroke After Anticoagulation Discontinuation Following Apparent Resolution of Left Ventricular Thrombus: A Case Report.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42757205.xml"
+    },
+    {
+      "pmid": "42757139",
+      "title": "Prevalence of and factors associated with gestational diabetes mellitus and diabetes in pregnancy in Bangladesh: a facility-based cross-sectional study (2019-2020).",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42757139.xml"
+    },
+    {
+      "pmid": "42757138",
+      "title": "Abnormally Low Hemoglobin A1c Due to a Heterozygous Alpha-Globin Variant (Hb I; HBA2 c.49A>G, p.Lys17Glu) in a Geriatric Patient.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42757138.xml"
+    },
+    {
+      "pmid": "42757104",
+      "title": "Role of the cGAS-STING signaling pathway in diabetes mellitus and its complications: from mechanisms to therapeutics.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42757104.xml"
+    },
+    {
+      "pmid": "42756978",
+      "title": "Cascade of care for type 2 diabetes mellitus and hypertension in rural Bangladesh: sub-regional mapping of gaps in care.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42756978.xml"
+    },
+    {
+      "pmid": "42756900",
+      "title": "Gut microbiota-host adaptive immune interactions in type 2 diabetes mellitus: mechanisms, disease progression, and microbiota-based therapeutic strategies.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42756900.xml"
+    },
+    {
+      "pmid": "42756876",
+      "title": "Perioperative cognitive dysfunction in bladder cancer patients, causal factors, and possible interventions.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42756876.xml"
+    },
+    {
+      "pmid": "42756827",
+      "title": "Precision Genome Engineering in Human Disease: Expanding Therapeutic Roles of CRISPR Technologies.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42756827.xml"
+    },
+    {
+      "pmid": "42756789",
+      "title": "Prevalence of Diabetes Mellitus among Adults in Rural Anambra State, Nigeria: Cross-Sectional Study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42756789.xml"
+    },
+    {
+      "pmid": "42756669",
+      "title": "Brachial Plexitis as a Rare Manifestation of Giant Cell Arteritis: A Case-Based Review.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42756669.xml"
+    },
+    {
+      "pmid": "42756668",
+      "title": "Seasonal variation in outcomes of diabetic patients with acute myocardial infarction: A retrospective cohort study.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42756668.xml"
+    },
+    {
+      "pmid": "42756659",
+      "title": "Increased Risk of Gout among Patients with Trisomy 21: Insights from a Population-Based Study of over 30,000 Patients with Trisomy 21.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42756659.xml"
+    },
+    {
+      "pmid": "42756549",
+      "title": "Predictors of Short- and Long-Term Major Adverse Cardiac and Cerebrovascular Events (MACCE) After Percutaneous Coronary Intervention: A Cohort Study on the Data of National Persian Registry of Cardiovascular Disease (N-PROVE).",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42756549.xml"
+    },
+    {
+      "pmid": "42756484",
+      "title": "Silent pheochromocytoma presenting as refractory hyperglycemia without classic adrenergic symptoms.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42756484.xml"
+    },
+    {
+      "pmid": "42756440",
+      "title": "Striking Discordance Between Morphological Residual Disease and Histological Pathological Complete Response: A Case Report of Pembrolizumab Treatment in Mismatch Repair-Deficient Colorectal Cancer With Liver Metastases.",
+      "path": "C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\data\\raw\\PMID42756440.xml"
+    }
+  ]
+}
