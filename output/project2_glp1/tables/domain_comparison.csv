@@ -1,0 +1,9 @@
+﻿measure,GLP-1 (medical),Machine learning (computing)
+Documents,500,500
+Tokens,88036,93131
+Vocabulary,12626,15191
+Zipf exponent,1.1248041822612052,1.0733969309020273
+R2,0.960953895186077,0.9618895964803689
+RMSE log10,0.09826322661121935,0.09262368505285082
+Hapax share,0.49730714398859494,0.5092488973734448
+Top 10 terms,"glp-1, receptor, patients, weight, metabolic, obesity, risk, agonists, diabetes, outcomes","model, learning, using, performance, models, study, analysis, data, clinical, machine"

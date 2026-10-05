@@ -1,4 +1,7 @@
-streamlit>=1.41.0
+streamlit>=1.49.0
 nltk>=3.8.1
 requests>=2.31.0
 lxml>=4.9.0
+numpy>=1.24.0
+matplotlib>=3.8.0
+reportlab>=4.0.0

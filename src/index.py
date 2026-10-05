@@ -112,7 +112,8 @@ def load_docs(path: Path | str) -> list[Document]:
             line = line.strip()
             if line:
                 docs.append(Document.from_dict(json.loads(line)))
-    return docs
+    from .library import active_documents
+    return active_documents(docs, Path(path).parent.parent / "library.sqlite3")
 
 
 def index_summary(index: InvertedIndex) -> dict[str, Any]:
@@ -153,9 +154,11 @@ def rebuild_local_index(raw_dir: Path, processed_dir: Path, *,
         previous = docs.get(doc.doc_id)
         if previous is None or len(doc.body) >= len(previous.body):
             docs[doc.doc_id] = doc
-    if not docs:
+    from .library import hidden_article_ids
+    if not docs and not hidden_article_ids(raw_dir.parent / "library.sqlite3"):
         raise ValueError("No readable article XML files were found.")
-    documents = list(docs.values())
+    from .library import active_documents
+    documents = active_documents(list(docs.values()), raw_dir.parent / "library.sqlite3")
     index = build_index(
         documents,
         stem=stem if stem is not None else (existing.stem if existing else True),

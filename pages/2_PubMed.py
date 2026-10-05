@@ -10,6 +10,8 @@ from collections import Counter
 from html import escape
 from io import StringIO
 from pathlib import Path
+from sqlite3 import Error as DatabaseError
+from time import perf_counter
 
 import streamlit as st
 
@@ -18,14 +20,14 @@ sys.path.insert(0, str(ROOT))
 
 from src.corpus import import_xml_document, parse_importable_xml
 from src.index import rebuild_local_index
-from src.library import count_articles, save_article_record
+from src.library import save_article_record
 from src.preprocess import tokenize
 from src.pubmed import (
     PubMedArticle,
     PubMedError,
-    export_json,
     fetch_pmc_fulltext,
     fetch_pubmed_article,
+    load_saved_article,
     normalize_article_id,
     save_article,
     _write_atomic,
@@ -47,7 +49,7 @@ from ui.i18n import t
 RAW_DIR = ROOT / "data" / "raw"
 DATABASE_PATH = ROOT / "data" / "library.sqlite3"
 PROCESSED_DIR = ROOT / "data" / "processed"
-PARSER_CACHE_VERSION = "superscript-subscript-v1"
+PARSER_CACHE_VERSION = "pubmed-network-v2"
 MAX_UPLOADS = 20
 
 
@@ -58,16 +60,29 @@ def fetch_article(identifier: str, parser_version: str) -> PubMedArticle:
     return fetch_pubmed_article(identifier)
 
 
-def save_to_local_library(article: PubMedArticle, include_fulltext: bool) -> dict:
+@st.cache_data(ttl=3600, max_entries=30, show_spinner=False)
+def fetch_fulltext(article: PubMedArticle) -> bytes:
+    return fetch_pmc_fulltext(article)
+
+
+def save_to_local_library(article: PubMedArticle, include_fulltext: bool, progress=None) -> dict:
     """Save exports only after the user explicitly selects the optional action."""
     fulltext = None
     fulltext_message = ""
+    timings = {}
     if include_fulltext and article.pmcid:
+        if progress:
+            progress("Fetching the optional full text from PMC…")
+        started = perf_counter()
         try:
-            fulltext = fetch_pmc_fulltext(article)
+            fulltext = fetch_fulltext(article)
         except PubMedError as exc:
             fulltext_message = str(exc)
+        timings["PMC full text (or cache)"] = perf_counter() - started
 
+    if progress:
+        progress("Saving this paper to your library…")
+    started = perf_counter()
     paths = save_article(article, RAW_DIR, fulltext)
     save_article_record(
         DATABASE_PATH,
@@ -76,11 +91,19 @@ def save_to_local_library(article: PubMedArticle, include_fulltext: bool) -> dic
         project_root=ROOT,
         has_full_text=bool(fulltext),
     )
+    timings["Local file and catalog save"] = perf_counter() - started
+    if progress:
+        progress("Updating the local search index…")
+    started = perf_counter()
+    indexed_count = rebuild_local_index(RAW_DIR, PROCESSED_DIR)
+    timings["Local index rebuild"] = perf_counter() - started
     return {
+        "pmid": article.pmid,
         "paths": [str(path.relative_to(ROOT)) for path in paths],
-        "indexed_count": rebuild_local_index(RAW_DIR, PROCESSED_DIR),
+        "indexed_count": indexed_count,
         "fulltext_message": fulltext_message,
         "has_fulltext": bool(fulltext),
+        "timings": timings,
     }
 
 
@@ -115,6 +138,7 @@ def display_analysis(abstract: str, document_id: str, *, key_prefix: str) -> Non
             file_name=f"{document_id}_abstract_statistics.csv",
             mime="text/csv",
             key=f"{key_prefix}_statistics_csv",
+            on_click="ignore",
         )
         counts = Counter(tokenize(abstract_text)).most_common(20)
         if counts:
@@ -172,50 +196,54 @@ def display_batch_statistics_table(rows: list[dict]) -> None:
 
 
 def display_save_options(article: PubMedArticle) -> None:
-    """Keep browser downloads and persistent storage separate from lookup."""
+    """Offer an XML download or a one-click import into the searchable library."""
     st.divider()
     st.markdown(f"### {t('save_options')}")
-    st.caption("Optional. Searching and analyzing an abstract does not write anything to your computer.")
+    st.caption(t("import_hint"))
+    with st.expander(t("import_options")):
+        include_fulltext = st.checkbox(
+            "Also try to download PMC full-text XML",
+            value=False,
+            disabled=not bool(article.pmcid),
+            help="Available only when the record has a linked PMCID.",
+            key=f"import_fulltext_{article.pmid}",
+        )
     left, right = st.columns(2)
     left.download_button(
         t("download_xml"),
         article.xml,
         file_name=f"PMID{article.pmid}.xml",
         mime="application/xml",
+        on_click="ignore",
         use_container_width=True,
     )
-    right.download_button(
-        t("download_json"),
-        export_json(article),
-        file_name=f"PMID{article.pmid}.json",
-        mime="application/json",
+    import_clicked = right.button(
+        t("import_paper"),
+        key=f"import_paper_{article.pmid}",
+        type="primary",
         use_container_width=True,
     )
-
-    with st.expander("Save this article to the local search library"):
-        include_fulltext = st.checkbox(
-            "Also try to download PMC full-text XML",
-            value=False,
-            disabled=not bool(article.pmcid),
-            help="Available only when the record has a linked PMCID.",
-        )
-        if st.button("Save XML and JSON locally", type="primary", use_container_width=True):
-            try:
-                with st.spinner("Saving files and updating the local search index..."):
-                    st.session_state.save_result = save_to_local_library(article, include_fulltext)
-            except (PubMedError, OSError, RuntimeError, LookupError) as exc:
-                st.error(str(exc))
-        saved = st.session_state.get("save_result")
-        if saved:
-            st.success(
-                f"Saved locally and indexed {saved['indexed_count']} document(s)."
-            )
+    if import_clicked:
+        st.session_state.pop("save_result", None)
+        try:
+            with st.status(t("importing_paper"), expanded=True) as status:
+                st.session_state.save_result = save_to_local_library(article, include_fulltext, progress=status.write)
+                status.update(label=t("import_complete"), state="complete", expanded=False)
+        except (PubMedError, OSError, RuntimeError, LookupError, DatabaseError) as exc:
+            st.error(str(exc))
+    saved = st.session_state.get("save_result")
+    if saved and saved.get("pmid") == article.pmid:
+        st.success(t("import_success").format(pmid=article.pmid))
+        if saved["has_fulltext"]:
+            st.caption("PMC full text is included in your library.")
+        elif saved["fulltext_message"]:
+            st.caption(f"The abstract was imported; PMC full text was unavailable: {saved['fulltext_message']}")
+        st.page_link("pages/1_Search.py", label=t("search_imported"))
+        with st.expander(t("import_details")):
             st.code("\n".join(saved["paths"]), language=None)
-            if saved["has_fulltext"]:
-                st.caption("PMC full-text XML was included in the local index.")
-            elif saved["fulltext_message"]:
-                st.caption(f"Saved the PubMed record; PMC full text was unavailable: {saved['fulltext_message']}")
-            st.page_link("pages/1_Search.py", label="Search the saved local library")
+            st.caption(f"Library: {saved['indexed_count']} indexed paper(s).")
+            if saved.get("timings"):
+                st.caption(" · ".join(f"{step}: {seconds:.2f} s" for step, seconds in saved["timings"].items()))
 
 
 def uploaded_json(document) -> bytes:
@@ -241,8 +269,8 @@ def display_uploaded_save_options(document, content: bytes, filename: str, *, ke
     st.markdown(f"### {t('save_options')}")
     st.caption("This upload is only being previewed. Save is optional and writes it to the server's local search collection.")
     left, right = st.columns(2)
-    left.download_button("Download uploaded XML", content, file_name=filename, mime="application/xml", use_container_width=True, key=f"{key_prefix}_xml")
-    right.download_button("Download parsed IR JSON", uploaded_json(document), file_name=f"{document.doc_id}_ir.json", mime="application/json", use_container_width=True, key=f"{key_prefix}_json")
+    left.download_button("Download uploaded XML", content, file_name=filename, mime="application/xml", use_container_width=True, key=f"{key_prefix}_xml", on_click="ignore")
+    right.download_button("Download parsed IR JSON", uploaded_json(document), file_name=f"{document.doc_id}_ir.json", mime="application/json", use_container_width=True, key=f"{key_prefix}_json", on_click="ignore")
     with st.expander("Save this uploaded XML to the local search library"):
         result_key = f"{key_prefix}_save_result"
         if st.button("Save XML and JSON locally", key=f"{key_prefix}_save", type="primary", use_container_width=True):
@@ -268,9 +296,6 @@ def main() -> None:
     inject_css()
     sidebar_nav()
     masthead(t("lookup_page_title"))
-    with st.sidebar:
-        st.metric("Saved locally", count_articles(DATABASE_PATH))
-        st.caption("Persistent storage is optional.")
 
     intro(
         "PMID or PMCID",
@@ -284,6 +309,8 @@ def main() -> None:
                 placeholder="30153250 or PMC13559554",
                 help="Numbers are treated as PMIDs. PMCID must start with PMC.",
             )
+            refresh = st.checkbox("Fetch latest from NCBI", value=False,
+                                  help="Normally an existing local XML or the app's one-hour cache is reused. Select this to bypass both and request a fresh record.")
             submitted = st.form_submit_button(t("search_abstract"), type="primary", use_container_width=True)
         st.caption(t("lookup_hint"))
 
@@ -297,12 +324,21 @@ def main() -> None:
 
     if submitted:
         st.session_state.pop("save_result", None)
+        st.session_state.pop("lookup_info", None)
+        started = perf_counter()
         try:
-            with st.spinner("Fetching the PubMed record..."):
-                st.session_state.lookup_article = fetch_article(normalize_article_id(identifier), PARSER_CACHE_VERSION)
+            normalized = normalize_article_id(identifier)
+            article = None if refresh else load_saved_article(normalized, RAW_DIR)
+            source = "Saved local XML (no network)"
+            if article is None:
+                with st.spinner("Fetching the PubMed record (up to 2 attempts per request)…"):
+                    article = fetch_pubmed_article(normalized) if refresh else fetch_article(normalized, PARSER_CACHE_VERSION)
+                source = "Live NCBI request" if refresh else "NCBI / one-hour app cache"
+            st.session_state.lookup_article = article
+            st.session_state.lookup_info = {"source": source, "seconds": perf_counter() - started}
         except (ValueError, PubMedError) as exc:
             st.session_state.pop("lookup_article", None)
-            st.error(str(exc))
+            st.error(f"{exc} (Lookup elapsed: {perf_counter() - started:.1f} s)")
 
     uploaded_records = []
     if uploaded_files:
@@ -351,6 +387,7 @@ def main() -> None:
             file_name="uploaded_abstract_statistics.csv",
             mime="text/csv",
             key="uploaded_batch_statistics_csv",
+            on_click="ignore",
         )
         for position, filename, uploaded_content, signature, uploaded_document in uploaded_records:
             identifier = uploaded_document.pmid or (f"PMC{uploaded_document.pmcid}" if uploaded_document.pmcid else uploaded_document.doc_id)
@@ -367,6 +404,9 @@ def main() -> None:
     else:
         article = st.session_state.get("lookup_article")
         if article:
+            info = st.session_state.get("lookup_info")
+            if info:
+                st.caption(f"{info['source']} · Lookup time: {info['seconds']:.2f} s")
             display_article_title(article.title, article.pmid)
             chips([f"PMID {article.pmid}"] + ([article.pmcid] if article.pmcid else []))
             st.caption(" | ".join(filter(None, [article.journal, article.year, article.doi])))

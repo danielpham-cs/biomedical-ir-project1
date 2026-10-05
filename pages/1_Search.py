@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+import hashlib
 from collections import Counter
 from html import escape
 from pathlib import Path
@@ -14,9 +15,13 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from src.index import index_summary, load_docs, load_index
-from src.preprocess import preprocess, tokenize
-from src.search import build_spelling_vocabulary, highlight_text, search, suggest_query_correction
+from src.index import build_index, index_summary, load_docs, load_index
+from src.parse_pmc import parse_xml_text
+from src.library import hidden_article_ids
+from src.tables import rows_csv
+from src.matching import document_matches, highlight_spans, make_match_plan, searchable_text
+from src.preprocess import tokenize
+from src.search import build_spelling_vocabulary, search, suggest_query_correction
 from src.stats import compute_stats
 from ui.brand import (
     BRAND,
@@ -43,6 +48,13 @@ def load_resources(docs_version: int, index_version: int):
     return docs, load_index(INDEX_PATH), build_spelling_vocabulary(docs)
 
 
+@st.cache_data(show_spinner=False, max_entries=32)
+def run_search(query, method, match_mode, max_edits, docs_version, index_version):
+    docs, index, _ = load_resources(docs_version, index_version)
+    return search(query, index, docs, method=method, match_mode=match_mode,
+                  max_edits=max_edits, top_k=len(docs))
+
+
 def open_document(doc_id: str) -> None:
     st.session_state.reader_doc = doc_id
 
@@ -56,14 +68,64 @@ def autocomplete_vocabulary(vocabulary: dict[str, int]) -> list[str]:
     return [word for word, _ in sorted(vocabulary.items(), key=lambda item: (-item[1], len(item[0]), item[0]))]
 
 
-def render_document(document) -> None:
-    st.button("Back to results", on_click=close_document)
+def move_occurrence(key, delta, total):
+    st.session_state[key] = (st.session_state.get(key, 0) + delta) % total
+
+
+def render_locations(document, index):
+    active = st.session_state.get("active_search")
+    if not active:
+        st.info("Run a search and open a result to inspect its keyword locations.")
+        return
+    plan = make_match_plan(active["query"], stem=index.stem, method=active["method"],
+                           match_mode=active["match_mode"], max_edits=active["max_edits"])
+    matches = document_matches(document, plan)
+    text = searchable_text(document)
+    st.caption(f'Query: {active["query"]} · {plan.kind} · {plan.method} · {len(matches)} occurrence(s)')
+    st.caption("Offsets are zero-based Unicode character positions [start, end) in the displayed searchable plaintext: "
+               "abstract + keywords + body, excluding the title and markup. Whitespace is normalized within paragraphs; "
+               "paragraphs are separated by two newlines. Sentence numbers start at 1. Download the text to verify offsets.")
+    if not matches:
+        st.info("This document has no occurrences for the saved query.")
+        return
+    signature = hashlib.sha256(repr((document.doc_id, plan)).encode()).hexdigest()[:16]
+    key = f"occurrence_{signature}"
+    position = st.selectbox("Go to occurrence", range(len(matches)), key=key,
+                           format_func=lambda n: f'{n + 1}. {text[matches[n].start:matches[n].end]} · '
+                           f'{matches[n].section} · sentence {matches[n].sentence} · '
+                           f'chars [{matches[n].start}, {matches[n].end})')
+    left, right, _ = st.columns([1, 1, 4])
+    left.button("Previous match", on_click=move_occurrence, args=(key, -1, len(matches)))
+    right.button("Next match", on_click=move_occurrence, args=(key, 1, len(matches)))
+    chosen = matches[position]
+    sentence = text[chosen.sentence_start:chosen.sentence_end]
+    marked = highlight_spans(sentence, [(chosen.start - chosen.sentence_start, chosen.end - chosen.sentence_start)])
+    st.markdown(f'<div class="hx-reading" style="white-space:pre-wrap">{marked}</div>', unsafe_allow_html=True)
+    st.dataframe([match.row(text) for match in matches], hide_index=True, use_container_width=True, height=320)
+    left, right = st.columns(2)
+    left.download_button("Download keyword locations (CSV)", rows_csv([match.row(text) for match in matches]),
+                         f"{document.doc_id}_matches.csv", "text/csv")
+    right.download_button("Download searchable plaintext", text, f"{document.doc_id}_searchable.txt", "text/plain")
+
+
+def render_document(document, index, *, from_corpus=False) -> None:
+    if from_corpus:
+        st.page_link("pages/11_HW2_Data.py", label="Back to experiment corpus")
+    else:
+        st.button("Back to results", on_click=close_document)
     intro("Document analysis", document.title, "Abstract statistics follow the final course specification.")
-    abstract, search_scope, statistics, sentences = st.tabs(
-        ["Abstract", "Search scope", "Statistics", "Sentences and EOS"]
-    )
+    if from_corpus:
+        abstract, locations, search_scope, statistics, sentences = st.tabs(
+            ["Abstract", "Keyword locations", "Search scope", "Statistics", "Sentences and EOS"]
+        )
+    else:
+        locations, abstract, search_scope, statistics, sentences = st.tabs(
+            ["Keyword locations", "Abstract", "Search scope", "Statistics", "Sentences and EOS"]
+        )
     abstract_text = document.abstract
     stats = compute_stats(abstract_text)
+    with locations:
+        render_locations(document, index)
     with abstract:
         if abstract_text:
             pubmed_abstract(abstract_text)
@@ -71,7 +133,15 @@ def render_document(document) -> None:
             st.info("This record has no abstract text.")
     with search_scope:
         st.caption("Search scope is abstract + keywords + body. The title is excluded.")
-        reading_text(document.search_text)
+        active = st.session_state.get("active_search")
+        if active:
+            plan = make_match_plan(active["query"], stem=index.stem, method=active["method"],
+                                   match_mode=active["match_mode"], max_edits=active["max_edits"])
+            text = searchable_text(document)
+            marked = highlight_spans(text, [(m.start, m.end) for m in document_matches(document, plan)])
+            st.markdown(f'<div class="hx-reading" style="white-space:pre-wrap">{marked}</div>', unsafe_allow_html=True)
+        else:
+            reading_text(document.search_text)
     with statistics:
         st.caption("Statistics cover the abstract and its final Keywords line. Characters use normalized whitespace.")
         for column, label, value in zip(
@@ -104,13 +174,32 @@ def main() -> None:
     sidebar_nav()
     masthead(t("search_page_title"))
 
+    requested_pmid = st.query_params.get("pmid")
+    if requested_pmid is not None:
+        try:
+            if not requested_pmid.isascii() or not requested_pmid.isdecimal():
+                raise ValueError("Invalid PMID.")
+            if f"PMID{requested_pmid}" in hidden_article_ids(ROOT / "data/library.sqlite3"):
+                raise ValueError("This paper is archived (soft-deleted).")
+            document = parse_xml_text((ROOT / "data/raw" / f"PMID{requested_pmid}.xml").read_bytes())
+            if document is None or document.pmid != requested_pmid:
+                raise ValueError("The saved paper does not match this PMID.")
+        except (OSError, ValueError) as exc:
+            st.warning(f"Could not open this paper in the local collection: {exc}")
+            st.page_link("pages/11_HW2_Data.py", label="Back to experiment corpus")
+        else:
+            render_document(document, build_index([document]), from_corpus=True)
+        footer()
+        return
+
     if not DOCS_PATH.exists() or not INDEX_PATH.exists():
         intro(t("local_search"), t("no_saved"), t("lookup_page_body"))
         st.page_link("pages/2_PubMed.py", label=t("lookup_action"))
         footer()
         return
 
-    docs, index, spelling_vocabulary = load_resources(DOCS_PATH.stat().st_mtime_ns, INDEX_PATH.stat().st_mtime_ns)
+    versions = (DOCS_PATH.stat().st_mtime_ns, INDEX_PATH.stat().st_mtime_ns)
+    docs, index, spelling_vocabulary = load_resources(*versions)
     if not docs:
         empty_state("No readable documents", "Rebuild the local index after saving XML files.")
         footer()
@@ -120,14 +209,24 @@ def main() -> None:
 
     with st.sidebar:
         st.divider()
-        mode = st.radio(t("query_mode"), ["AND", "OR", "PHRASE"], help=t("search_hint"))
+        match_mode = st.selectbox("Word matching", ["STEM", "PARTIAL", "FUZZY"], key="word_matching",
+                                 format_func=lambda value: {"STEM": "Standard tokens / stemming", "PARTIAL": "Partial / substring",
+                                                            "FUZZY": "Fuzzy / edit distance"}[value])
+        mode = st.radio(t("query_mode"), ["AND", "OR", "PHRASE"] if match_mode == "STEM" else ["AND", "OR"], help=t("search_hint"))
+        max_edits = st.select_slider("Maximum edits", [1, 2], value=1) if match_mode == "FUZZY" else 1
+        if match_mode == "PARTIAL":
+            st.caption("Match inside words, ignoring case: diabe → diabetes. Each query token is a substring; stemming is off.")
+        elif match_mode == "FUZZY":
+            st.caption("Match whole words within the chosen edit distance, including adjacent transpositions. Stemming is off.")
+        else:
+            st.caption(f"Index stemming: {'on' if index.stem else 'off'}. PHRASE preserves word order and stopwords.")
         st.metric(t("indexed_records"), summary["num_documents"])
         st.metric(t("vocabulary"), summary["vocabulary_size"])
         st.caption("Every candidate is ranked with BM25 (k1 = 1.2, b = 0.75).")
 
     selected = st.session_state.get("reader_doc")
     if selected in by_id:
-        render_document(by_id[selected])
+        render_document(by_id[selected], index)
         footer()
         return
 
@@ -139,6 +238,7 @@ def main() -> None:
         del st.query_params["suggestion"]
     if "home_query" in st.session_state:
         st.session_state.search_query = st.session_state.pop("home_query")
+        st.session_state.run_local_search = True
     elif "search_query" not in st.session_state:
         st.session_state.search_query = ""
     completion_event = ghost_search(
@@ -157,21 +257,27 @@ def main() -> None:
         query = str(completion_event.get("value", "")).strip()
         st.session_state.search_query = query
         submitted = True
-    if not submitted:
+    if submitted:
+        st.session_state.active_search = {"query": query, "method": mode, "match_mode": match_mode, "max_edits": max_edits}
+    elif "active_search" in st.session_state:
+        query = st.session_state.active_search["query"]
+        st.session_state.active_search.update(method=mode, match_mode=match_mode, max_edits=max_edits)
+    else:
         footer()
         return
 
-    terms = preprocess(query, remove_stopwords=mode != "PHRASE", stem=index.stem)
+    plan = make_match_plan(query, stem=index.stem, method=mode, match_mode=match_mode, max_edits=max_edits)
+    terms = list(plan.terms)
     if not terms:
         empty_state("No valid search terms", "Try a biomedical term, or use PHRASE to keep stopwords.")
         footer()
         return
     started = perf_counter()
-    hits = search(query, index, docs, method=mode, top_k=len(docs))
+    hits = run_search(query, mode, match_mode, max_edits, *versions)
     elapsed = (perf_counter() - started) * 1000
     suggestion = suggest_query_correction(query, index, spelling_vocabulary)
     chips(list(dict.fromkeys(terms)))
-    st.caption(f"{len(hits)} match(es) in {elapsed:.1f} ms. Ranking: BM25.")
+    st.caption(f"{len(hits)} match(es) in {elapsed:.1f} ms · {match_mode} · {mode}. Ranking: BM25 over matched index terms.")
     if suggestion:
         st.markdown(
             f'<p class="hx-suggestion">{escape(t("did_you_mean"))} '
@@ -201,13 +307,14 @@ def main() -> None:
                     unsafe_allow_html=True,
                 )
                 st.markdown(
-                    f'<p class="hx-snippet">{highlight_text(hit.snippet, hit.matched_terms, index)}</p>',
+                    f'<p class="hx-snippet">{hit.snippet_html}</p>',
                     unsafe_allow_html=True,
                 )
                 chips(hit.matched_terms)
             with right:
                 st.metric("BM25", f"{hit.score:.3f}")
-                st.button("Open", key=f"open_{hit.doc_id}", on_click=open_document, args=(hit.doc_id,), use_container_width=True)
+                st.caption(f"{len(hit.occurrences)} occurrence(s)")
+                st.button("Open & locate", key=f"open_{hit.doc_id}", on_click=open_document, args=(hit.doc_id,), use_container_width=True)
             rows = [
                 {"Term": term, "Abstract": counts["abstract"], "Body": counts["body"], "Full text": counts["full"]}
                 for term, counts in hit.term_counts.items()

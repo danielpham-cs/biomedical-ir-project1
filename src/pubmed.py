@@ -8,6 +8,8 @@ import re
 import threading
 import time
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from xml.etree import ElementTree as ET
@@ -22,7 +24,8 @@ EFETCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
 ID_CONVERTER = "https://pmc.ncbi.nlm.nih.gov/tools/idconv/api/v1/articles/"
 _REQUEST_LOCK = threading.Lock()
 _LAST_REQUEST = 0.0
-_MAX_ATTEMPTS = 3
+_MAX_ATTEMPTS = 2
+_HTTP_STATE = threading.local()
 
 
 class PubMedError(RuntimeError):
@@ -151,48 +154,109 @@ def parse_pubmed_xml(xml: bytes | str, expected_pmid: str | None = None) -> PubM
     raise PubMedError(f"No PubMed record found for PMID {expected_pmid or '(unknown)'}.")
 
 
+def _http_session() -> requests.Session:
+    """Reuse TLS connections without sharing mutable sessions between threads."""
+    if not hasattr(_HTTP_STATE, "session"):
+        _HTTP_STATE.session = requests.Session()
+    return _HTTP_STATE.session
+
+
+def _retry_delay(value: str | None, fallback: float) -> float:
+    """Interpret Retry-After seconds or HTTP date without exposing response text."""
+    if not value:
+        return fallback
+    try:
+        return max(0.0, float(value))
+    except (ValueError, TypeError):
+        try:
+            date = parsedate_to_datetime(value)
+            if date.tzinfo is None:
+                date = date.replace(tzinfo=timezone.utc)
+            return max(0.0, (date - datetime.now(timezone.utc)).total_seconds())
+        except (ValueError, TypeError, OverflowError):
+            return fallback
+
+
 def _request_ncbi(url: str, params: dict[str, str]) -> bytes:
-    """Request an NCBI endpoint with rate limiting and brief transient retries."""
+    """Rate-limit requests; retry only transient failures, with short waits.
+
+    A single abstract/ID conversion gets a 12s read timeout. PMC full text and
+    batch exports retain 30s for larger responses. These are socket inactivity
+    limits, not a promise about total elapsed time (DNS/multiple IPs can add time).
+    """
     global _LAST_REQUEST
     params = {**params, "tool": "helix_biomedical_ir"}
     email = os.environ.get("NCBI_EMAIL", "local@example.invalid")
     params["email"] = email
-    if url == EFETCH and os.environ.get("NCBI_API_KEY"):
+    if url.startswith("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/") and os.environ.get("NCBI_API_KEY"):
         params["api_key"] = os.environ["NCBI_API_KEY"]
     headers = {
         "User-Agent": f"helix-biomedical-ir/1.0 ({email})",
         "Accept": "application/xml,text/xml;q=0.9,*/*;q=0.1",
     }
+    read_timeout = 30 if params.get("db") == "pmc" or "," in params.get("id", "") else 12
+    started = time.monotonic()
     last_error: requests.RequestException | None = None
+    endpoint = "PMC ID conversion" if url == ID_CONVERTER else ("PMC full text" if params.get("db") == "pmc" else "PubMed")
     for attempt in range(_MAX_ATTEMPTS):
         # Keep consecutive requests within NCBI's unauthenticated rate limit.
         with _REQUEST_LOCK:
             time.sleep(max(0, 0.35 - (time.monotonic() - _LAST_REQUEST)))
             _LAST_REQUEST = time.monotonic()
+        response = None
+        retry_delay = 0.7 * (attempt + 1)
         try:
-            response = requests.get(url, params=params, headers=headers, timeout=(10, 30))
-            if response.status_code == 429:
-                if attempt < _MAX_ATTEMPTS - 1:
-                    time.sleep(1.0 + attempt)
-                    continue
-                raise PubMedError("NCBI is receiving too many requests. Wait a moment and try again.")
-            if response.status_code >= 500 and attempt < _MAX_ATTEMPTS - 1:
-                time.sleep(0.7 * (attempt + 1))
-                continue
-            response.raise_for_status()
-            return response.content
+            response = _http_session().get(url, params=params, headers=headers, timeout=(5, read_timeout))
+            status = response.status_code
+            if status == 429 or status in {500, 502, 503, 504}:
+                retry_delay = _retry_delay(response.headers.get("Retry-After"), retry_delay)
+                reason = "too many requests (HTTP 429)" if status == 429 else f"a temporary server error (HTTP {status})"
+                if attempt == _MAX_ATTEMPTS - 1 or retry_delay > 5:
+                    wait = f" Wait at least {retry_delay:.0f} seconds before trying again." if retry_delay > 5 else " Try again shortly."
+                    raise PubMedError(f"{endpoint}: NCBI returned {reason}.{wait}")
+            elif status >= 400:
+                # Retrying an invalid ID/request or an access denial adds delay
+                # without changing the response. Report the actual HTTP class.
+                raise PubMedError(f"{endpoint}: NCBI returned HTTP {status}. Check the article ID or access to this record; the request was not retried.")
+            else:
+                response.raise_for_status()
+                return response.content
         except requests.Timeout as exc:
             last_error = exc
-        except requests.RequestException as exc:
+        except requests.exceptions.SSLError as exc:
+            raise PubMedError(f"{endpoint}: secure connection verification failed. Check the server's certificate/proxy configuration.") from exc
+        except requests.ConnectionError as exc:
             last_error = exc
+        except requests.RequestException as exc:
+            raise PubMedError(f"{endpoint}: the HTTP request failed ({type(exc).__name__}).") from exc
+        finally:
+            if response is not None:
+                response.close()
         if attempt < _MAX_ATTEMPTS - 1:
-            time.sleep(0.7 * (attempt + 1))
+            time.sleep(retry_delay)
 
+    elapsed = time.monotonic() - started
     if isinstance(last_error, requests.Timeout):
-        raise PubMedError("NCBI took too long to respond after three attempts. Please try again.") from last_error
+        raise PubMedError(f"{endpoint}: NCBI timed out after {_MAX_ATTEMPTS} attempts ({elapsed:.1f} s). Please try again, or use an already saved XML file.") from last_error
     raise PubMedError(
-        "Could not reach NCBI after three attempts. Check your internet, VPN, or firewall and try again."
+        f"{endpoint}: could not connect to NCBI after {_MAX_ATTEMPTS} attempts ({elapsed:.1f} s). Check the app server's internet, DNS, VPN or proxy."
     ) from last_error
+
+
+def load_saved_article(value: str, raw_dir: Path) -> PubMedArticle | None:
+    """Read an existing, identity-checked PubMed XML without any network call."""
+    identifier = normalize_article_id(value)
+    raw_dir = Path(raw_dir)
+    paths = sorted(raw_dir.glob("PMID*.xml")) if identifier.startswith("PMC") else [raw_dir / f"PMID{identifier}.xml"]
+    for path in paths:
+        try:
+            expected_pmid = normalize_pmid(path.stem.removeprefix("PMID"))
+            article = parse_pubmed_xml(path.read_bytes(), expected_pmid=expected_pmid)
+        except (OSError, PubMedError, ValueError):
+            continue
+        if (identifier.startswith("PMC") and article.pmcid == identifier) or article.pmid == identifier:
+            return article
+    return None
 
 
 def _fetch_xml(database: str, identifier: str) -> bytes:

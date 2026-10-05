@@ -60,8 +60,17 @@ def _abbreviation_at_end(token: str) -> bool:
 
 def tokenize_words(text: str) -> list[str]:
     """Tokenize words exactly as defined by the final project specification."""
-    text = normalize_whitespace(text)
-    tokens: list[str] = []
+    return [token for token, _, _ in tokenize_word_spans(text)]
+
+
+def tokenize_word_spans(text: str) -> list[tuple[str, int, int]]:
+    """Return tokens and zero-based [start, end) offsets in the input text.
+
+    Do not casefold or normalize the input before scanning: Unicode casefolding
+    and whitespace normalization can change character offsets.
+    """
+    text = text or ""
+    tokens: list[tuple[str, int, int]] = []
     index = 0
     while index < len(text):
         if not text[index].isalnum():
@@ -109,7 +118,7 @@ def tokenize_words(text: str) -> list[str]:
             break
         token = "".join(value).rstrip(".") if not saw_abbreviation_dot else "".join(value)
         if token:
-            tokens.append(token.casefold())
+            tokens.append((token.casefold(), start, start + len(token)))
         if index == start:
             index += 1
     return tokens

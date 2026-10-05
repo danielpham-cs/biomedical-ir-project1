@@ -1,0 +1,17 @@
+﻿condition,region,points,rank_start,rank_end,slope,intercept,zipf_exponent,r_squared,rmse_log10,note
+A,All,28792,1,28792,-1.091505899748842,4.699729154808736,1.091505899748842,0.9570645854393325,0.10029594549669221,Descriptive OLS in log10 space; not a power-law goodness-of-fit test.
+A,Head (0–10%),2880,1,2880,-0.9568316567904119,4.363332797795217,0.9568316567904119,0.9921147849460985,0.0367974264035441,Descriptive OLS in log10 space; not a power-law goodness-of-fit test.
+A,Middle (10–80%),20154,2881,23034,-1.1852376711600683,5.0365143451531065,1.1852376711600683,0.9236473630816718,0.08023678942530038,Descriptive OLS in log10 space; not a power-law goodness-of-fit test.
+A,Tail (80–100%),5758,23035,28792,0.0,0.0,-0.0,,0.0,Constant frequencies: R² is undefined; this is not evidence of a perfect Zipf fit.
+B,All,19231,1,19231,-1.2507675310308428,5.214901965851397,1.2507675310308428,0.9687232578197001,0.09745996266025103,Descriptive OLS in log10 space; not a power-law goodness-of-fit test.
+B,Head (0–10%),1924,1,1924,-0.9489669811869185,4.383332796163563,0.9489669811869185,0.9899729132851767,0.04109718131008943,Descriptive OLS in log10 space; not a power-law goodness-of-fit test.
+B,Middle (10–80%),13461,1925,15385,-1.4790483148854117,6.072637045600079,1.4790483148854117,0.9627870297945196,0.06845859594809775,Descriptive OLS in log10 space; not a power-law goodness-of-fit test.
+B,Tail (80–100%),3846,15386,19231,0.0,0.0,-0.0,,0.0,Constant frequencies: R² is undefined; this is not evidence of a perfect Zipf fit.
+C,All,19115,1,19115,-1.209477728920121,5.043279098910865,1.209477728920121,0.9632509204611586,0.10244410118438811,Descriptive OLS in log10 space; not a power-law goodness-of-fit test.
+C,Head (0–10%),1912,1,1912,-0.844691804679738,4.033755625519164,0.844691804679738,0.9727820422477571,0.060797289803321365,Descriptive OLS in log10 space; not a power-law goodness-of-fit test.
+C,Middle (10–80%),13380,1913,15292,-1.4539957607917897,5.965170396268828,1.4539957607917897,0.9613916300048755,0.06860404189663132,Descriptive OLS in log10 space; not a power-law goodness-of-fit test.
+C,Tail (80–100%),3823,15293,19115,0.0,0.0,-0.0,,0.0,Constant frequencies: R² is undefined; this is not evidence of a perfect Zipf fit.
+D,All,15569,1,15569,-1.2663299043655691,5.145010034139268,1.2663299043655691,0.9613389462418636,0.11009393484303642,Descriptive OLS in log10 space; not a power-law goodness-of-fit test.
+D,Head (0–10%),1557,1,1557,-0.9165534561709575,4.246539303479426,0.9165534561709575,0.9579113230353351,0.08253906962414127,Descriptive OLS in log10 space; not a power-law goodness-of-fit test.
+D,Middle (10–80%),10899,1558,12456,-1.4525038683199551,5.811198824465768,1.4525038683199551,0.9549916416028996,0.07424983027228159,Descriptive OLS in log10 space; not a power-law goodness-of-fit test.
+D,Tail (80–100%),3113,12457,15569,0.0,0.0,-0.0,,0.0,Constant frequencies: R² is undefined; this is not evidence of a perfect Zipf fit.

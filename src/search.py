@@ -5,15 +5,16 @@ from __future__ import annotations
 import re
 from collections import Counter
 from dataclasses import dataclass, field
-from html import escape
 
 from .index import InvertedIndex
+from .matching import (MatchPlan, Occurrence, document_matches, edit_distance as _damerau_levenshtein,
+                       highlight_plan, make_match_plan, match_snippet, searchable_text)
+from .markup import plain_text
 from .parse_pmc import Document
 from .preprocess import preprocess, tokenize
 
 K1 = 1.2
 B = 0.75
-_DISPLAY_TOKEN = re.compile(r"[^\W_]+(?:[.\-‐‑–'’][^\W_]+)*%?", re.UNICODE)
 
 
 @dataclass
@@ -26,85 +27,14 @@ class SearchHit:
     snippet: str
     matched_terms: list[str]
     term_counts: dict[str, dict[str, int]] = field(default_factory=dict)
-
-
-def _doc_map(docs: list[Document]) -> dict[str, Document]:
-    return {document.doc_id: document for document in docs}
-
-
-def _snippet(
-    text: str,
-    terms: list[str],
-    *,
-    stem: bool,
-    phrase_span: tuple[int, int] | None = None,
-    window: int = 150,
-) -> str:
-    """Show context for every matched query term, even when terms are far apart."""
-    if phrase_span is not None:
-        start, end = phrase_span
-        window_start = max(0, start - window // 2)
-        window_end = min(len(text), end + window // 2)
-        return (
-            ("..." if window_start else "")
-            + text[window_start:window_end].strip()
-            + ("..." if window_end < len(text) else "")
-        )
-    targets = set(terms)
-    first_match: dict[str, tuple[int, int]] = {}
-    for match in _DISPLAY_TOKEN.finditer(text):
-        normalized = preprocess(match.group(), remove_stopwords=False, stem=stem)
-        if len(normalized) == 1 and normalized[0] in targets:
-            first_match.setdefault(normalized[0], (match.start(), match.end()))
-    if not first_match:
-        return text[:window].strip() + ("..." if len(text) > window else "")
-
-    windows = sorted(
-        (max(0, start - window // 2), min(len(text), end + window // 2))
-        for start, end in first_match.values()
-    )
-    merged: list[list[int]] = []
-    for start, end in windows:
-        if merged and start <= merged[-1][1] + 24:
-            merged[-1][1] = max(merged[-1][1], end)
-        else:
-            merged.append([start, end])
-    fragments = [
-        ("..." if start else "") + text[start:end].strip() + ("..." if end < len(text) else "")
-        for start, end in merged
-    ]
-    return " … ".join(fragments)
-
-
-def _query_terms(query: str, mode: str, index: InvertedIndex) -> list[str]:
-    """AND/OR discard stopwords; PHRASE preserves them. All modes stem."""
-    return preprocess(query, remove_stopwords=mode != "PHRASE", stem=index.stem)
+    occurrences: list[Occurrence] = field(default_factory=list)
+    match_mode: str = "STEM"
+    snippet_html: str = ""
 
 
 def highlight_text(text: str, terms: list[str], index: InvertedIndex) -> str:
-    """Return escaped text with every retrieval-equivalent token marked.
-
-    Display highlighting follows the same tokenizer and stemming setting as the
-    inverted index, so a query for ``test`` also marks source forms such as
-    ``testing`` and ``tested``.
-    """
-    targets = set(terms)
-    if not text or not targets:
-        return escape(text or "")
-
-    rendered: list[str] = []
-    cursor = 0
-    for match in _DISPLAY_TOKEN.finditer(text):
-        rendered.append(escape(text[cursor:match.start()]))
-        token = match.group()
-        normalized = preprocess(token, remove_stopwords=False, stem=index.stem)
-        if len(normalized) == 1 and normalized[0] in targets:
-            rendered.append(f"<mark>{escape(token)}</mark>")
-        else:
-            rendered.append(escape(token))
-        cursor = match.end()
-    rendered.append(escape(text[cursor:]))
-    return "".join(rendered)
+    """Escaped highlighting with the same tokenizer and stemmer as retrieval."""
+    return highlight_plan(text, MatchPlan(tuple(terms), stem=index.stem))
 
 
 def build_spelling_vocabulary(docs: list[Document]) -> dict[str, int]:
@@ -117,36 +47,6 @@ def build_spelling_vocabulary(docs: list[Document]) -> dict[str, int]:
     for document in docs:
         counts.update(token for token in tokenize(document.search_text) if token.isascii() and token.isalpha())
     return dict(counts)
-
-
-def _damerau_levenshtein(left: str, right: str, cutoff: int) -> int:
-    """Edit distance with adjacent transpositions and an early cutoff."""
-    if abs(len(left) - len(right)) > cutoff:
-        return cutoff + 1
-    previous_previous: list[int] | None = None
-    previous = list(range(len(right) + 1))
-    for row, left_char in enumerate(left, 1):
-        current = [row]
-        for column, right_char in enumerate(right, 1):
-            cost = left_char != right_char
-            value = min(
-                previous[column] + 1,
-                current[column - 1] + 1,
-                previous[column - 1] + cost,
-            )
-            if (
-                previous_previous is not None
-                and row > 1
-                and column > 1
-                and left_char == right[column - 2]
-                and left[row - 2] == right_char
-            ):
-                value = min(value, previous_previous[column - 2] + 1)
-            current.append(value)
-        if min(current) > cutoff:
-            return cutoff + 1
-        previous_previous, previous = previous, current
-    return previous[-1]
 
 
 def suggest_query_correction(
@@ -195,54 +95,38 @@ def suggest_query_correction(
     return suggestion if suggestion != query else None
 
 
-def _phrase_matches(document: Document, terms: list[str], index: InvertedIndex) -> bool:
-    if not terms:
-        return False
-    # A phrase must remain inside one original paragraph.
-    for paragraph in re.split(r"\n\s*\n", document.search_text):
-        tokens = preprocess(paragraph, remove_stopwords=False, stem=index.stem)
-        width = len(terms)
-        if any(tokens[offset : offset + width] == terms for offset in range(len(tokens) - width + 1)):
-            return True
-    return False
-
-
-def _phrase_span(text: str, terms: list[str], index: InvertedIndex) -> tuple[int, int] | None:
-    """Locate the first phrase match so the result snippet can prove the match."""
-    if not terms:
-        return None
-    for paragraph in re.finditer(r"(?:^|\n\s*\n)(.*?)(?=$|\n\s*\n)", text, re.DOTALL):
-        offset = paragraph.start(1)
-        token_spans: list[tuple[str, int, int]] = []
-        for raw_token in _DISPLAY_TOKEN.finditer(paragraph.group(1)):
-            normalized = preprocess(raw_token.group(), remove_stopwords=False, stem=index.stem)
-            if len(normalized) == 1:
-                token_spans.append((normalized[0], offset + raw_token.start(), offset + raw_token.end()))
-        width = len(terms)
-        for position in range(len(token_spans) - width + 1):
-            if [token for token, _, _ in token_spans[position : position + width]] == terms:
-                return token_spans[position][1], token_spans[position + width - 1][2]
-    return None
+def spelling_candidates(word: str, vocabulary: dict[str, int], limit: int = 10) -> list[dict]:
+    """The ranked candidates behind a suggestion: distance first, then corpus frequency."""
+    folded = word.casefold()
+    cutoff = 1 if len(folded) <= 4 else 2
+    ranked = sorted(
+        (distance, -frequency, candidate)
+        for candidate, frequency in vocabulary.items()
+        if abs(len(candidate) - len(folded)) <= cutoff
+        if (distance := _damerau_levenshtein(folded, candidate, cutoff)) <= cutoff
+    )
+    return [{"candidate": candidate, "edit_distance": distance, "corpus_frequency": -negative}
+            for distance, negative, candidate in ranked[:limit]]
 
 
 def _candidate_ids(terms: list[str], index: InvertedIndex, mode: str, docs: list[Document]) -> set[str]:
     if not terms:
         return set()
-    posting_sets = [{posting.doc_id for posting in index.postings.get(term, [])} for term in terms]
-    if mode == "OR":
-        return set.union(*posting_sets) if posting_sets else set()
+    # PHRASE is validated on the original token stream, including stopwords
+    # omitted from the index. They must not empty the preliminary candidate set.
     if mode == "PHRASE":
-        preliminary = set.intersection(*posting_sets) if posting_sets else set()
-        by_id = _doc_map(docs)
-        return {doc_id for doc_id in preliminary if doc_id in by_id and _phrase_matches(by_id[doc_id], terms, index)}
-    return set.intersection(*posting_sets) if posting_sets else set()
+        terms = [term for term in terms if term in index.postings]
+        if not terms:
+            return {document.doc_id for document in docs}
+    posting_sets = [{posting.doc_id for posting in index.postings.get(term, [])} for term in terms]
+    return set.union(*posting_sets) if mode == "OR" else set.intersection(*posting_sets)
 
 
-def _count_terms(document: Document, terms: list[str]) -> dict[str, dict[str, int]]:
-    """Show stemmed query occurrence totals by the three required scopes."""
+def _count_terms(document: Document, terms: list[str], *, stem: bool) -> dict[str, dict[str, int]]:
+    """Count query terms in each scope, respecting the index's stem setting."""
     unique = list(dict.fromkeys(terms))
-    abstract = Counter(preprocess(document.abstract, remove_stopwords=False, stem=True))
-    body = Counter(preprocess(document.body, remove_stopwords=False, stem=True))
+    abstract = Counter(preprocess(plain_text(document.abstract), remove_stopwords=False, stem=stem))
+    body = Counter(preprocess(plain_text(document.body), remove_stopwords=False, stem=stem))
     return {
         term: {
             "abstract": abstract[term],
@@ -274,36 +158,53 @@ def search(
     method: str = "and",
     boolean_mode: str = "AND",
     top_k: int = 20,
+    match_mode: str = "STEM",
+    max_edits: int = 1,
 ) -> list[SearchHit]:
-    """Find AND/OR/PHRASE candidates and rank every candidate using BM25."""
+    """Rank standard, substring or fuzzy matches; record every source location.
+
+    Partial/fuzzy modes match casefolded surface tokens, without stemming or
+    stopword removal. AND requires each query token, OR requires any token.
+    BM25 ranks the actual matched vocabulary terms using the existing index.
+    """
     requested = method.upper()
     if requested in {"BOOLEAN", "TFIDF"}:
         requested = boolean_mode.upper() if requested == "BOOLEAN" else "OR"
     mode = requested if requested in {"AND", "OR", "PHRASE"} else "AND"
-    terms = _query_terms(query, mode, index)
-    ids = _candidate_ids(terms, index, mode, docs)
-    by_id = _doc_map(docs)
+    plan = make_match_plan(query, stem=index.stem, method=mode, match_mode=match_mode, max_edits=max_edits)
+    if not plan.terms:
+        return []
+    terms = list(plan.terms)
+    ids = (_candidate_ids(terms, index, mode, docs) if plan.kind == "STEM"
+           else {document.doc_id for document in docs})
     hits: list[SearchHit] = []
-    for doc_id in ids:
-        document = by_id.get(doc_id)
-        if document is None:
+    for document in docs:
+        if document.doc_id not in ids:
             continue
-        matched = [term for term in dict.fromkeys(terms) if doc_id in {p.doc_id for p in index.postings.get(term, [])}]
-        phrase_span = _phrase_span(document.search_text, terms, index) if mode == "PHRASE" else None
-        hits.append(
-            SearchHit(
-                doc_id=doc_id,
-                score=round(_bm25_score(doc_id, terms, index), 4),
-                title=document.title,
-                pmid=document.pmid,
-                pmcid=document.pmcid,
-                snippet=_snippet(document.search_text, matched, stem=index.stem, phrase_span=phrase_span),
-                matched_terms=matched,
-                term_counts=_count_terms(document, terms),
-            )
-        )
+        matches = document_matches(document, plan)
+        found = {match.term for match in matches}
+        if not matches or (mode == "AND" and not set(terms).issubset(found)):
+            continue
+        matched = terms if mode == "PHRASE" else [term for term in terms if term in found]
+        if plan.kind == "STEM":
+            counts = _count_terms(document, terms, stem=index.stem)
+            ranking_terms = terms
+        else:
+            counts = {term: {"abstract": 0, "body": 0, "full": 0} for term in terms}
+            for match in matches:
+                counts[match.term][match.section.lower()] += 1
+                counts[match.term]["full"] += 1
+            ranking_terms = preprocess(" ".join({match.word for match in matches}),
+                                       remove_stopwords=False, stem=index.stem)
+        hits.append(SearchHit(
+            doc_id=document.doc_id, score=round(_bm25_score(document.doc_id, ranking_terms, index), 4),
+            title=document.title, pmid=document.pmid, pmcid=document.pmcid,
+            snippet=match_snippet(searchable_text(document), matches), matched_terms=matched,
+            snippet_html=match_snippet(searchable_text(document), matches, highlighted=True),
+            term_counts=counts, occurrences=matches, match_mode=plan.kind,
+        ))
     hits.sort(key=lambda hit: (-hit.score, hit.title.casefold()))
-    return hits[:top_k]
+    return hits[:max(0, top_k)]
 
 
 def boolean_search(query: str, index: InvertedIndex, docs: list[Document], *, mode: str = "AND", top_k: int = 20) -> list[SearchHit]:

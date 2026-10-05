@@ -54,7 +54,7 @@ def main() -> None:
     sidebar_nav()
     masthead("Biomedical evidence search")
     docs, index = load_collection()
-    raw_count = sum(1 for _ in (ROOT / "data" / "raw").rglob("PMID*.xml"))
+    raw_count = sum((ROOT / "data/raw" / f"PMID{doc.pmid}.xml").exists() for doc in docs)
     abstract_only = sum(not bool(document.body) for document in docs)
     vocabulary_size = index.vocabulary_size() if index else 0
 
@@ -117,6 +117,11 @@ def main() -> None:
                 unsafe_allow_html=True,
             )
             st.page_link("pages/1_Search.py", label=t("library_action"))
+
+    with st.container(border=True):
+        st.markdown("### Homework 2 · GLP-1 experiments")
+        st.write("Ten demo pages, one per requirement: corpus, preprocessing A–D, Porter, Zipf, CF/DF/IDF, Word2Vec, edit distance & search, two domains and the report.")
+        st.page_link("pages/10_HW2_Overview.py", label="Open the Homework 2 demo →")
 
     st.markdown(f'<div class="hx-overview-heading hx-how-heading"><span>03</span><h2>{t("how")}</h2></div>', unsafe_allow_html=True)
     st.markdown(f'<p class="hx-how-caption">{t("how_caption")}</p>', unsafe_allow_html=True)

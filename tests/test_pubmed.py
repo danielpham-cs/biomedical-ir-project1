@@ -108,7 +108,7 @@ class PubMedTests(unittest.TestCase):
             with self.subTest(xml=xml), self.assertRaises(PubMedError):
                 parse_pubmed_xml(xml, "12345")
 
-    @patch("src.pubmed.requests.get")
+    @patch("src.pubmed.requests.Session.get")
     def test_fetch_uses_pubmed_and_checks_id(self, get):
         get.return_value = Mock(status_code=200, content=PUBMED)
         result = fetch_pubmed_article("PMID: 12345")
@@ -116,13 +116,13 @@ class PubMedTests(unittest.TestCase):
         self.assertEqual(get.call_args.kwargs["params"]["db"], "pubmed")
         self.assertEqual(get.call_args.kwargs["params"]["id"], "12345")
 
-    @patch("src.pubmed.requests.get")
+    @patch("src.pubmed.requests.Session.get")
     def test_invalid_id_never_requests_network(self, get):
         with self.assertRaises(ValueError):
             fetch_pubmed_article("../../bad")
         get.assert_not_called()
 
-    @patch("src.pubmed.requests.get")
+    @patch("src.pubmed.requests.Session.get")
     def test_network_errors(self, get):
         for error in [requests.Timeout(), requests.ConnectionError(), requests.HTTPError()]:
             get.side_effect = error

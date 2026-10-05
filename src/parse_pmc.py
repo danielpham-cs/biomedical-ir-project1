@@ -223,7 +223,8 @@ def parse_directory(raw_dir: Path | str) -> list[Document]:
         # Prefer full text when both PubMed metadata and PMC XML were saved.
         if previous is None or len(doc.body) > len(previous.body):
             docs[doc.doc_id] = doc
-    return list(docs.values())
+    from .library import active_documents
+    return active_documents(list(docs.values()), raw_dir.parent / "library.sqlite3")
 
 
 def iter_docs(docs: list[Document]) -> Iterator[Document]:

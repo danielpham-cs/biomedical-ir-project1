@@ -9,6 +9,10 @@ import streamlit as st
 from src.markup import render_inline_markup
 
 from .i18n import dark_mode, preferences, t
+from .quiet_asyncio import install as _quiet_closed_connections
+
+# Every page imports this module, so the Windows "connection lost" log filter is always active.
+_quiet_closed_connections()
 
 BRAND = "Helix"
 TAGLINE = "A clearer view of biomedical literature."
@@ -21,7 +25,9 @@ def inject_css() -> None:
     if dark_mode():
         st.markdown(
             """<style>
-            .stApp { background: #10191e !important; color: #e8f0f2 !important; }
+            .stApp { --hx-ink: #e8f0f2; --hx-muted: #aabdc4; --hx-teal: #71d6c9;
+                --hx-line: #31464f; --hx-surface: #17242b; --hx-surface-alt: #20323a;
+                background: #10191e !important; color: #e8f0f2 !important; }
             header[data-testid="stHeader"] { background: #10191ef2 !important; }
             [data-testid="stSidebar"] { background: #17242b !important; border-color: #31464f !important; }
             h1, h2, h3, h4, p, label, [data-testid="stMetricValue"] { color: #e8f0f2 !important; }
@@ -85,7 +91,52 @@ def inject_css() -> None:
             [data-testid="stDialog"] button:hover { background: #087f78 !important; border-color: #50cfc0 !important; color: #ffffff !important; }
             [data-testid="stDialog"] button svg, [data-testid="stDialog"] button svg * { color: currentColor !important; fill: currentColor !important; opacity: 1 !important; }
             .hx-pubmed-abstract-body, .hx-flow { background: #17242b !important; }
-            [data-testid="stTextInput"] input, [data-baseweb="select"] > div { background: #10191e !important; color: #e8f0f2 !important; }
+            /* Native widgets still inherit Streamlit's light theme. Set both color
+               and text-fill: BaseWeb uses the latter for input text. */
+            [data-testid="stTextInput"] [data-baseweb="input"],
+            [data-testid="stTextInputRootElement"],
+            [data-testid="stNumberInput"] [data-baseweb="input"],
+            [data-testid="stNumberInputContainer"],
+            [data-testid="stTextArea"] [data-baseweb="textarea"],
+            [data-baseweb="select"] > div {
+                background: #10191e !important; color: #e8f0f2 !important; border-color: #3a5963 !important; }
+            [data-testid="stTextInput"] input,
+            [data-testid="stNumberInput"] input,
+            [data-testid="stTextArea"] textarea,
+            [data-baseweb="select"] input {
+                background: #10191e !important; color: #e8f0f2 !important;
+                -webkit-text-fill-color: #e8f0f2 !important; caret-color: #71d6c9 !important; color-scheme: dark; }
+            [data-testid="stTextInput"] input::placeholder,
+            [data-testid="stNumberInput"] input::placeholder,
+            [data-testid="stTextArea"] textarea::placeholder,
+            [data-baseweb="select"] input::placeholder {
+                color: #aabdc4 !important; -webkit-text-fill-color: #aabdc4 !important; opacity: 1; }
+            [data-testid="stTextInput"] input:disabled,
+            [data-testid="stNumberInput"] input:disabled,
+            [data-testid="stTextArea"] textarea:disabled {
+                color: #8fa8b0 !important; -webkit-text-fill-color: #8fa8b0 !important; }
+            [data-testid="stTextInput"] [data-baseweb="input"]:focus-within,
+            [data-testid="stTextInputRootElement"]:focus-within,
+            [data-testid="stNumberInput"] [data-baseweb="input"]:focus-within,
+            [data-testid="stNumberInputContainer"]:focus-within,
+            [data-testid="stTextArea"] [data-baseweb="textarea"]:focus-within,
+            [data-baseweb="select"] > div:focus-within { border-color: #71d6c9 !important; }
+            [data-testid="stNumberInput"] button, [data-testid="stTextInput"] button {
+                background: #20323a !important; color: #e8f0f2 !important; border-color: #3a5963 !important; }
+            [data-testid="stNumberInput"] button:hover, [data-testid="stTextInput"] button:hover {
+                background: #29424b !important; color: #71d6c9 !important; }
+            [data-testid="stNumberInput"] button:disabled { color: #8fa8b0 !important; }
+            [data-baseweb="select"] > div > div { color: #e8f0f2 !important; }
+            [data-baseweb="select"] svg { color: #aabdc4 !important; fill: currentColor !important; }
+            [data-baseweb="popover"] [role="listbox"], [data-baseweb="popover"] [role="option"] {
+                background: #17242b !important; color: #e8f0f2 !important; }
+            [data-baseweb="popover"] [role="option"]:hover,
+            [data-baseweb="popover"] [role="option"][aria-selected="true"] {
+                background: #29424b !important; color: #71d6c9 !important; }
+            [data-testid="stText"], [data-testid="stMarkdownContainer"] li,
+            [data-testid="stMarkdownContainer"] strong { color: #e8f0f2 !important; }
+            [data-testid="stCode"], [data-testid="stCode"] pre,
+            [data-testid="stCode"] code { background: #17242b !important; color: #c9d8dc !important; }
             </style>""",
             unsafe_allow_html=True,
         )
@@ -152,8 +203,8 @@ def pubmed_abstract(text: str) -> None:
 
 def footer() -> None:
     st.markdown(
-        '<div class="hx-footer"><span><strong>helix</strong> / Biomedical Information Retrieval / Project 1</span>'
-        '<span>XML / Keyword matching / Document statistics / EOS</span></div>',
+        '<div class="hx-footer"><span><strong>helix</strong> / Biomedical Information Retrieval / Projects 1 &amp; 2</span>'
+        '<span>Retrieval / Text statistics / Zipf / Word2Vec</span></div>',
         unsafe_allow_html=True,
     )
 
@@ -169,6 +220,10 @@ def sidebar_nav() -> None:
         with st.expander(t("advanced")):
             st.page_link("pages/3_Collection.py", label=t("collection"))
             st.page_link("pages/4_Methods.py", label=t("methods"))
+        st.markdown("#### Homework 2 · demo")
+        from ui.hw2.registry import PAGES
+        for number, page in enumerate(PAGES):
+            st.page_link(page.file, label=f"{number}. {page.title}")
         st.divider()
         st.markdown(f"#### {t('settings')}")
         preferences()

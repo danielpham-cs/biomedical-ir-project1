@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT))
 from src.corpus import document_rows, import_xml
 from src.index import load_docs, load_index, rebuild_local_index
 from src.parse_pmc import parse_directory
+from src.library import list_articles, set_articles_deleted
 from ui.brand import footer, inject_css, intro, masthead, sidebar_nav
 
 
@@ -38,13 +39,34 @@ def main() -> None:
     processed = ROOT / "data/processed"
     files = sorted(raw.rglob("*.xml"))
     signature = tuple((str(p), p.stat().st_mtime_ns, p.stat().st_size) for p in files)
+    database = ROOT / "data/library.sqlite3"
+    if database.exists():
+        signature += ((str(database), database.stat().st_mtime_ns, database.stat().st_size),)
     docs = inspect_raw(str(raw), signature)
     index_path = processed / "index.pkl"
     index = load_index(index_path) if index_path.exists() else None
     with st.container(key="overview_metrics"):
-        for col, name, value in zip(st.columns(4), ["XML files", "Unique readable papers", "Full-text papers", "Indexed papers"],
+        for col, name, value in zip(st.columns(4), ["XML files (including archived)", "Active readable papers", "Full-text papers", "Indexed papers"],
                                     [len(files), len(docs), sum(bool(d.body) for d in docs), index.N if index else 0]):
             col.metric(name, value)
+
+    with st.expander("Archived papers / restore"):
+        archived = [row for row in list_articles(database, include_deleted=True) if row["Archived"]]
+        st.caption(f"{len(archived)} archived papers. Source files remain intact. Restoring changes the active library; the Project 2 experiment manifest stays fixed.")
+        if archived:
+            st.dataframe(archived, hide_index=True, use_container_width=True)
+            by_id = {row["PMID"]: row for row in archived}
+            restore_ids = st.multiselect("Papers to restore", list(by_id), format_func=lambda pmid: f"{pmid} | {by_id[pmid]['Title']}")
+            if st.button("Restore selected papers", disabled=not restore_ids):
+                restored = set_articles_deleted(database, restore_ids, deleted=False)
+                try:
+                    rebuild_local_index(raw, processed, stem=True, remove_stopwords=True)
+                    st.session_state.collection_restore_result = f"Restored {restored} papers and rebuilt the library index."
+                    st.rerun()
+                except (OSError, ValueError, RuntimeError, LookupError) as exc:
+                    st.error(f"Restored {restored} catalog entries; index rebuild failed: {exc}. Use Build / update index to retry.")
+        if st.session_state.get("collection_restore_result"):
+            st.success(st.session_state.collection_restore_result)
 
     upload_tab, corpus_tab, build_tab = st.tabs(["1 · Import XML", "2 · Inspect documents", "3 · Build index"])
     with upload_tab:

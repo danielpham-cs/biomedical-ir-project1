@@ -1,5 +1,8 @@
 # Project #1: implementation aligned with the homework brief
 
+For Project #2 (Zipf, local Porter comparison, Word2Vec and spelling correction),
+see [the Homework 2 system description](HW2.md) and the **Homework 2 · demo** pages.
+
 Source: `homework-1-26-20260908.pdf`, one page, due September 22, 2026.
 
 The brief specifies individual work, permits ChatGPT/Claude/Gemini, and evaluates

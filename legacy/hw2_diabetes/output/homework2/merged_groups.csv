@@ -1,0 +1,640 @@
+stem,forms,form_count,frequency
+diabet,"diabetes (260), diabetic (80)",2,340
+patient,"patient (28), patients (177)",2,205
+studi,"studied (5), studies (81), study (107)",3,193
+risk,"risk (136), risks (8)",2,144
+us,"use (24), used (26), useful (3), usefulness (1), using (88)",5,142
+associ,"associated (81), association (38), associations (12)",3,131
+ci,"ci (118), cis (2)",2,120
+diseas,"disease (76), diseases (24)",2,100
+clinic,"clinic (3), clinical (83), clinically (8), clinics (1)",4,95
+group,"group (51), grouped (2), groups (36)",3,89
+includ,"include (4), included (41), includes (1), including (41)",4,87
+ag,"age (62), aged (12), ageing (1), ages (1), aging (4)",5,80
+outcom,"outcome (17), outcomes (59)",2,76
+increas,"increase (14), increased (42), increases (6), increasing (9)",4,71
+assess,"assess (9), assessed (33), assessing (2), assessment (22), assessments (2)",5,68
+care,"care (64), careful (2)",2,66
+level,"level (16), levels (49)",2,65
+year,"year (5), years (60)",2,65
+factor,"factor (13), factors (48)",2,61
+control,"control (23), controlled (8), controls (26)",3,57
+effect,"effect (18), effective (12), effects (27)",3,57
+signific,"significance (3), significant (54)",2,57
+preval,"prevalence (46), prevalences (2), prevalent (6)",3,54
+compar,"comparable (8), comparative (3), compare (9), compared (32), comparing (1)",5,53
+perform,"performance (17), performed (35), performing (1)",3,53
+adult,"adult (5), adults (47)",2,52
+evalu,"evaluable (1), evaluate (22), evaluated (15), evaluating (4), evaluation (7), evaluations (2)",6,51
+metabol,"metabolic (42), metabolism (7), metabolizer (1), metabolizers (1)",4,51
+show,"show (7), showed (42), showing (1)",3,50
+find,"finding (1), findings (46)",2,47
+report,"report (12), reported (19), reporting (11), reports (5)",4,47
+review,"review (36), reviewed (1), reviewers (2), reviewing (1), reviews (5)",5,45
+analys,"analyse (1), analysed (5), analyses (38)",3,44
+remain,"remain (11), remained (13), remaining (2), remains (18)",4,44
+differ,"differ (6), differed (2), difference (7), differences (20), different (8)",5,43
+complic,"complication (8), complications (34)",2,42
+model,"model (16), modeling (3), modelled (1), modelling (2), models (19)",5,41
+hypertens,"hypertension (36), hypertensive (4)",2,40
+identifi,"identified (27), identifier (2), identifies (1), identify (8), identifying (2)",5,40
+potenti,"potential (32), potentially (7), potentials (1)",3,40
+ratio,"ratio (32), ratios (8)",2,40
+rate,"rate (14), rates (22), rating (1), ratings (1)",4,38
+weight,"weight (33), weighted (2), weighting (2)",3,37
+conduct,"conducted (35), conduction (1)",2,36
+develop,"develop (1), developed (16), developing (2), development (16), developments (1)",5,36
+estim,"estimate (8), estimated (13), estimates (12), estimating (1), estimator (1), estimators (1)",6,36
+aim,"aim (3), aimed (23), aiming (2), aims (7)",4,35
+month,"month (4), months (31)",2,35
+need,"need (19), needed (10), needs (6)",3,35
+therapi,"therapies (7), therapy (28)",2,35
+treatment,"treatment (32), treatments (3)",2,35
+indic,"indicate (2), indicated (3), indicates (2), indicating (3), indication (1), indications (4), indicator (3), indicators (10), indices (6)",9,34
+predict,"predict (3), predicted (4), predicting (2), prediction (8), predictions (1), predictive (16)",6,34
+intervent,"intervention (19), interventions (14)",2,33
+system,"system (14), systemic (12), systems (7)",3,33
+improv,"improve (8), improved (11), improvement (6), improvements (2), improves (1), improving (4)",6,32
+popul,"population (24), populations (8)",2,32
+chang,"change (8), changes (22), changing (1)",3,31
+cohort,"cohort (29), cohorts (2)",2,31
+function,"function (22), functional (6), functionalities (1), functionally (1), functioning (1)",5,31
+incid,"incidence (22), incident (9)",2,31
+investig,"investigate (15), investigated (8), investigating (1), investigation (3), investigations (2), investigator (1), investigators (1)",7,31
+medic,"medical (15), medication (12), medications (4)",3,31
+observ,"observational (6), observe (1), observed (24)",3,31
+screen,"screened (2), screening (28), screenings (1)",3,31
+test,"test (15), tested (2), testing (5), tests (9)",4,31
+case,"case (20), cases (10)",2,30
+mean,"mean (28), means (2)",2,30
+regress,"regression (29), regressions (1)",2,30
+sever,"several (8), severe (16), severely (1), severity (5)",4,30
+individu,"individual (6), individualized (3), individually (2), individuals (18)",4,29
+obes,"obese (3), obesity (26)",2,29
+adjust,"adjust (1), adjusted (14), adjusting (2), adjustment (9), adjustments (2)",5,28
+burden,"burden (27), burdens (1)",2,28
+examin,"examination (8), examinations (1), examine (7), examined (9), examines (1), examining (2)",6,28
+infect,"infection (15), infections (12), infective (1)",3,28
+target,"target (11), targeted (11), targeting (2), targets (4)",4,28
+arteri,"arterial (4), arteries (6), artery (17)",3,27
+demonstr,"demonstrate (2), demonstrated (20), demonstrates (4), demonstrating (1)",4,27
+hospit,"hospital (18), hospitalization (2), hospitalized (3), hospitals (4)",4,27
+sex,"sex (23), sexes (4)",2,27
+evid,"evidence (25), evidences (1)",2,26
+mechan,"mechanical (3), mechanics (1), mechanism (3), mechanisms (19)",4,26
+particip,"participants (24), participated (1), participates (1)",3,26
+systemat,"systematic (18), systematically (8)",2,26
+tool,"tool (13), tools (12)",2,25
+abscess,"abscess (19), abscesses (5)",2,24
+inhibitor,"inhibitor (8), inhibitors (16)",2,24
+involv,"involve (1), involved (4), involvement (10), involving (9)",4,24
+proport,"proportion (9), proportional (7), proportions (8)",3,24
+support,"support (14), supported (3), supporting (4), supportive (1), supports (2)",5,24
+time,"time (13), timely (3), times (5), timing (3)",4,24
+disord,"disorder (6), disorders (17)",2,23
+follow,"followed (12), following (11)",2,23
+manag,"managed (1), management (21), managing (1)",3,23
+monitor,"monitor (2), monitorate (1), monitored (1), monitoring (18), monitors (1)",5,23
+suggest,"suggest (8), suggested (6), suggesting (4), suggests (5)",4,23
+dysfunct,"dysfunction (21), dysfunctions (1)",2,22
+elev,"elevated (20), elevation (1), elevations (1)",3,22
+interact,"interact (1), interacted (1), interaction (16), interactions (3), interactive (1)",5,22
+multivari,"multivariable (10), multivariate (12)",2,22
+present,"present (8), presentation (1), presented (9), presenting (1), presents (3)",5,22
+reduc,"reduce (2), reduced (10), reduces (6), reducing (4)",4,22
+requir,"require (5), required (6), requirement (2), requirements (1), requires (6), requiring (2)",6,22
+result,"resulted (1), resulting (3), results (18)",3,22
+sensit,"sensitively (1), sensitivity (21)",2,22
+set,"set (11), sets (3), setting (5), settings (3)",4,22
+specif,"specific (7), specifically (4), specificity (11)",3,22
+statist,"statistical (8), statistically (14)",2,22
+subgroup,"subgroup (19), subgroups (3)",2,22
+surgeri,"surgeries (1), surgery (21)",2,22
+impair,"impair (1), impaired (16), impairment (2), impairments (1), impairs (1)",5,21
+interv,"interval (11), intervals (10)",2,21
+progress,"progress (3), progressed (1), progression (15), progressive (2)",4,21
+retrospect,"retrospective (18), retrospectively (3)",2,21
+base,"base (3), based (17)",2,20
+confirm,"confirm (3), confirmation (1), confirmed (16)",3,20
+dai,"day (9), days (11)",2,20
+event,"event (2), events (18)",2,20
+extract,"extract (11), extractable (1), extracted (4), extraction (4)",4,20
+independ,"independence (1), independent (10), independently (9)",3,20
+major,"major (19), majority (1)",2,20
+measur,"measurable (1), measure (1), measured (7), measurement (3), measurements (4), measures (4)",6,20
+pathwai,"pathway (13), pathways (7)",2,20
+respons,"response (10), responses (8), responsible (1), responsiveness (1)",4,20
+strategi,"strategies (16), strategy (4)",2,20
+valu,"value (14), values (6)",2,20
+cell,"cell (10), cells (9)",2,19
+correl,"correlated (6), correlates (1), correlation (8), correlations (4)",4,19
+gestat,"gestation (2), gestational (17)",2,19
+highlight,"highlight (7), highlighting (2), highlights (10)",3,19
+hr,"hr (16), hrs (3)",2,19
+influenc,"influence (6), influenced (5), influences (2), influencing (6)",4,19
+provid,"provide (6), provided (2), provides (8), providing (3)",4,19
+select,"select (2), selected (9), selecting (1), selection (6), selectivity (1)",5,19
+collect,"collected (13), collecting (1), collection (2), collectively (2)",4,18
+consist,"consistency (1), consistent (16), consisting (1)",3,18
+emerg,"emerged (7), emergencies (2), emergency (6), emerging (3)",4,18
+glycat,"glycated (17), glycation (1)",2,18
+limit,"limitations (4), limited (12), limits (2)",3,18
+oral,"oral (17), orally (1)",2,18
+treat,"treated (13), treating (5)",2,18
+valid,"validate (1), validated (3), validation (13), validity (1)",4,18
+complet,"complete (7), completed (1), completely (1), completeness (8)",4,17
+databas,"database (12), databases (5)",2,17
+detect,"detect (1), detectable (1), detected (6), detecting (2), detection (7)",5,17
+predictor,"predictor (3), predictors (14)",2,17
+receiv,"receive (1), received (8), receiver (6), receiving (2)",4,17
+research,"research (16), researchers (1)",2,17
+respect,"respective (1), respectively (16)",2,17
+score,"score (9), scored (1), scores (7)",3,17
+substanti,"substantial (15), substantially (2)",2,17
+trial,"trial (6), trials (11)",2,17
+affect,"affect (7), affected (5), affecting (1), affects (3)",4,16
+cancer,"cancer (15), cancers (1)",2,16
+combin,"combination (8), combined (8)",2,16
+gener,"general (3), generalized (3), generally (5), generated (2), generating (1), generation (1), generic (1)",7,16
+hormon,"hormonal (6), hormone (5), hormones (5)",3,16
+pregnanc,"pregnancies (2), pregnancy (14)",2,16
+profil,"profile (6), profiles (9), profiling (1)",3,16
+signal,"signal (4), signaling (6), signals (6)",3,16
+structur,"structural (2), structure (1), structured (12), structures (1)",4,16
+advanc,"advanced (9), advances (4), advancing (2)",3,15
+caus,"cause (9), caused (5), causes (1)",3,15
+challeng,"challenge (5), challenged (1), challenges (7), challenging (2)",4,15
+comorbid,"comorbid (1), comorbidities (9), comorbidity (5)",3,15
+dali,"daly (6), dalys (9)",2,15
+fa,"fa (11), fas (4)",2,15
+genet,"genetic (12), genetically (3)",2,15
+immun,"immune (11), immunity (4)",2,15
+impact,"impact (12), impacts (3)",2,15
+infarct,"infarct (2), infarction (12), infarctions (1)",3,15
+paramet,"parameter (1), parameters (14)",2,15
+rang,"range (6), ranged (5), ranges (2), ranging (2)",4,15
+record,"record (3), recorded (6), recording (1), records (5)",4,15
+relationship,"relationship (14), relationships (1)",2,15
+repres,"represent (9), representative (2), representing (2), represents (2)",4,15
+virtual,"virtual (14), virtually (1)",2,15
+admiss,"admission (13), admissions (1)",2,14
+advers,"adverse (13), adversely (1)",2,14
+characterist,"characteristic (6), characteristics (8)",2,14
+curv,"curve (11), curves (3)",2,14
+establish,"establish (5), established (6), establishing (2), establishment (1)",4,14
+explor,"explore (9), explored (3), exploring (2)",3,14
+marker,"marker (3), markers (11)",2,14
+nutrit,"nutrition (7), nutritional (7)",2,14
+pool,"pool (2), pooled (12)",2,14
+prospect,"prospective (11), prospectively (2), prospects (1)",3,14
+random,"random (4), randomization (4), randomized (6)",3,14
+search,"search (6), searched (6), searches (1), searching (1)",4,14
+season,"season (2), seasonal (9), seasonality (1), seasons (2)",4,14
+sma,"sma (9), smas (5)",2,14
+topic,"topical (13), topically (1)",2,14
+variant,"variant (8), variants (6)",2,14
+activ,"activate (1), activated (1), activation (2), active (4), actively (1), activities (1), activity (3)",7,13
+analyz,"analyze (2), analyzed (11)",2,13
+composit,"composite (8), composition (5)",2,13
+exercis,"exercise (10), exercises (3)",2,13
+femal,"female (7), females (6)",2,13
+integr,"integrate (1), integrated (3), integrating (2), integration (4), integrity (3)",5,13
+mediat,"mediated (4), mediating (1), mediation (5), mediator (3)",4,13
+posit,"position (1), positive (7), positively (4), positivity (1)",4,13
+prevent,"prevent (2), preventable (1), prevented (1), preventing (3), prevention (5), preventive (1)",6,13
+region,"region (7), regional (3), regions (3)",3,13
+applic,"applicability (3), applicable (2), application (4), applications (3)",4,12
+approach,"approach (7), approached (1), approaches (4)",3,12
+condit,"condition (3), conditions (9)",2,12
+consid,"consider (2), considered (9), considering (1)",3,12
+cultur,"cultural (4), culturally (3), culture (2), cultures (3)",4,12
+death,"death (8), deaths (4)",2,12
+decreas,"decrease (2), decreased (10)",2,12
+design,"design (3), designated (3), designed (5), designing (1)",4,12
+diagnos,"diagnosed (10), diagnoses (1), diagnosing (1)",3,12
+divers,"diverse (5), diversity (7)",2,12
+enrol,"enroll (1), enrolled (11)",2,12
+heterogen,"heterogeneity (9), heterogeneous (3)",2,12
+initi,"initial (4), initially (2), initiated (2), initiation (4)",4,12
+plaqu,"plaque (4), plaques (8)",2,12
+public,"public (8), publication (3), publications (1)",3,12
+recent,"recent (9), recently (3)",2,12
+size,"size (9), sizes (3)",2,12
+stroke,"stroke (11), strokes (1)",2,12
+week,"week (4), weeks (8)",2,12
+accord,"accordance (2), according (9)",2,11
+attribut,"attributable (8), attributed (3)",2,11
+comprehens,"comprehensive (9), comprehensively (2)",2,11
+current,"current (9), currently (2)",2,11
+declin,"decline (6), declined (1), declining (4)",3,11
+demograph,"demographic (6), demographics (5)",2,11
+dog,"dog (3), dogs (8)",2,11
+durat,"duration (10), durations (1)",2,11
+enhanc,"enhance (3), enhanced (4), enhancement (2), enhances (1), enhancing (1)",5,11
+fistula,"fistula (10), fistulas (1)",2,11
+global,"global (10), globally (1)",2,11
+guidelin,"guideline (3), guidelines (8)",2,11
+hazard,"hazard (6), hazards (5)",2,11
+interpret,"interpretable (3), interpretation (2), interpreted (5), interpreting (1)",4,11
+male,"male (6), males (5)",2,11
+normal,"normal (8), normality (1), normalization (1), normalized (1)",4,11
+optim,"optimal (4), optimization (3), optimize (2), optimized (1), optimizes (1)",5,11
+phenotyp,"phenotype (9), phenotypes (2)",2,11
+refer,"reference (10), referred (1)",2,11
+syndrom,"syndrome (10), syndromes (1)",2,11
+trajectori,"trajectories (6), trajectory (5)",2,11
+transplant,"transplant (2), transplantation (8), transplanted (1)",3,11
+undergo,"undergo (1), undergoing (10)",2,11
+variabl,"variable (1), variables (9), variably (1)",3,11
+achiev,"achieve (1), achieved (6), achieves (1), achieving (2)",4,10
+ae,"ae (1), aes (9)",2,10
+alter,"alteration (1), alterations (5), altered (4)",3,10
+continu,"continue (1), continued (2), continues (1), continuous (6)",4,10
+contribut,"contributed (2), contributes (1), contributing (4), contribution (2), contributions (1)",5,10
+describ,"describe (6), describes (3), describing (1)",3,10
+determin,"determinants (1), determine (8), determined (1)",3,10
+drug,"drug (7), drugs (3)",2,10
+experi,"experience (5), experiences (2), experiments (3)",3,10
+format,"format (1), formation (9)",2,10
+frequent,"frequent (3), frequently (7)",2,10
+import,"importance (6), important (4)",2,10
+intens,"intensity (1), intensive (9)",2,10
+median,"median (9), medians (1)",2,10
+met,"met (5), mets (5)",2,10
+oper,"operates (1), operating (6), operations (1), operative (1), operator (1)",5,10
+pattern,"pattern (4), patterns (6)",2,10
+person,"person (1), personality (1), personalized (5), persons (3)",4,10
+polici,"policies (4), policy (6)",2,10
+postop,"postoperative (8), postoperatively (2)",2,10
+practic,"practice (5), practices (5)",2,10
+precis,"precise (5), precision (5)",2,10
+preoper,"preoperative (9), preoperatively (1)",2,10
+protein,"protein (7), proteins (3)",2,10
+rel,"relative (7), relatively (3)",2,10
+respond,"respond (1), respondents (9)",2,10
+sampl,"sample (3), samples (5), sampling (2)",3,10
+standard,"standard (3), standardization (1), standardized (5), standards (1)",4,10
+survei,"survey (7), surveys (3)",2,10
+translat,"translated (1), translation (6), translational (3)",3,10
+adapt,"adaptation (2), adaptive (7)",2,9
+address,"address (3), addressed (5), addressing (1)",3,9
+biomark,"biomarker (3), biomarkers (6)",2,9
+burn,"burn (7), burns (2)",2,9
+character,"characterize (4), characterized (4), characterizing (1)",3,9
+genom,"genome (7), genomic (2)",2,9
+graft,"graft (6), grafting (3)",2,9
+lead,"lead (2), leading (7)",2,9
+lifestyl,"lifestyle (8), lifestyles (1)",2,9
+nation,"national (8), nationally (1)",2,9
+neonat,"neonatal (8), neonate (1)",2,9
+occur,"occur (2), occurred (7)",2,9
+reduct,"reduction (6), reductions (3)",2,9
+reflect,"reflect (2), reflected (2), reflecting (1), reflects (4)",4,9
+regul,"regulate (1), regulates (1), regulating (1), regulation (4), regulations (1), regulator (1)",6,9
+rural,"rural (8), rurally (1)",2,9
+state,"state (6), states (3)",2,9
+area,"area (5), areas (3)",2,8
+artifici,"artificial (7), artificially (1)",2,8
+comparison,"comparison (4), comparisons (4)",2,8
+concern,"concern (2), concerning (1), concerns (5)",3,8
+critic,"critical (7), critically (1)",2,8
+defin,"define (1), defined (7)",2,8
+exhibit,"exhibited (6), exhibiting (1), exhibits (1)",3,8
+exist,"exist (1), existing (6), exists (1)",3,8
+focus,"focused (4), focuses (1), focusing (3)",3,8
+framework,"framework (6), frameworks (2)",2,8
+intern,"internal (2), international (6)",2,8
+link,"link (1), linked (5), linking (2)",3,8
+method,"method (4), methods (4)",2,8
+neg,"negative (6), negatively (2)",2,8
+point,"point (5), points (3)",2,8
+regard,"regarded (1), regarding (7)",2,8
+relev,"relevance (4), relevant (4)",2,8
+scienc,"science (7), sciences (1)",2,8
+segment,"segment (6), segments (2)",2,8
+serv,"serve (3), served (1), serves (4)",3,8
+shift,"shift (2), shifting (2), shifts (4)",3,8
+stabil,"stability (6), stabilization (1), stabilize (1)",3,8
+stratifi,"stratified (7), stratifying (1)",2,8
+superior,"superior (7), superiority (1)",2,8
+trimest,"trimester (4), trimesters (4)",2,8
+underscor,"underscore (4), underscores (2), underscoring (2)",3,8
+util,"utility (2), utilization (3), utilized (1), utilizing (2)",4,8
+variat,"variation (5), variations (3)",2,8
+wound,"wound (7), wounds (1)",2,8
+addit,"addition (2), additional (5)",2,7
+administr,"administrable (1), administration (4), administrative (2)",3,7
+agent,"agent (2), agents (5)",2,7
+avail,"availability (2), available (5)",2,7
+benefit,"benefit (2), benefits (5)",2,7
+chatbot,"chatbot (3), chatbots (4)",2,7
+class,"class (4), classes (3)",2,7
+cyst,"cyst (1), cysts (6)",2,7
+document,"document (1), documented (6)",2,7
+dose,"dose (3), doses (2), dosing (2)",3,7
+drive,"drive (1), drives (1), driving (5)",3,7
+ethic,"ethical (6), ethics (1)",2,7
+larg,"large (4), largely (3)",2,7
+modul,"modulate (1), modulating (3), modulation (2), module (1)",4,7
+partial,"partial (3), partially (4)",2,7
+persist,"persist (1), persisted (3), persistent (2), persists (1)",4,7
+physiolog,"physiologic (1), physiological (5), physiologically (1)",3,7
+program,"program (6), programming (1)",2,7
+promis,"promise (2), promising (5)",2,7
+summar,"summarize (2), summarized (3), summarizes (2)",3,7
+symptom,"symptom (1), symptoms (6)",2,7
+tissu,"tissue (5), tissues (2)",2,7
+abnorm,"abnormal (2), abnormalities (4)",2,6
+access,"access (5), accessible (1)",2,6
+attend,"attendance (1), attended (2), attending (3)",3,6
+causal,"causal (5), causality (1)",2,6
+classifi,"classified (5), classify (1)",2,6
+close,"close (2), closely (4)",2,6
+coher,"coherence (5), coherent (1)",2,6
+compris,"comprised (2), comprising (4)",2,6
+comput,"computational (2), computed (4)",2,6
+count,"count (5), counts (1)",2,6
+countri,"countries (5), country (1)",2,6
+delai,"delay (1), delayed (3), delaying (2)",3,6
+deriv,"derivatives (3), derived (3)",2,6
+direct,"direct (4), direction (1), directions (1)",3,6
+dynam,"dynamic (2), dynamics (4)",2,6
+elig,"eligibility (1), eligible (5)",2,6
+elucid,"elucidate (4), elucidated (1), elucidates (1)",3,6
+enabl,"enable (2), enabled (1), enabling (3)",3,6
+experienc,"experienced (5), experiencing (1)",2,6
+fraction,"fraction (4), fractional (1), fractions (1)",3,6
+incorpor,"incorporated (3), incorporating (3)",2,6
+inform,"inform (3), information (3)",2,6
+insuffici,"insufficient (4), insufficiently (2)",2,6
+like,"like (1), likely (5)",2,6
+lncrna,"lncrna (5), lncrnas (1)",2,6
+match,"matched (1), matching (5)",2,6
+mnr,"mnr (1), mnrs (5)",2,6
+moder,"moderate (4), moderated (1), moderately (1)",3,6
+object,"objective (5), objectives (1)",2,6
+owner,"owner (4), owners (2)",2,6
+polymorph,"polymorphism (4), polymorphisms (2)",2,6
+quantifi,"quantified (4), quantify (2)",2,6
+rare,"rare (5), rarely (1)",2,6
+rat,"rat (1), rats (5)",2,6
+recommend,"recommendations (4), recommended (1), recommending (1)",3,6
+regist,"register (1), registered (5)",2,6
+routin,"routine (5), routinely (1)",2,6
+secret,"secreted (3), secretion (3)",2,6
+stage,"stage (1), staged (1), stages (2), staging (2)",4,6
+subregion,"subregional (5), subregions (1)",2,6
+suspect,"suspect (2), suspected (4)",2,6
+technologi,"technologies (3), technology (3)",2,6
+unit,"unit (4), united (2)",2,6
+univers,"universal (2), university (4)",2,6
+uti,"uti (1), utis (5)",2,6
+allow,"allowed (1), allowing (4)",2,5
+appear,"appear (1), appeared (2), appears (2)",3,5
+appropri,"appropriate (4), appropriately (1)",2,5
+approv,"approval (1), approved (4)",2,5
+assai,"assay (2), assays (3)",2,5
+channel,"channel (1), channels (4)",2,5
+complex,"complex (4), complexity (1)",2,5
+confound,"confounders (3), confounding (2)",2,5
+corticosteroid,"corticosteroid (2), corticosteroids (3)",2,5
+deficit,"deficit (4), deficits (1)",2,5
+discrimin,"discrimination (3), discriminative (2)",2,5
+effici,"efficiency (1), efficient (4)",2,5
+endpoint,"endpoint (2), endpoints (3)",2,5
+evolv,"evolved (1), evolving (4)",2,5
+exclud,"excluded (3), excluding (2)",2,5
+facilit,"facilitate (4), facilitated (1)",2,5
+fractur,"fracture (4), fractures (1)",2,5
+guid,"guide (1), guided (3), guiding (1)",3,5
+habit,"habit (4), habits (1)",2,5
+implement,"implement (1), implementation (2), implemented (2)",3,5
+implic,"implicated (3), implications (2)",2,5
+induc,"induce (1), induced (4)",2,5
+lack,"lack (2), lacking (2), lacks (1)",3,5
+languag,"language (4), languages (1)",2,5
+lesion,"lesion (1), lesions (4)",2,5
+live,"lived (1), lives (1), living (3)",3,5
+load,"loaded (1), loading (4)",2,5
+microbiom,"microbiome (4), microbiomes (1)",2,5
+neuron,"neuronal (2), neurons (3)",2,5
+notabl,"notable (1), notably (4)",2,5
+platform,"platform (3), platforms (2)",2,5
+possibl,"possibility (1), possible (4)",2,5
+procedur,"procedural (2), procedure (3)",2,5
+protect,"protection (1), protective (4)",2,5
+robust,"robust (2), robustness (3)",2,5
+sequenc,"sequence (2), sequencing (3)",2,5
+techniqu,"technique (3), techniques (2)",2,5
+threshold,"threshold (3), thresholds (2)",2,5
+toler,"tolerance (4), tolerated (1)",2,5
+trend,"trend (1), trends (4)",2,5
+triglycerid,"triglyceride (3), triglycerides (2)",2,5
+usual,"usual (4), usually (1)",2,5
+warrant,"warrant (2), warranted (2), warranting (1)",3,5
+wide,"wide (1), widely (4)",2,5
+adipos,"adipose (1), adiposity (3)",2,4
+agonist,"agonist (3), agonists (1)",2,4
+attenu,"attenuated (1), attenuating (1), attenuation (2)",3,4
+autoimmun,"autoimmune (2), autoimmunity (2)",2,4
+barrier,"barrier (2), barriers (2)",2,4
+behavior,"behavioral (3), behaviors (1)",2,4
+candid,"candidate (3), candidates (1)",2,4
+catecholamin,"catecholamine (3), catecholamines (1)",2,4
+categor,"categorical (1), categorized (3)",2,4
+clarifi,"clarified (1), clarify (3)",2,4
+cluster,"cluster (1), clustered (1), clustering (1), clusters (1)",4,4
+compromis,"compromise (2), compromised (1), compromises (1)",3,4
+conclus,"conclusion (2), conclusions (2)",2,4
+construct,"constructed (3), constructing (1)",2,4
+cours,"course (3), courses (1)",2,4
+decis,"decision (3), decisions (1)",2,4
+descript,"descriptive (2), descriptively (2)",2,4
+discuss,"discussed (1), discussing (1), discussion (1), discussions (1)",4,4
+disproportion,"disproportionalities (1), disproportionality (2), disproportionately (1)",3,4
+emphas,"emphasizes (2), emphasizing (2)",2,4
+frequenc,"frequencies (1), frequency (3)",2,4
+gap,"gap (3), gaps (1)",2,4
+gene,"gene (3), genes (1)",2,4
+hemodynam,"hemodynamic (3), hemodynamically (1)",2,4
+interview,"interview (2), interviewing (1), interviews (1)",3,4
+invers,"inverse (3), inversely (1)",2,4
+locat,"located (2), location (2)",2,4
+manifest,"manifestation (2), manifestations (2)",2,4
+modif,"modification (2), modifications (2)",2,4
+offer,"offer (2), offered (1), offers (1)",3,4
+open,"open (2), opening (1), openings (1)",3,4
+paradigm,"paradigm (3), paradigms (1)",2,4
+process,"process (2), processes (2)",2,4
+product,"product (1), production (1), products (2)",3,4
+programm,"programme (2), programmes (2)",2,4
+prolong,"prolonged (3), prolongs (1)",2,4
+recipi,"recipient (1), recipients (3)",2,4
+regimen,"regimen (2), regimens (2)",2,4
+repeat,"repeat (1), repeated (3)",2,4
+revers,"reversal (1), reverse (1), reversible (2)",3,4
+rna,"rna (2), rnas (2)",2,4
+share,"share (2), shared (2)",2,4
+sourc,"source (1), sourced (1), sources (2)",3,4
+stem,"stem (3), stemmed (1)",2,4
+sustain,"sustained (3), sustaining (1)",2,4
+swallow,"swallowable (3), swallowing (1)",2,4
+trait,"trait (1), traits (3)",2,4
+ulcer,"ulcerative (1), ulcers (3)",2,4
+understand,"understand (1), understanding (3)",2,4
+user,"user (1), users (3)",2,4
+veterinarian,"veterinarian (1), veterinarians (3)",2,4
+work,"work (1), working (3)",2,4
+acceler,"accelerate (2), accelerating (1)",2,3
+account,"account (1), accounted (1), accounting (1)",3,3
+accumul,"accumulating (1), accumulation (2)",2,3
+acid,"acid (2), acids (1)",2,3
+algorithm,"algorithm (1), algorithms (2)",2,3
+allevi,"alleviate (2), alleviated (1)",2,3
+altern,"alternative (2), alternatives (1)",2,3
+asian,"asian (1), asians (2)",2,3
+autoantibodi,"autoantibodies (2), autoantibody (1)",2,3
+becom,"become (2), becoming (1)",2,3
+carri,"carried (1), carries (1), carry (1)",3,3
+center,"center (2), centered (1)",2,3
+claim,"claim (1), claims (2)",2,3
+code,"coded (1), codes (2)",2,3
+collabor,"collaboration (1), collaborative (2)",2,3
+compon,"component (2), components (1)",2,3
+compound,"compounded (1), compounds (2)",2,3
+concentr,"concentration (2), concentrations (1)",2,3
+confer,"confer (1), conferences (1), confers (1)",3,3
+consider,"considerable (1), consideration (2)",2,3
+correspond,"corresponding (2), corresponds (1)",2,3
+cytokin,"cytokine (1), cytokines (2)",2,3
+discontinu,"discontinuation (1), discontinued (2)",2,3
+discrep,"discrepancies (1), discrepancy (1), discrepant (1)",3,3
+engin,"engineered (2), engineering (1)",2,3
+excess,"excess (2), excessive (1)",2,3
+exclus,"exclusion (2), exclusions (1)",2,3
+face,"face (2), faced (1)",2,3
+fit,"fit (1), fitting (2)",2,3
+food,"food (2), foods (1)",2,3
+form,"form (1), forming (1), forms (1)",3,3
+grade,"grade (2), grading (1)",2,3
+hemoglobinopathi,"hemoglobinopathies (2), hemoglobinopathy (1)",2,3
+homogen,"homogeneity (2), homogeneous (1)",2,3
+hypothyroid,"hypothyroid (1), hypothyroidism (2)",2,3
+immunometabol,"immunometabolic (2), immunometabolism (1)",2,3
+imput,"imputation (2), imputations (1)",2,3
+induct,"induction (2), inductively (1)",2,3
+inject,"injecting (1), injection (2)",2,3
+intermedi,"intermediate (2), intermediates (1)",2,3
+issu,"issue (1), issues (2)",2,3
+maintain,"maintain (1), maintaining (2)",2,3
+menopaus,"menopausal (1), menopause (2)",2,3
+metabolom,"metabolomic (2), metabolomics (1)",2,3
+modal,"modalities (1), modality (2)",2,3
+narr,"narrative (1), narratively (2)",2,3
+organ,"organ (2), organism (1)",2,3
+paf,"paf (1), pafs (2)",2,3
+part,"part (2), parts (1)",2,3
+perspect,"perspective (2), perspectives (1)",2,3
+plai,"play (1), plays (2)",2,3
+predomin,"predominance (2), predominant (1)",2,3
+probe,"probe (2), probes (1)",2,3
+promot,"promoted (1), promoters (1), promoting (1)",3,3
+pseudoaneurysm,"pseudoaneurysm (2), pseudoaneurysmal (1)",2,3
+quantit,"quantitative (2), quantitatively (1)",2,3
+root,"root (2), roots (1)",2,3
+round,"round (1), roundness (2)",2,3
+separ,"separate (1), separately (1), separation (1)",3,3
+site,"site (2), sites (1)",2,3
+sole,"sole (1), solely (2)",2,3
+start,"started (2), starting (1)",2,3
+subsequ,"subsequent (1), subsequently (2)",2,3
+subtyp,"subtype (2), subtypes (1)",2,3
+suffici,"sufficiency (1), sufficient (2)",2,3
+summaris,"summarise (2), summarised (1)",2,3
+synthes,"synthesize (1), synthesized (2)",2,3
+term,"term (1), terms (2)",2,3
+transit,"transition (2), transitions (1)",2,3
+transport,"transport (1), transporter (2)",2,3
+u,"u (2), us (1)",2,3
+urban,"urban (2), urbanization (1)",2,3
+vari,"varies (1), vary (2)",2,3
+act,"acted (1), acts (1)",2,2
+adopt,"adopted (1), adopting (1)",2,2
+align,"aligned (1), aligning (1)",2,2
+apprais,"appraisal (1), appraised (1)",2,2
+austrian,"austrian (1), austrians (1)",2,2
+avenu,"avenue (1), avenues (1)",2,2
+balanc,"balance (1), balanced (1)",2,2
+blind,"blinded (1), blinding (1)",2,2
+bound,"bound (1), bounds (1)",2,2
+consult,"consult (1), consulting (1)",2,2
+contributor,"contributor (1), contributors (1)",2,2
+debrid,"debridement (1), debridements (1)",2,2
+dedifferenti,"dedifferentiated (1), dedifferentiation (1)",2,2
+demand,"demand (1), demands (1)",2,2
+depress,"depression (1), depressive (1)",2,2
+devic,"device (1), devices (1)",2,2
+divis,"division (1), divisions (1)",2,2
+dysregul,"dysregulated (1), dysregulation (1)",2,2
+embol,"embolic (1), embolism (1)",2,2
+encompass,"encompasses (1), encompassing (1)",2,2
+engag,"engaged (1), engagement (1)",2,2
+ethnic,"ethnically (1), ethnicity (1)",2,2
+extens,"extension (1), extensively (1)",2,2
+fall,"fall (1), falls (1)",2,2
+favour,"favourable (1), favourably (1)",2,2
+final,"final (1), finally (1)",2,2
+fluctuat,"fluctuated (1), fluctuating (1)",2,2
+govern,"govern (1), governance (1)",2,2
+gradient,"gradient (1), gradients (1)",2,2
+histor,"historical (1), historically (1)",2,2
+ici,"ici (1), icis (1)",2,2
+ill,"ill (1), illnesses (1)",2,2
+illustr,"illustrated (1), illustrates (1)",2,2
+immunosuppress,"immunosuppression (1), immunosuppressive (1)",2,2
+institut,"institute (1), institution (1)",2,2
+instrument,"instrumentation (1), instruments (1)",2,2
+limb,"limb (1), limbs (1)",2,2
+local,"local (1), locally (1)",2,2
+map,"map (1), maps (1)",2,2
+materi,"material (1), materials (1)",2,2
+minim,"minimal (1), minimize (1)",2,2
+molecul,"molecule (1), molecules (1)",2,2
+neuter,"neutered (1), neutering (1)",2,2
+nonlinear,"nonlinear (1), nonlinearity (1)",2,2
+numer,"numerically (1), numerous (1)",2,2
+obstruct,"obstruction (1), obstructive (1)",2,2
+organis,"organisation (1), organised (1)",2,2
+plan,"planning (1), plans (1)",2,2
+precipit,"precipitate (1), precipitates (1)",2,2
+pretreat,"pretreated (1), pretreatment (1)",2,2
+priorit,"prioritize (1), prioritized (1)",2,2
+profession,"professional (1), professionals (1)",2,2
+project,"project (1), projections (1)",2,2
+prompt,"prompt (1), prompting (1)",2,2
+protocol,"protocol (1), protocols (1)",2,2
+provinc,"province (1), provinces (1)",2,2
+proxi,"proxies (1), proxy (1)",2,2
+racial,"racial (1), racialized (1)",2,2
+reach,"reach (1), reached (1)",2,2
+resid,"residence (1), residents (1)",2,2
+retriev,"retrieve (1), retrieved (1)",2,2
+rise,"rise (1), rising (1)",2,2
+scan,"scan (1), scans (1)",2,2
+slope,"slope (1), slopes (1)",2,2
+slow,"slow (1), slowing (1)",2,2
+substitut,"substitute (1), substitutions (1)",2,2
+suscept,"susceptibility (1), susceptible (1)",2,2
+switch,"switch (1), switched (1)",2,2
+tabl,"table (1), tables (1)",2,2
+themat,"thematic (1), thematically (1)",2,2
+transform,"transformation (1), transforming (1)",2,2
+transpar,"transparency (1), transparent (1)",2,2
+transvers,"transversal (1), transverse (1)",2,2
+twin,"twin (1), twins (1)",2,2
+uncov,"uncovered (1), uncovering (1)",2,2
+urgent,"urgent (1), urgently (1)",2,2
+utilis,"utilisation (1), utilised (1)",2,2
+verifi,"verified (1), verify (1)",2,2
+vessel,"vessel (1), vessels (1)",2,2
+window,"window (1), windows (1)",2,2

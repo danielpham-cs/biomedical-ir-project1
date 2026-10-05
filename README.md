@@ -1,10 +1,73 @@
-# Helix — Biomedical IR Project #1
+# Helix — Biomedical IR Projects #1 & #2
 
 **Helix** is a course workspace for keyword-based retrieval over **PubMed/PMC XML**. Its default workflow is: PMID/PMCID → download local XML/JSON + SQLite catalog → keyword search.
 
-Course: Biomedical Information Retrieval · Due: Sept 22, 2026
+Course: Biomedical Information Retrieval · HW1 due September 22, 2026 · HW2 due October 6, 2026
 
 ## Features
+
+### Active corpus: GLP-1 (September 29, 2026)
+
+The active library now contains **1,000 English GLP-1 PubMed abstracts** in SQLite,
+XML/JSON and the retrieval index. The previous **104 papers are soft-deleted** using
+`articles.deleted_at`; their source files remain intact. Rebuilding the index does
+not restore hidden papers. The Homework 2 page defaults to the active 1,000-paper
+manifest. The detailed A–D analysis, 15-epoch Skip-gram model and report have now
+been generated on these 1,000 abstracts. Earlier diabetes outputs are archived under
+`legacy/hw2_diabetes/`.
+
+```powershell
+.\.venv\python.exe scripts\download_glp1_corpus.py --n 1000
+```
+
+Downloads resume from `data/staging/glp1`; a successful rerun validates the current
+collection without replacing it. The script keeps a snapshot in `data/archives/`
+before switching corpora. To restore the previous active collection while keeping
+all downloaded files:
+
+```powershell
+.\.venv\python.exe scripts\download_glp1_corpus.py --restore data\archives\before_glp1_20260929T080819389728Z
+```
+
+### Homework 2 demo (restructured September 30)
+
+Start the app from the repository root:
+
+```powershell
+.\.venv\python.exe -m streamlit run app.py
+```
+
+The sidebar group **Homework 2 · demo** has six pages sized for a five-minute demo:
+
+0. Overview & results
+1. Data & preprocessing
+2. Zipf's law
+3. CF · DF · IDF
+4. Word2Vec
+5. Edit distance & search
+
+Each page is one scroll of cards, one per question, with key numbers as chips; collapsed **More details** and **Answers** blocks at the bottom hold everything else. The two-domain comparison is under Zipf → More details; the report, RQ answers and downloads are on the Overview.
+
+Opening a page never trains a model or downloads from PubMed. The Data page (Details → Manage corpora) can fetch or archive additional corpora; these live in `data/experiments/` and never replace the pinned 1,000-paper course corpus.
+
+Generate or reuse the complete analysis, model, PDF report, one-page summary and two-domain comparison:
+
+```powershell
+.\.venv\python.exe scripts\run_project2.py --domain-b data\experiments\1649fed9869439267d9a\corpus_snapshot.json
+```
+
+The outputs go to `output/project2_glp1/`:
+- `report.pdf`, `executive_summary.pdf`, `report.md`
+- `analysis.json`, CSV tables and figures
+- `skipgram.npz`, `corpus_snapshot.json`
+- `domain_comparison.json`
+- checksums and `submission.zip`
+
+To replay the frozen texts offline, add `--snapshot output\project2_glp1\corpus_snapshot.json`.
+
+See [docs/HW2.md](docs/HW2.md) for the requirement → page → code map, measured results and the 12-minute demo route. Earlier Homework 2 versions are in `legacy/`.
+
+The existing retrieval pages below continue to support Homework 1.
 
 - Parse PMC XML → title, abstract, body, PMID/PMCID, journal, year
 - Preprocessing: lowercase, tokenize, English **stop-words**, **Porter stemming** (NLTK / Porter 1980)
@@ -18,7 +81,7 @@ Course: Biomedical Information Retrieval · Due: Sept 22, 2026
 
 1. Open **Search and analyze abstract** and enter a PMID (for example `30153250`) or PMCID (for example `PMC13559554`).
 2. Click **Search abstract**. Helix retrieves the PubMed record and calculates character, word, unique-word, term-frequency, and EOS sentence statistics from its abstract.
-3. Saving is optional. Use the browser download buttons or **Save XML and JSON locally** only when you want a persistent local search collection.
+3. Click **Import paper to library** to store the displayed paper and update the search index in one step. **Download PubMed XML** remains available for a browser download.
 
 `data/library.sqlite3` is a local SQLite database built into Python; no database server, account, or separate setup is needed. The database tracks IDs, metadata, saved-file paths, full-text availability, and save time. XML/JSON stay as normal local files so the index can be rebuilt later.
 
@@ -110,20 +173,20 @@ The UI uses local fonts and CSS and does not need an external image or font serv
    Keep the `PMC` prefix: plain numbers are interpreted as PMIDs, not PMCIDs.
    If a PMC record has no linked PMID, the app explains that its PubMed record
    is not available rather than looking up an unrelated numeric PMID.
-3. Download **PubMed XML** or **IR JSON** through your browser. If the record has a
-   PMCID, choose **Fetch PMC full-text XML** to retrieve full text when NCBI makes
-   it available. PubMed metadata/abstract remain downloadable when full text is unavailable.
-4. To use the paper inside Helix, choose **Save XML & JSON to project**. Files are
+3. Click **Import paper to library** to save the record directly in Helix. This
+   uses the displayed record without another PubMed request. Under **Import options**,
+   optionally include PMC full text when available. Browser download is offered for **PubMed XML**.
+4. Imported articles are cataloged in SQLite. Their files are
    stored as `data/raw/PMID<id>.xml`, `data/raw/PMID<id>.json`, and, if fetched,
    `data/raw/PMC<id>.xml`. Saving the same ID updates these files.
-5. Choose **Update local search index**, then open the local search workspace.
+5. The search index updates automatically; use **Search your library** to find the paper.
    Existing indexed papers and stemming/stopword settings are preserved. PubMed
    and PMC records of the same paper are merged, preferring the full text.
 
 JSON contains the existing `Document` fields (`doc_id`, `pmid`, `pmcid`, `title`,
 `abstract`, `body`, `journal`, `year`, `full_text`) plus `authors`, `doi`,
 `pubmed_url`, `source`, and `has_full_text`. Without PMC full text, `body` is empty
-and local search uses the title and abstract. IR JSON includes the complete parsed
+and local search uses the abstract and keywords. Stored IR JSON includes the complete parsed
 body, including section headings and table/caption text; source XML remains unchanged.
 The command-line `scripts/build_index.py` also accepts these saved PubMed XMLs.
 
@@ -131,6 +194,19 @@ The lookup uses the official [NCBI EFetch API](https://www.ncbi.nlm.nih.gov/book
 Optionally set `NCBI_EMAIL` to a contact email and `NCBI_API_KEY` to your API key
 in the server environment. Lookup requests are spaced at least 0.35 seconds apart;
 successful PubMed lookups are cached for one hour.
+
+Lookup first reuses an identity-checked `PMID<id>.xml` already in `data/raw/`.
+Select **Fetch latest from NCBI** to bypass local XML and the one-hour cache.
+The result shows its source and elapsed lookup time. XML browser downloads use
+the prepared bytes and do not repeat the NCBI request or rerun the page.
+
+Transient timeouts, connection failures, HTTP 429 and selected 5xx errors get at
+most two attempts. Single-record lookups use 5-second connect and 12-second read
+timeouts; larger PMC/batch responses keep a 30-second read timeout. These are
+socket inactivity limits, not a total wall-clock deadline. Permanent HTTP errors
+fail immediately. Long `Retry-After` values are shown instead of making the UI
+sleep. Optional local saves show separate timings for PMC retrieval, file/catalog
+storage and index rebuilding; repeated full-text retrievals are cached for one hour.
 
 Offline checks:
 
@@ -153,6 +229,18 @@ python scripts/build_index.py
 | `metformin type 2` | Compare Boolean AND vs OR |
 | `glucose blood pressure` | Open a doc → stats + sentences |
 | `inflammation cytokine` | Preprocessed stemmed terms in UI |
+| `diabe ins` | Choose Partial / substring; open a result to inspect character/sentence locations |
+| `diabtes` | Choose Fuzzy / edit distance (1 edit) for direct typo-tolerant retrieval |
+
+Search results include **Open & locate → Keyword locations**, with every match's
+section, sentence, character range, previous/next navigation, CSV and plaintext
+exports. Offsets are zero-based `[start, end)` in the displayed normalized
+abstract + keywords + body; the title is excluded.
+
+On **Homework 2 · demo → 4. Word2Vec**, the **PCA 2D** map uses the saved model without
+retraining. Explore a query's neighbors or frequent words, hover/click points,
+zoom/pan, toggle labels and download coordinates. PCA is fitted to the complete
+normalized vocabulary and reports the variance retained in two dimensions.
 
 ## Project layout
 
@@ -204,7 +292,7 @@ Slide outline: [papers/SLIDES.md](papers/SLIDES.md)
 - Matching is implemented from scratch (no Elasticsearch/Lucene) to reflect basic IR course schemes.
 - Porter stemmer is the standard public-domain algorithm via NLTK.
 - NCBI asks for a contact email in E-utilities; change `--email` in the download script if needed.
-- Corpus size is intentionally ~100–200 docs for a stable classroom demo.
+- The course submission uses 1,000 English GLP-1 abstracts; extra corpora have their own explicit sample sizes.
 # Run on the NCKU local network
 
 To make the app reachable from another device on the same NCKU network, run this

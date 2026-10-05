@@ -1,0 +1,82 @@
+"""Page 0 (open 30 s, close 15 s): results, executive summary, requirement map and report answers."""
+import json
+import re
+from html import escape
+
+import streamlit as st
+
+from src.hw2_answers import ir_implications, report_answers
+from ui.hw2 import common
+
+PIPELINE = '''digraph {
+  rankdir=LR; bgcolor="transparent"; node [shape=box style="rounded,filled" fillcolor="#edf3f5" color="#087f78" fontname="Helvetica" fontsize=11];
+  edge [color="#566b76"];
+  pubmed [label="PubMed E-utilities\\nXML, English, has abstract"];
+  corpus [label="Frozen corpus\\n1,000 PMIDs + SHA-256"];
+  prep [label="Preprocessing A→D\\ntokenize · lowercase · punctuation\\nstopwords · own Porter"];
+  stats [label="CF · DF · IDF\\nTop 50, spectrum"];
+  zipf [label="Zipf: linear regression in log-log\\nslope, k, R², RMSE, regions"];
+  w2v [label="Skip-gram (NumPy)\\nnegative sampling"];
+  index [label="Inverted index\\nBM25 ranking"];
+  ed [label="DP edit distance\\nspelling, fuzzy, partial"];
+  report [label="Answers, report,\\nexecutive summary"];
+  pubmed -> corpus -> prep; prep -> stats -> zipf -> report; prep -> w2v; corpus -> index; ed -> index; stats -> report; w2v -> report;
+}'''
+
+MODULES = [
+    ('src/zipf_experiment.py', 'Corpus loading, preprocessing A–D, CF/DF/IDF, Zipf regression and regions'),
+    ('src/porter.py', 'Own Porter 1980 stemmer, step-by-step trace'),
+    ('src/word2vec.py', 'Skip-gram with negative sampling in NumPy'),
+    ('src/matching.py', 'Dynamic-programming edit distance, partial/fuzzy matching, match locations'),
+    ('src/search.py', 'Spelling correction and BM25 search'),
+    ('src/domain_compare.py', 'Optional two-domain comparison'),
+    ('src/hw2_answers.py · src/project2_report.py', 'Answers, report and executive summary from measured numbers'),
+    ('ui/hw2/*.py · pages/1x_HW2_*.py', 'One demo page per requirement group'),
+]
+
+
+def summary_findings(result):
+    b, c, d = (result['conditions'][x] for x in 'BCD')
+    fit = b['fits']['All']
+    k = {x: v['fits']['All']['zipf_exponent'] for x, v in result['conditions'].items()}
+    return {
+        'Finding 1 · Zipf?': f"Approximately: log-log fit R² = {fit['r_squared']:.3f}, but the head and the tied tail bend away from the line.",
+        'Finding 2 · Exponent': f"k = {fit['zipf_exponent']:.3f} for condition B (range {min(k.values()):.3f}–{max(k.values()):.3f} over A–D), not exactly 1.",
+        'Finding 3 · Preprocessing': f"Vocabulary {result['conditions']['A']['stats']['vocabulary']:,} (A) → {d['stats']['vocabulary']:,} (D); "
+                                     f"stopword removal cuts {1 - c['stats']['tokens'] / b['stats']['tokens']:.0%} of tokens and changes the head terms.",
+        'Finding 4 · Meaning for IR': 'A small head dominates postings and gets low IDF; the long tail dominates the dictionary. '
+                                      'Stopword policy, index compression and TF-IDF weighting follow from this skew.',
+    }
+
+
+def render(corpus, result):
+    with common.card('Results at a glance', 'Condition B (punctuation cleaned, stopwords kept) unless stated.'):
+        b, c, d = (result['conditions'][x] for x in 'BCD')
+        fit = b['fits']['All']
+        cols = st.columns(5)
+        cols[0].metric('Abstracts', f"{b['stats']['documents']:,}")
+        cols[1].metric('Vocabulary (B)', f"{b['stats']['vocabulary']:,}")
+        cols[2].metric('Zipf exponent k', f"{fit['zipf_exponent']:.3f}")
+        cols[3].metric('R² (log-log)', f"{fit['r_squared']:.3f}")
+        cols[4].metric('Porter C→D', f"−{1 - d['stats']['vocabulary'] / c['stats']['vocabulary']:.1%}", help='Vocabulary reduction from stemming')
+    with common.card('Executive summary · Finding 1–4', 'What 1,000 abstracts showed beyond the textbook.'):
+        for title, text in summary_findings(result).items():
+            st.markdown(f'**{title}** — {text}')
+    with st.expander('System pipeline and modules'):
+        st.graphviz_chart(PIPELINE, width='stretch')
+        common.html_table(['Module', 'Responsibility'], [[f'<code>{escape(m)}</code>', escape(r)] for m, r in MODULES])
+        st.code('.\\.venv\\python.exe -m streamlit run app.py\n'
+                '.\\.venv\\python.exe scripts\\run_project2.py --domain-b data\\experiments\\1649fed9869439267d9a\\corpus_snapshot.json',
+                language='powershell')
+
+    current, _ = common.report_status(result)
+    common.more('Answers', '')
+    essay = ir_implications(result)
+    words = len(re.findall(r'\S+', essay))
+    with st.expander(f"Part IX · Why does Zipf's Law matter to an IR system? ({words} words; required 300–500)"):
+        st.write(essay)
+    answers = report_answers(result)
+    common.answers('RQ1–RQ5 and the final challenge', {t: a for t, a in answers.items() if not t.startswith('RQ5')})
+    published = common.selected_output() / 'research_answers.json'
+    if current and published.exists() and json.loads(published.read_text(encoding='utf8')) != answers:
+        st.info('The published report was generated by an earlier version of the answer text; rerun scripts/run_project2.py to refresh it.')

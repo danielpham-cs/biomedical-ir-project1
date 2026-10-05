@@ -8,7 +8,20 @@ data/library.sqlite3
 data/library.sqlite3-shm
 data/library.sqlite3-wal
 data/processed/*
+data/homework2/
+data/archives/
+data/staging/
+data/experiments/
+output/project2_glp1/*.npz
+output/project2_glp1/*.zip
+tmp/
+output/homework2/*.npz
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 .streamlit/*
 !.streamlit/config.toml
+
+# Course material (briefs, lecture slides) stays local: the repository is public.
+/Homework-*.pdf
+/project-*.pdf
+/lecture-*.pdf

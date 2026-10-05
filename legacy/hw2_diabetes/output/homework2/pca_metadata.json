@@ -1,0 +1,10 @@
+{
+  "method": "PCA via SVD",
+  "input": "All L2-normalized, mean-centered center vectors",
+  "model_key": "abb01e1eae12a36f22128d7068d4cceed42a30b85477653c6319d657c47ea610",
+  "explained_variance_ratio": [
+    0.3365743197475758,
+    0.17489632039347572
+  ],
+  "vocabulary_size": 2514
+}

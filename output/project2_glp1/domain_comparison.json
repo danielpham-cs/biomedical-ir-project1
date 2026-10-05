@@ -1,0 +1,178 @@
+{
+  "condition": "C",
+  "size": 500,
+  "shared_vocabulary": 5087,
+  "jaccard": 0.22380114386273647,
+  "shared_top10": [],
+  "distinctive_A": [
+    "glp-1",
+    "agonists",
+    "glucagon-like",
+    "peptide-1",
+    "semaglutide",
+    "insulin",
+    "glp-1ras",
+    "tirzepatide",
+    "glp-1ra",
+    "ras"
+  ],
+  "distinctive_B": [
+    "images",
+    "image",
+    "shap",
+    "segmentation",
+    "forest",
+    "xgboost",
+    "cross-validation",
+    "convolutional",
+    "cnn",
+    "dl"
+  ],
+  "A": {
+    "query": "(\"GLP-1\"[Title/Abstract] OR \"glucagon-like peptide-1\"[Title/Abstract] OR \"glucagon like peptide 1\"[Title/Abstract]) AND hasabstract[text] AND english[lang]",
+    "fingerprint": "43be97743f89d09e7e8821d116d4a352d3b9b9527196180be215b8a420dd1de1",
+    "documents": 500,
+    "tokens": 88036,
+    "vocabulary": 12626,
+    "average_tokens_per_document": 176.072,
+    "hapax": 6279,
+    "hapax_share": 0.49730714398859494,
+    "zipf_exponent": 1.1248041822612052,
+    "slope": -1.1248041822612052,
+    "intercept": 4.499969613744321,
+    "r_squared": 0.960953895186077,
+    "rmse_log10": 0.09826322661121935,
+    "regions": {
+      "All": {
+        "points": 12626,
+        "rank_start": 1,
+        "rank_end": 12626,
+        "slope": -1.1248041822612052,
+        "intercept": 4.499969613744321,
+        "zipf_exponent": 1.1248041822612052,
+        "r_squared": 0.960953895186077,
+        "rmse_log10": 0.09826322661121935,
+        "note": "Descriptive OLS in log10 space; not a power-law goodness-of-fit test."
+      },
+      "Head (0–10%)": {
+        "points": 1263,
+        "rank_start": 1,
+        "rank_end": 1263,
+        "slope": -0.7629556934088996,
+        "intercept": 3.5433605784318525,
+        "zipf_exponent": 0.7629556934088996,
+        "r_squared": 0.9758378949501183,
+        "rmse_log10": 0.05148116298438795,
+        "note": "Descriptive OLS in log10 space; not a power-law goodness-of-fit test."
+      },
+      "Middle (10–80%)": {
+        "points": 8838,
+        "rank_start": 1264,
+        "rank_end": 10101,
+        "slope": -1.3880748733983355,
+        "intercept": 5.455216150959775,
+        "zipf_exponent": 1.3880748733983355,
+        "r_squared": 0.9600932795560199,
+        "rmse_log10": 0.06662686073428464,
+        "note": "Descriptive OLS in log10 space; not a power-law goodness-of-fit test."
+      },
+      "Tail (80–100%)": {
+        "points": 2525,
+        "rank_start": 10102,
+        "rank_end": 12626,
+        "slope": 0.0,
+        "intercept": 0.0,
+        "zipf_exponent": -0.0,
+        "r_squared": null,
+        "rmse_log10": 0.0,
+        "note": "Constant frequencies: R² is undefined; this is not evidence of a perfect Zipf fit."
+      }
+    },
+    "top_terms": [
+      "glp-1",
+      "receptor",
+      "patients",
+      "weight",
+      "metabolic",
+      "obesity",
+      "risk",
+      "agonists",
+      "diabetes",
+      "outcomes"
+    ]
+  },
+  "B": {
+    "query": "((\"deep learning\"[Title] OR \"machine learning\"[Title] OR \"neural network\"[Title]) AND (algorithm[Title/Abstract] OR architecture[Title/Abstract])) AND hasabstract[text] AND english[lang]",
+    "fingerprint": "ab2ed1fafdea04b43640947bc7f775280d9d55f12cf0f80f7798187d0a0c458e",
+    "documents": 500,
+    "tokens": 93131,
+    "vocabulary": 15191,
+    "average_tokens_per_document": 186.262,
+    "hapax": 7736,
+    "hapax_share": 0.5092488973734448,
+    "zipf_exponent": 1.0733969309020273,
+    "slope": -1.0733969309020273,
+    "intercept": 4.372914534950737,
+    "r_squared": 0.9618895964803689,
+    "rmse_log10": 0.09262368505285082,
+    "regions": {
+      "All": {
+        "points": 15191,
+        "rank_start": 1,
+        "rank_end": 15191,
+        "slope": -1.0733969309020273,
+        "intercept": 4.372914534950737,
+        "zipf_exponent": 1.0733969309020273,
+        "r_squared": 0.9618895964803689,
+        "rmse_log10": 0.09262368505285082,
+        "note": "Descriptive OLS in log10 space; not a power-law goodness-of-fit test."
+      },
+      "Head (0–10%)": {
+        "points": 1520,
+        "rank_start": 1,
+        "rank_end": 1520,
+        "slope": -0.7594918826573404,
+        "intercept": 3.5264806617122835,
+        "zipf_exponent": 0.7594918826573404,
+        "r_squared": 0.9804674464081022,
+        "rmse_log10": 0.04604482016072452,
+        "note": "Descriptive OLS in log10 space; not a power-law goodness-of-fit test."
+      },
+      "Middle (10–80%)": {
+        "points": 10633,
+        "rank_start": 1521,
+        "rank_end": 12153,
+        "slope": -1.303465041672857,
+        "intercept": 5.2213817190829666,
+        "zipf_exponent": 1.303465041672857,
+        "r_squared": 0.9548260264889082,
+        "rmse_log10": 0.06674432419888152,
+        "note": "Descriptive OLS in log10 space; not a power-law goodness-of-fit test."
+      },
+      "Tail (80–100%)": {
+        "points": 3038,
+        "rank_start": 12154,
+        "rank_end": 15191,
+        "slope": 0.0,
+        "intercept": 0.0,
+        "zipf_exponent": -0.0,
+        "r_squared": null,
+        "rmse_log10": 0.0,
+        "note": "Constant frequencies: R² is undefined; this is not evidence of a perfect Zipf fit."
+      }
+    },
+    "top_terms": [
+      "model",
+      "learning",
+      "using",
+      "performance",
+      "models",
+      "study",
+      "analysis",
+      "data",
+      "clinical",
+      "machine"
+    ]
+  },
+  "answer": "With 500 abstracts per domain under condition C, both rank-frequency curves remain Zipf-like: k = 1.125 (R² 0.961) for GLP-1 (medical) and k = 1.073 (R² 0.962) for Machine learning (computing), a difference of 0.051. The overall shape is therefore similar, but the details are domain-specific. GLP-1 (medical) has 12,626 distinct terms versus 15,191 for Machine learning (computing) (49.7% vs 50.9% hapax), and only 22.4% of the combined vocabulary is shared. The top-10 lists share 0 terms (none); the other head terms name each domain's subject (glp-1, receptor, patients, weight, metabolic, obesity, risk, agonists, diabetes, outcomes vs model, learning, using, performance, models, study, analysis, data, clinical, machine). Domain specificity thus changes which terms occupy the head and how large the tail is, while the heavy-tailed form persists. Two single-topic samples cannot establish a general effect size; the exponent also depends on preprocessing and the fitted rank range."
+}

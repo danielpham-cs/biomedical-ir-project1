@@ -20,6 +20,7 @@ def main() -> None:
     intro("Explain what the system does", "Visible steps. Inspectable results.",
           "Trace a piece of text through preprocessing and sentence detection, then use the same concepts to explain retrieval results.")
     system, processing, eos, demo = st.tabs(["System description", "Preprocessing", "EOS playground", "Demo guide"])
+    st.page_link("pages/10_HW2_Overview.py", label="Homework 2: Zipf, Porter, Word2Vec & edit distance →")
 
     with system:
         st.markdown("### From source XML to ranked documents")
