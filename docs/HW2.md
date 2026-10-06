@@ -9,7 +9,7 @@ Due **October 6, 2026**. Two course documents define the work:
 
 ```powershell
 .\.venv\python.exe -m streamlit run app.py
-.\.venv\python.exe scripts\run_project2.py --domain-b data\experiments\1649fed9869439267d9a\corpus_snapshot.json
+.\.venv\python.exe scripts\run_project2.py --domain-b data\experiments\9d8fa747786d1c01c921\corpus_snapshot.json
 .\.venv\python.exe -m unittest discover -s tests
 ```
 
@@ -29,10 +29,10 @@ The demo has five minutes, so there are **six pages**: an overview, then five pa
 |---|---|---|---|---|---|
 | 0 Overview & results | 0:00–0:30, 4:45–5:00 | Brief · demo; Spec · Summary, Part IX, RQ1–RQ5 | Headline numbers, Finding 1–4 | System pipeline and modules; Part IX essay, RQ1–RQ5, final challenge (report files: `output/project2_glp1/`) | `ui/hw2/overview.py` |
 | 1 Data & preprocessing | 0:30–1:30 | Spec · Dataset, Parts I, II, VI; Brief · Porter | Dataset checks, A–D vocabulary table, one sentence through steps 1–5, Porter rules for one word, 100% agreement with NLTK | Browse documents, abstract trace, A–D top terms and curves, all Porter steps, C vs D, merged forms, corpus management; Part VI answers | `ui/hw2/data.py` (+ `corpus.py`, `preprocessing.py`, `porter.py`) |
-| 2 Zipf's law | 1:30–2:30 | Brief · Zipf; Spec · Parts III, V, optional domains | Chips k · R² · RMSE · slope · intercept with linear vs log-log plots; **B → C** and **C → D** cards with side-by-side curves | Regions, residuals, Top 50, spectrum, figures, two domains; Q1–Q4 and domain answer | `ui/hw2/zipf.py`, `ui/hw2/domains.py` |
+| 2 Zipf's law | 1:30–2:30 | Brief · Zipf; Spec · Parts III, V, optional domains | k · R² · RMSE · slope · intercept with linear vs log-log plots (data, regression line, ideal 1/r); **Effect of preprocessing**: one A–D table (vocabulary and tokens with changes, top 3 terms, k, slope, intercept, R², RMSE), all four curves on one chart, and a one-line summary per step (A→B, B→C, C→D) | Regions, residuals, Top 50, spectrum, figures, two domains; Q1–Q4 and domain answer | `ui/hw2/zipf.py`, `ui/hw2/domains.py` |
 | 3 CF · DF · IDF | 2:30–3:15 | Spec · Parts IV, VII, VIII | 20 terms with CF, DF, CF/DF, IDF; CF–DF plot colored by IDF | DF of every term, one term across documents with reader; Part VII and VIII answers | `ui/hw2/terms.py` |
 | 4 Word2Vec | 3:15–4:00 | Brief · Word2Vec | Training examples of a real sentence, viewed as Skip-gram (word → each context) or CBOW (mean of context → word); neighbours; PCA map; **Skip-gram vs CBOW** neighbours side by side | Model selection, **background training** (Skip-gram or CBOW, progress bar while the page stays usable), loss, σ(v·u), config | `ui/hw2/word2vec.py`, `ui/hw2/training.py` |
-| 5 Edit distance & search | 4:00–4:45 | Brief · matching, spelling, locations | Query with auto-correct; **keyword interpretation** chips (`semaglutde → semaglutide (d=1)`); **publication-year filter**; top 5 hits with **location chips** (`word @offset (d=…)`); DP table of the correction | Spelling candidate ranking | `ui/hw2/search.py` |
+| 5 Edit distance & search | 4:00–4:45 | Brief · matching, spelling, locations | Query with auto-correct; **Keywords** line (~~semaglutde~~ → **semaglutide** (1 edit) · receptor ✓); top 5 hits with a highlighted snippet and **character positions** grouped by word; a title opens the paper in a **popup** with every match highlighted; DP table with prefix headers for short examples (`livr → liver`, `doze → dose`, `weigth → weight`) | Spelling candidate ranking | `ui/hw2/search.py` |
 
 Shared code:
 - `ui/hw2/registry.py`: pages, minutes, requirements and demo script.
@@ -60,7 +60,7 @@ Shared code:
 - **Edit distance.** Optimal string alignment by dynamic programming: insert, delete, substitute and adjacent transpose, each costing 1.
   - Spelling correction ranks candidates by distance, then by corpus frequency. The distance limit is 1 for words of ≤ 4 letters and 2 otherwise.
   - FUZZY search matches whole tokens within 1–2 edits. PARTIAL search matches substrings.
-- **Domains.** The first *n* abstracts of each corpus are used, with the same *n* for both and condition C. Domain B is 500 PubMed abstracts from `("deep learning"[Title] OR "machine learning"[Title] OR "neural network"[Title]) AND (algorithm[Title/Abstract] OR architecture[Title/Abstract])`, excluding GLP-1 PMIDs.
+- **Domains.** The first *n* abstracts of each corpus are used, with the same *n* for both and condition C. Domain B is 500 computer-science abstracts from the arXiv API (`src/experiment_store.py::fetch_arxiv_corpus`): the 50 newest papers whose *primary* category is each of cs.AI, cs.LG, cs.CL, cs.CV, cs.CR, cs.DB, cs.DS, cs.IR, cs.SE and cs.NI, so no single subfield dominates. Ids are arXiv ids without version; title and abstract whitespace is normalized.
 
 ## Measured results (current run)
 
@@ -73,13 +73,13 @@ Shared code:
 
 **Two domains (condition C, 500 abstracts each):**
 
-| Measure | GLP-1 | Machine learning |
+| Measure | GLP-1 | Computer science (arXiv) |
 |---|---:|---:|
-| Tokens | 88,036 | 93,131 |
-| Vocabulary | 12,626 | 15,191 |
-| k | 1.125 | 1.073 |
-| R² | 0.961 | 0.962 |
-| Shared vocabulary (Jaccard) | 22.4% | 22.4% |
+| Tokens | 88,036 | 67,692 |
+| Vocabulary | 12,626 | 13,001 |
+| k | 1.125 | 1.038 |
+| R² | 0.961 | 0.949 |
+| Shared vocabulary (Jaccard) | 17.3% | 17.3% |
 
 The two domains share none of their top-10 terms.
 
@@ -91,7 +91,7 @@ The two domains share none of their top-10 terms.
 | Probe loss (final; not comparable across architectures, different objectives) | 4.16 → 1.86 | 1.74 |
 | Nearest to `semaglutide` | liraglutide, dulaglutide, once-weekly, 2·4, avexitide | tirzepatide, liraglutide, dulaglutide, subcutaneous, orforglipron |
 
-**Year filter:** 995 of the 1,000 abstracts are from 2026 (PubMed returns the newest first), so the filter appears only when a result set spans several years.
+**Search filters and the course material:** STEM matching, AND/OR and PHRASE queries follow lecture 2 (stemming, postings merge, positional index); PARTIAL and FUZZY matching and the spelling-correction line are what the brief requires (edit distance, "spelling correction is necessary"). No publication-year filter: neither the brief nor the lectures ask for one, and 995 of the 1,000 abstracts are from 2026.
 
 **Search on the course corpus:**
 
@@ -120,7 +120,7 @@ Scroll through the cards; open More details or Answers only when asked.
 
 - The corpus is a single topic in PubMed order, not a random sample. R² describes a log-space line; it is not a power-law test.
 - Cosine similarity is not synonymy.
-- The comparison covers only two single-topic samples.
+- The comparison covers only two samples: one biomedical topic and the newest arXiv papers of ten CS subfields.
 - No relevance judgments, compression measurements or embedding benchmarks were collected.
 
 ## Legacy

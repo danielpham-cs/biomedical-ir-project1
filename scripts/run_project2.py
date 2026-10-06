@@ -34,7 +34,7 @@ def export_domains(corpus, domain_b, output, size=500):
     other = load_snapshot(domain_b)
     size = min(size, len(corpus.documents), len(other.documents))
     comparison = compare_domains(corpus, other, condition='C', size=size)
-    names = ('GLP-1 (medical)', 'Machine learning (computing)')
+    names = ('GLP-1 (medical)', 'Computer science (arXiv)')
     measures = [('Documents', 'documents'), ('Tokens', 'tokens'), ('Vocabulary', 'vocabulary'), ('Zipf exponent', 'zipf_exponent'),
                 ('R2', 'r_squared'), ('RMSE log10', 'rmse_log10'), ('Hapax share', 'hapax_share')]
     rows = [{'measure': label, names[0]: comparison['A'][key], names[1]: comparison['B'][key]} for label, key in measures]
@@ -45,7 +45,7 @@ def export_domains(corpus, domain_b, output, size=500):
     summary.update({side: {k: v for k, v in comparison[side].items() if k != 'rows'} for side in 'AB'}, answer=answer)
     save_json(output/'domain_comparison.json', summary)
     lines = ['', '## Optional challenge — two domains', '',
-             f'Domain B query: {other.query}. {size} abstracts per domain, condition C.', '',
+             f'Domain B: {other.query}. {size} abstracts per domain, condition C.', '',
              f'| Measure | {names[0]} | {names[1]} |', '|---|---|---|']
     lines += [f"| {r['measure']} | {r[names[0]]:.4f} | {r[names[1]]:.4f} |" if isinstance(r[names[0]], float) else f"| {r['measure']} | {r[names[0]]} | {r[names[1]]} |" for r in rows]
     lines += ['', answer, '']

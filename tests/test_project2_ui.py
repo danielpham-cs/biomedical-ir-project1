@@ -137,16 +137,35 @@ class Project2UITests(unittest.TestCase):
         self.assertRegex(card, r'<b>semaglutide \(d=1\)</b> \d+')
         self.assertIn('p2_ed_left_livr', [t.key for t in at.text_input])  # DP table uses a short example, not the query
 
-    def test_zipf_pairwise_cards(self):
+    def test_zipf_top50_switches_condition(self):
         at = self.app('zipf')
-        labels = [m.label for m in at.metric]
-        for label in ('Zipf exponent k', 'Vocabulary (B → C)', 'Tokens (B → C)', 'Vocabulary (C → D)', 'Tokens (C → D)'):
-            self.assertIn(label, labels)
+        choice = at.radio(key='p2_top50_condition')
+        self.assertEqual(choice.value, 'B')  # starts at the page's condition
+        for c in 'ABCD':
+            choice.set_value(c).run()
+            self.assert_clean(at)
+            table = next(d.value for d in at.dataframe if list(d.value.columns) == ['rank', 'term', 'CF', 'DF', 'relative_frequency'])
+            expected = [r['term'] for r in self.result['conditions'][c]['rows'][:len(table)]]
+            self.assertEqual(list(table['term']), expected)
+            self.assertIn(f'Condition {c}. CF(t)', self.captions(at))
+            choice = at.radio(key='p2_top50_condition')
+
+    def test_zipf_effect_of_preprocessing_table(self):
+        at = self.app('zipf')
+        self.assertIn('Zipf exponent k', [m.label for m in at.metric])
+        table = next(m.value for m in at.markdown if 'Step added' in m.value)
+        for header in ('Vocabulary', 'Tokens', 'Top 3 terms', 'Zipf k', 'Slope', 'Intercept', 'R²', 'RMSE'):
+            self.assertIn(header, table)
+        conditions = self.result['conditions']
+        for c in 'ABCD':  # one row per condition, with its own exponent
+            self.assertIn(f'<b>{c}</b>', table)
+            self.assertIn(f"<b>{conditions[c]['fits']['All']['zipf_exponent']:.3f}</b>", table)
+        c, d = (conditions[x]['stats']['vocabulary'] for x in 'CD')
+        self.assertIn(f'{d:,}<br><small class="p2-change p2-nowrap">{d - c:+,}', table)  # change against the row above
+        summary = next(m.value for m in at.markdown if '**A → B**' in m.value)
+        self.assertIn('**B → C**', summary)
+        self.assertIn('**C → D**', summary)
         self.assertFalse(any('p2-chip' in m.value for m in at.markdown))
-        vocab_cd = next(m for m in at.metric if m.label == 'Vocabulary (C → D)')
-        c, d = (self.result['conditions'][x]['stats']['vocabulary'] for x in 'CD')
-        self.assertEqual(vocab_cd.value, f'{d:,}')
-        self.assertEqual(vocab_cd.delta, f'{d - c:+,}')
 
     def test_autocorrect_searches_corrected_query_and_can_be_turned_off(self):
         at = self.app('search', query='semaglutde')
@@ -280,17 +299,15 @@ class Project2UITests(unittest.TestCase):
         self.assertEqual(Word2VecModel.load(target).metadata['architecture'], 'CBOW with negative sampling')
         self.assertNotIn('test-key', training.running())
 
-    def test_search_year_filter(self):
-        at = self.app('search', query='semaglutide')
-        year = at.selectbox(key='p2_year')
-        self.assertEqual(year.options, ['All years (3)', '2026 (2)', '2025 (1)'])
-        year.set_value('2025').run()
-        self.assert_clean(at)
-        self.assertIn('1 matching documents', self.captions(at))
+    def test_search_has_no_year_filter(self):
+        at = self.app('search', query='semaglutide')  # fixture papers span 2025 and 2026
+        self.assertFalse(any(s.label == 'Publication year' for s in at.selectbox))
+        self.assertIn('3 matching documents', self.captions(at))
 
     def test_domains_compare_two_corpora(self):
         cid = 'b' * 20
-        row = dict(id=cid, query='Machine learning', document_count=3, created_at='2026-09-30', deleted_at=None)
+        row = dict(id=cid, query='arXiv computer science: cs.AI (3 newest per primary category)', document_count=3,
+                   created_at='2026-09-30', deleted_at=None)
         corpora = {common.MAIN: self.corpus, cid: self.other}
         with patch.object(common, 'list_corpora', return_value=[row]), \
                 patch.object(common, 'corpus_by_id', side_effect=lambda signature, corpus_id=common.MAIN: corpora[corpus_id]):
@@ -299,6 +316,9 @@ class Project2UITests(unittest.TestCase):
         self.assertEqual(list(table['Measure'])[:3], ['Documents', 'Tokens', 'Vocabulary'])
         self.assertIn('Top 10 terms', list(table['Measure']))
         self.assertTrue(any('Does domain specificity' in e.label for e in at.expander))
+        self.assertIn('Computer science (arXiv)', table.columns)  # domains are fixed and named, no pickers
+        self.assertFalse(any(b.label.startswith('Domain') for b in at.selectbox))
+        self.assertFalse(any(t.label.startswith('Short name') for t in at.text_input))
 
     def test_shared_corpus_selection_and_archive_are_reversible(self):
         cid = 'a' * 20

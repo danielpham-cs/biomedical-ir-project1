@@ -53,7 +53,7 @@ Opening a page never trains a model or downloads from PubMed. The Data page (Det
 Generate or reuse the complete analysis, model, PDF report, one-page summary and two-domain comparison:
 
 ```powershell
-.\.venv\python.exe scripts\run_project2.py --domain-b data\experiments\1649fed9869439267d9a\corpus_snapshot.json
+.\.venv\python.exe scripts\run_project2.py --domain-b data\experiments\9d8fa747786d1c01c921\corpus_snapshot.json
 ```
 
 The outputs go to `output/project2_glp1/`:

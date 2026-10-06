@@ -93,17 +93,17 @@ Run `.\.venv\python.exe scripts\run_project2.py`. To replay frozen texts offline
 IR implications discussion length: 362 whitespace-delimited words.
 ## Optional challenge — two domains
 
-Domain B query: (("deep learning"[Title] OR "machine learning"[Title] OR "neural network"[Title]) AND (algorithm[Title/Abstract] OR architecture[Title/Abstract])) AND hasabstract[text] AND english[lang]. 500 abstracts per domain, condition C.
+Domain B: arXiv computer science: cs.AI, cs.LG, cs.CL, cs.CV, cs.CR, cs.DB, cs.DS, cs.IR, cs.SE, cs.NI (50 newest per primary category). 500 abstracts per domain, condition C.
 
-| Measure | GLP-1 (medical) | Machine learning (computing) |
+| Measure | GLP-1 (medical) | Computer science (arXiv) |
 |---|---|---|
 | Documents | 500 | 500 |
-| Tokens | 88036 | 93131 |
-| Vocabulary | 12626 | 15191 |
-| Zipf exponent | 1.1248 | 1.0734 |
-| R2 | 0.9610 | 0.9619 |
-| RMSE log10 | 0.0983 | 0.0926 |
-| Hapax share | 0.4973 | 0.5092 |
-| Top 10 terms | glp-1, receptor, patients, weight, metabolic, obesity, risk, agonists, diabetes, outcomes | model, learning, using, performance, models, study, analysis, data, clinical, machine |
+| Tokens | 88036 | 67692 |
+| Vocabulary | 12626 | 13001 |
+| Zipf exponent | 1.1248 | 1.0385 |
+| R2 | 0.9610 | 0.9488 |
+| RMSE log10 | 0.0983 | 0.1045 |
+| Hapax share | 0.4973 | 0.5140 |
+| Top 10 terms | glp-1, receptor, patients, weight, metabolic, obesity, risk, agonists, diabetes, outcomes | model, models, across, data, language, two, show, training, framework, results |
 
-With 500 abstracts per domain under condition C, both rank-frequency curves remain Zipf-like: k = 1.125 (R² 0.961) for GLP-1 (medical) and k = 1.073 (R² 0.962) for Machine learning (computing), a difference of 0.051. The overall shape is therefore similar, but the details are domain-specific. GLP-1 (medical) has 12,626 distinct terms versus 15,191 for Machine learning (computing) (49.7% vs 50.9% hapax), and only 22.4% of the combined vocabulary is shared. The top-10 lists share 0 terms (none); the other head terms name each domain's subject (glp-1, receptor, patients, weight, metabolic, obesity, risk, agonists, diabetes, outcomes vs model, learning, using, performance, models, study, analysis, data, clinical, machine). Domain specificity thus changes which terms occupy the head and how large the tail is, while the heavy-tailed form persists. Two single-topic samples cannot establish a general effect size; the exponent also depends on preprocessing and the fitted rank range.
+With 500 abstracts per domain under condition C, both rank-frequency curves remain Zipf-like: k = 1.125 (R² 0.961) for GLP-1 (medical) and k = 1.038 (R² 0.949) for Computer science (arXiv), a difference of 0.086. The overall shape is therefore similar, but the details are domain-specific. GLP-1 (medical) has 12,626 distinct terms versus 13,001 for Computer science (arXiv) (49.7% vs 51.4% hapax), and only 17.3% of the combined vocabulary is shared. The top-10 lists share 0 terms (none); the other head terms name each domain's subject (glp-1, receptor, patients, weight, metabolic, obesity, risk, agonists, diabetes, outcomes vs model, models, across, data, language, two, show, training, framework, results). Domain specificity thus changes which terms occupy the head and how large the tail is, while the heavy-tailed form persists. Two single-topic samples cannot establish a general effect size; the exponent also depends on preprocessing and the fitted rank range.

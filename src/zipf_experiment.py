@@ -34,12 +34,19 @@ class AbstractCorpus:
     query: str
     fingerprint: str
     source_hashes: dict[str, str]
+    source: str = "pubmed"  # "pubmed" (ids are PMIDs) or "arxiv" (ids like 2510.01234)
 
     def metadata(self):
-        return {"document_count": len(self.documents), "query": self.query,
+        meta = {"document_count": len(self.documents), "query": self.query,
                 "pmids": [doc.pmid for doc in self.documents], "fingerprint": self.fingerprint,
                 "scope": "PubMed Abstract/AbstractText only; title, keywords and body excluded",
                 "language": "eng", "pipeline": VERSION, "source_sha256": self.source_hashes}
+        if self.source != "pubmed":  # PubMed metadata stays byte-identical to earlier runs
+            meta.update(source=self.source, scope=f"{self.source} abstract only; title and body excluded")
+        return meta
+
+
+ID_PATTERNS = {"pubmed": r"[1-9][0-9]*", "arxiv": r"[0-9]{4}\.[0-9]{4,5}"}
 
 
 def corpus_fingerprint(query, documents):
@@ -53,15 +60,16 @@ def load_snapshot(path: Path) -> AbstractCorpus:
     snapshot = json.loads(Path(path).read_text(encoding="utf-8"))
     meta = snapshot["metadata"]
     documents = [Document.from_dict(row) for row in snapshot["documents"]]
-    if (meta.get("pipeline") != VERSION or meta.get("language") != "eng"
+    source = meta.get("source", "pubmed")
+    if (source not in ID_PATTERNS or meta.get("pipeline") != VERSION or meta.get("language") != "eng"
             or meta.get("document_count") != len(documents) or not documents
             or len({d.pmid for d in documents}) != len(documents)
-            or any(not re.fullmatch(r"[1-9][0-9]*", d.pmid) or not d.abstract.strip() or d.body for d in documents)):
+            or any(not re.fullmatch(ID_PATTERNS[source], d.pmid) or not d.abstract.strip() or d.body for d in documents)):
         raise ValueError("Snapshot must contain unique English abstract-only records for the current pipeline.")
     fingerprint = corpus_fingerprint(meta["query"], documents)
     if fingerprint != meta["fingerprint"]:
         raise ValueError("Snapshot fingerprint does not match its texts and query.")
-    return AbstractCorpus(documents, meta["query"], fingerprint, meta["source_sha256"])
+    return AbstractCorpus(documents, meta["query"], fingerprint, meta["source_sha256"], source)
 
 
 def load_corpus(manifest_path: Path, limit: int | None = None) -> AbstractCorpus:

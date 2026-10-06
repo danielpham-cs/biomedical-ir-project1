@@ -15,7 +15,7 @@ from urllib.parse import urlencode
 
 import streamlit as st
 
-from src.experiment_store import corpus_directory, fetch_corpus, list_corpora, set_archived  # noqa: F401 (patched in tests)
+from src.experiment_store import corpus_directory, fetch_arxiv_corpus, fetch_corpus, list_corpora, set_archived  # noqa: F401 (patched in tests)
 from src.index import build_index
 from src.library import hidden_article_ids
 from src.matching import document_matches, highlight_spans, make_match_plan, searchable_text
@@ -304,7 +304,7 @@ def inject_css():
     st.markdown('''<style>
       .p2-table {overflow-x:auto;border:1px solid var(--hx-line);border-radius:10px;}
       .p2-table table {width:100%;border-collapse:collapse;background:var(--hx-surface);color:var(--hx-ink);}
-      .p2-table th {background:var(--hx-surface-alt);text-align:left;}
+      .p2-table th {background:var(--hx-surface-alt);text-align:left;white-space:nowrap;}
       .p2-table th,.p2-table td {padding:10px 12px;border-bottom:1px solid var(--hx-line);}
       .p2-table a,.p2-result a {color:var(--hx-ink)!important;text-decoration:none;}
       .p2-table a:hover,.p2-table a:focus-visible,.p2-result a:hover,.p2-result a:focus-visible {color:var(--hx-teal)!important;text-decoration:underline;}
@@ -365,10 +365,16 @@ def inject_css():
       .p2-bar {display:block;height:100%;border-radius:4px;background:var(--hx-teal);}
       .p2-barcell > span:last-child {white-space:nowrap;font-variant-numeric:tabular-nums;}
       .p2-change {color:var(--hx-muted);margin-left:4px;}
+      .p2-nowrap {white-space:nowrap;margin-left:0;}
     </style>''', unsafe_allow_html=True)
 
 
 # ---------------------------------------------------------------- reader
+
+def paper_id(doc):
+    """'PMID 12345' for PubMed abstracts, 'arXiv 2510.01234' for arXiv ones."""
+    return f'arXiv {doc.pmid}' if doc.doc_id.startswith('arXiv:') else f'PMID {doc.pmid}'
+
 
 def reader(corpus):
     pmid, source = st.query_params.get('paper', ''), st.query_params.get('source', 'corpus')
@@ -378,7 +384,7 @@ def reader(corpus):
         st.warning('This paper is archived or outside the current experiment corpus.')
         return
     st.subheader(doc.title)
-    st.caption(f'PMID {doc.pmid} · {doc.year or ""} · Abstract only')
+    st.caption(f'{paper_id(doc)} · {doc.year or ""} · Abstract only')
     spans, locations = [], []
     text = searchable_text(doc) if source == 'search' else doc.abstract
     if source == 'term':
@@ -439,7 +445,7 @@ def paper_dialog(doc, query, method, mode, edits):
     survives any full rerun until the viewer closes it.
     """
     st.subheader(doc.title)
-    st.caption(f'PMID {doc.pmid} · {doc.year or ""} · Abstract only · Query: {query} · {mode} / {method}')
+    st.caption(f'{paper_id(doc)} · {doc.year or ""} · Abstract only · Query: {query} · {mode} / {method}')
     try:
         text, spans, locations = search_matches(doc, query, method, mode, edits)
     except ValueError as exc:

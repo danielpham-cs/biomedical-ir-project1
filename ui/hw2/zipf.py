@@ -1,5 +1,6 @@
 """Page 2 (≈1 min): rank–frequency vs log-log (Part V), pairwise effect of preprocessing (Part VI), CF Top 50 (Part III)."""
 import math
+from html import escape
 
 import streamlit as st
 
@@ -64,23 +65,64 @@ def plot(values, scale, title, key, height=280):
                                            {'field': 'frequency', 'title': 'CF (actual or predicted)', 'format': ',.1~f'}]}}, key=key)
 
 
-def pair_card(result, before, after, title, note):
-    """Two conditions side by side: the change as metrics with deltas, then both log-log curves."""
-    with common.card(title, note):
-        b, a = result['conditions'][before], result['conditions'][after]
-        fb, fa = b['fits']['All'], a['fits']['All']
-        cols = st.columns(4)
-        cols[0].metric(f'Vocabulary ({before} → {after})', f"{a['stats']['vocabulary']:,}",
-                       f"{a['stats']['vocabulary'] - b['stats']['vocabulary']:+,}", delta_color='off')
-        cols[1].metric(f'Tokens ({before} → {after})', f"{a['stats']['tokens']:,}",
-                       f"{a['stats']['tokens'] - b['stats']['tokens']:+,}", delta_color='off')
-        cols[2].metric('Zipf k', f"{fa['zipf_exponent']:.3f}", f"{fa['zipf_exponent'] - fb['zipf_exponent']:+.3f}", delta_color='off')
-        cols[3].metric('R²', f"{fa['r_squared']:.3f}", f"{fa['r_squared'] - fb['r_squared']:+.3f}", delta_color='off')
-        left, right = st.columns(2)
-        for column, name, data in ((left, before, b), (right, after, a)):
-            with column:
-                plot(curve(common.thin_ranks(data['rows']), data['fits']['All'], data['rows'][0]['CF'], reference=False), 'log',
-                     f"{name} · head: {', '.join(r['term'] for r in data['rows'][:5])}", f'p2_pair_{before}{after}_{name}', 240)
+STEP_ADDED = {'A': 'tokenize + lowercase', 'B': '+ remove punctuation', 'C': '+ remove stopwords', 'D': '+ Porter stemming'}
+CONDITION_COLORS = {'A': '#8f9aa1', 'B': '#5688bf', 'C': '#e07b1f', 'D': '#087f78'}
+
+
+def change(value, previous, digits=0):
+    """'19,231' plus a small muted change against the row above (blank for the first row)."""
+    shown = f'{value:,.{digits}f}'
+    if previous is None:
+        return shown
+    diff = value - previous
+    relative = f' ({diff / previous:+.0%})' if digits == 0 and previous else ''
+    return f'{shown}<br><small class="p2-change p2-nowrap">{diff:+,.{digits}f}{relative}</small>'
+
+
+def effect_summary(conditions):
+    """One sentence per step, from the numbers: what each preprocessing step changed most."""
+    s = {c: v['stats'] for c, v in conditions.items()}
+    k = {c: v['fits']['All']['zipf_exponent'] for c, v in conditions.items()}
+    head = {c: common.md_escape(', '.join(r['term'] for r in v['rows'][:3])) for c, v in conditions.items()}
+    return (f"**A → B** (punctuation): vocabulary {s['B']['vocabulary'] / s['A']['vocabulary'] - 1:+.0%} — 'data,' and 'data.' merge; tail shortens.  \n"
+            f"**B → C** (stopwords): tokens {s['C']['tokens'] / s['B']['tokens'] - 1:+.0%}, vocabulary almost unchanged — "
+            f"the head changes from *{head['B']}* to *{head['C']}*.  \n"
+            f"**C → D** (stemming): vocabulary {s['D']['vocabulary'] / s['C']['vocabulary'] - 1:+.0%}, tokens unchanged — "
+            f"word forms merge, so the tail shortens.  \n"
+            f"Zipf k moves {k['A']:.3f} → {k['B']:.3f} → {k['C']:.3f} → {k['D']:.3f}: the exponent depends on how a 'term' is defined.")
+
+
+def effect_card(result):
+    """Part VI in one place: every condition's numbers in one table, and all four curves on one chart."""
+    conditions = result['conditions']
+    with common.card('Effect of preprocessing (Conditions A–D)',
+                     'Each condition adds one step to the previous one; changes are against the row above. '
+                     'Spec Part VI: vocabulary size, high-frequency terms, Zipf exponent, shape of the distribution.'):
+        rows, previous = [], None
+        for c, v in conditions.items():
+            s, f = v['stats'], v['fits']['All']
+            rows.append([f'<b>{c}</b>', escape(STEP_ADDED[c]),
+                         change(s['vocabulary'], previous and previous['vocabulary']),
+                         change(s['tokens'], previous and previous['tokens']),
+                         escape(', '.join(r['term'] for r in v['rows'][:3])),
+                         f"<b>{f['zipf_exponent']:.3f}</b>", f"{f['slope']:.3f}", f"{f['intercept']:.3f}",
+                         f"{f['r_squared']:.3f}", f"{f['rmse_log10']:.3f}"])
+            previous = s
+        common.html_table(['', 'Step added', 'Vocabulary', 'Tokens', 'Top 3 terms', 'Zipf k', 'Slope', 'Intercept', 'R²', 'RMSE'], rows)
+        values = [dict(rank=r['rank'], frequency=r['CF'], condition=c, term=r['term'])
+                  for c, v in conditions.items() for r in common.thin_ranks(v['rows'])]
+        common.chart({'data': {'values': values}, 'mark': {'type': 'line', 'clip': True}, 'height': 300,
+                      'title': 'Rank–frequency, log-log, all four conditions',
+                      'encoding': {'x': axis('rank', 'rank r', 'log', [v['rank'] for v in values]),
+                                   'y': axis('frequency', 'CF', 'log', [v['frequency'] for v in values]),
+                                   'color': {'field': 'condition', 'title': 'Condition',
+                                             'scale': {'domain': list(CONDITION_COLORS), 'range': list(CONDITION_COLORS.values())},
+                                             'legend': {'orient': 'right'}},
+                                   'strokeWidth': {'value': 2},
+                                   'tooltip': [{'field': 'condition', 'title': 'Condition'}, {'field': 'term', 'title': 'Word at this rank'},
+                                               {'field': 'rank', 'title': 'Rank', 'format': ','}, {'field': 'frequency', 'title': 'CF', 'format': ','}]}},
+                     key='p2_zipf_conditions')
+        st.markdown(effect_summary(conditions))
 
 
 def render(corpus, result):
@@ -104,10 +146,7 @@ def render(corpus, result):
         top = sum(r['CF'] for r in rows[:max(1, len(rows) // 100)]) / data['stats']['tokens']
         st.caption(f"The top 1% of terms hold {top:.1%} of all tokens; {data['stats']['hapax']:,} terms ({data['stats']['hapax'] / len(rows):.1%}) occur once.")
 
-    pair_card(result, 'B', 'C', 'Before vs after stopword removal (B → C)',
-              'Same punctuation-cleaned tokens; only stopwords differ. The head (the, of, and …) disappears, so the fitted slope changes.')
-    pair_card(result, 'C', 'D', 'Before vs after Porter stemming (C → D)',
-              'Word forms merge (patients → patient), so the vocabulary and the tail shrink while the token count stays the same.')
+    effect_card(result)
 
     common.more()
     with st.expander('Regression by rank region, with residuals'):
@@ -136,11 +175,17 @@ def render(corpus, result):
         st.dataframe([dict(region=name, **f) for name, f in data['fits'].items()], hide_index=True, width='stretch')
         common.csv_download('Download regional fits', [dict(region=r, **f) for r, f in data['fits'].items()], f'{condition}_fits.csv')
     with st.expander('Collection frequency · Top 50 terms (Part III)'):
+        names = list(result['conditions'])
+        top_condition = st.radio('Condition', names, index=names.index(condition), horizontal=True, key='p2_top50_condition',
+                                 format_func=lambda c: f'{c} · {STEP_ADDED[c]}')
+        top_rows = result['conditions'][top_condition]['rows']
         q = st.text_input('Filter vocabulary').casefold()
-        filtered = [r for r in rows if q in r['term']]
-        st.caption(f'CF(t) = occurrences in the whole collection; ties alphabetical. {len(filtered):,} matching terms of {len(rows):,}; first 50 displayed.')
-        st.dataframe([{k: r[k] for k in ('rank', 'term', 'CF', 'DF', 'relative_frequency')} for r in filtered[:50]], hide_index=True, width='stretch', height=300)
-        common.csv_download('Download full frequency table', rows, f'{condition}_frequency.csv')
+        filtered = [r for r in top_rows if q in r['term']]
+        st.caption(f'Condition {top_condition}. CF(t) = occurrences in the whole collection; ties alphabetical. '
+                   f'{len(filtered):,} matching terms of {len(top_rows):,}; first 50 displayed.')
+        st.dataframe([{k: r[k] for k in ('rank', 'term', 'CF', 'DF', 'relative_frequency')} for r in filtered[:50]],
+                     hide_index=True, width='stretch', height=300)
+        common.csv_download(f'Download full frequency table ({top_condition})', top_rows, f'{top_condition}_frequency.csv')
     with st.expander('Frequency spectrum and published figures'):
         common.chart({'data': {'values': data['spectrum']}, 'mark': 'point', 'height': 240, 'title': 'How many terms occur exactly k times',
                       'encoding': {'x': {'field': 'frequency', 'type': 'quantitative', 'scale': {'type': 'log'}, 'title': 'CF = k'},

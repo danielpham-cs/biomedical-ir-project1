@@ -106,20 +106,6 @@ def cached_spelling(fingerprint, query, _index, _vocabulary):
     return interpret(query, _vocabulary), suggest_query_correction(query, _index, _vocabulary)
 
 
-def year_filter(hits, corpus):
-    """Narrow ranked hits to one publication year; options show how many hits each year has."""
-    years = {d.pmid: str(d.year or 'Unknown') for d in corpus.documents}
-    counts = Counter(years.get(h.pmid, 'Unknown') for h in hits)
-    if len(counts) < 2:
-        return hits
-    options = ['All years'] + sorted(counts, reverse=True)
-    if st.session_state.get('p2_year') not in options:
-        st.session_state.p2_year = 'All years'
-    chosen = st.selectbox('Publication year', options, key='p2_year',
-                          format_func=lambda y: f'All years ({len(hits)})' if y == 'All years' else f'{y} ({counts[y]})')
-    return hits if chosen == 'All years' else [h for h in hits if years.get(h.pmid, 'Unknown') == chosen]
-
-
 def render(corpus, result):
     index, vocabulary = common.retrieval_index(corpus.fingerprint, corpus.documents)
 
@@ -153,7 +139,6 @@ def render(corpus, result):
                     st.session_state.pop('_p2_query', None)
                     st.rerun()
             hits = cached_search(corpus.fingerprint, effective, method, mode, edits, index, corpus.documents)
-            hits = year_filter(hits, corpus)
             st.caption(f'{len(hits)} matching documents; first 5 displayed; all in the CSV. Click a title to open the paper in a popup '
                        'with every match highlighted.')
             if not hits:

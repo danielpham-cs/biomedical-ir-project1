@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T11:26:14.895223+00:00",
+  "generated_at": "2026-10-05T13:28:24.403658+00:00",
   "corpus": {
     "document_count": 1000,
     "query": "(\"GLP-1\"[Title/Abstract] OR \"glucagon-like peptide-1\"[Title/Abstract] OR \"glucagon like peptide 1\"[Title/Abstract]) AND hasabstract[text] AND english[lang]",
@@ -2023,11 +2023,12 @@
     "learning_rate": 0.025,
     "sample": 0.001,
     "batch_size": 128,
-    "seed": 42
+    "seed": 42,
+    "architecture": "skipgram"
   },
   "python": "3.12.10",
   "numpy": "2.5.3",
-  "elapsed_seconds": 11.682333900011145,
+  "elapsed_seconds": 10.39606559999811,
   "dependencies": {
     "numpy": "2.5.3",
     "nltk": "3.10.3",
@@ -2036,10 +2037,10 @@
     "streamlit": "1.64.0"
   },
   "implementation_sha256": {
-    "scripts\\run_project2.py": "97995e72c8ad8b149289b2683d3e255e4d2e4bc66e43e0d91740a7a1a3399652",
-    "src\\zipf_experiment.py": "d9bdd8175c4c2cadfcd0c5ae7f896532d610442a7a7c6e03d4c319185e2056c0",
+    "scripts\\run_project2.py": "bb897b34213d0433f5f19e1e122b42144424b6595f0119989d0be29eac493e96",
+    "src\\zipf_experiment.py": "49eb674ad67ad7f470798a3f20c0b588c3368a2753d0b8d243af9d496dbbe077",
     "src\\porter.py": "90226b4c3ca2d432c3ced2cd2e73082b7ae2e3b1261b4083db1176a41ab76c9f",
-    "src\\word2vec.py": "9e40d6261c77b1c875b2e24ae15fd848d647213195430016b178ece605e00fb2",
+    "src\\word2vec.py": "6256689a01e9400335abea38cb82aa12ce1a94c79f75865b058802ce1b87ec60",
     "src\\project2_report.py": "8ad9e9b4e9dea56ead98b4312ea14201b6f1c51c81b293d5e4e4019082daf7d5",
     "src\\domain_compare.py": "7b2c1307dd9c2c82d8d991f0baf5855a20b78b0308033949f18aec1293a930ae"
   },
@@ -2047,21 +2048,21 @@
   "files": {
     "analysis.json": "c0727a38f6017994e63a6100cf6eb34d9a467e24f2a724cc6f583015222773aa",
     "corpus_snapshot.json": "753ec18a10a4d2416394a905adfb7cd43762172e888339773aa18349a0fc3e7f",
-    "domain_comparison.json": "20214ffcc57f0475bad8c2470d9afc4c700a47bca207d13bfeac628c017f0864",
-    "executive_summary.pdf": "826e2bcf4bc7edebeb499e00f2d4a5596d91140fd617b997a1dce2abde3196ef",
+    "domain_comparison.json": "9c88c680ecec2bf3549c691f69c0058584d15d595a5a8b2851be2d57d415b0a5",
+    "executive_summary.pdf": "ec09ddbf4e9e2ea17912f5cbbf4597317bcebe43e51ce6fc888837a05be90d71",
     "figures\\cf_df.png": "6c07217e340cb603e92063a230a97b4a548589397f4bbd77203309af8f84ac14",
     "figures\\conditions.png": "f270acc4b0d8339f98486c033890854ee044f01fa235ca8ef80a23af1cb3f740",
-    "figures\\loglog_fit.pdf": "f760336bd3a886fafdbcc12c0c84476a93471830377cb121a86a0108b999daef",
+    "figures\\loglog_fit.pdf": "d308ee75a316a0af25f35d3e137444c114f082109ba9479ee15a16a7fbbd322b",
     "figures\\loglog_fit.png": "11da8237e53b149abe90823c1fd67161a2b47d6720546b4d1ca1aa447dcb946d",
-    "figures\\rank_frequency.pdf": "c8d4c9eefade3834c3c48bcfdf8fb66d1606905c89da05ba7e4d6e9ae9c8205e",
+    "figures\\rank_frequency.pdf": "39c32c0a2662196bdef4a9ee528ce7886e79291cf49fda5b928baefd5e3ebe33",
     "figures\\rank_frequency.png": "4e07652522dfe3f1fb4d6b4256d25f6c63b36d0629321b6c556d428357bc37ff",
-    "figures\\residuals.pdf": "2f939db8a5b0f9065a217ba24ccfe194556c3cd5a18338656f0b704fb5271aa6",
+    "figures\\residuals.pdf": "50b366b21a505e6046740c9f537a3d17315152a3754ef97771f2b8d0f984a842",
     "figures\\residuals.png": "1e3ff28fa72e4fc6e870373102d588a18ed06a02c008b394f7cfcc2580a0bbef",
     "figures\\training_loss.png": "24cff24329aa2341b78f3c86a4ad604ce230f014cdcea1b4ac5a0b851d243c8c",
     "pca_metadata.json": "fcf0caeb07ab53fce07f60ef6d027b90dd02e7604682a04de3ed205b41396075",
     "README.md": "288ca399ad2b7047091f2b6f3bb83be3a0c537a8886e0047030f010588668512",
-    "report.md": "c0fe89f5a4e97906e7fb9c9e15c7ef0bfcf3dc6b7ef4b745712ef9ccdce771b2",
-    "report.pdf": "4f1156587c0976aa76ff3c0c20f54c0d75ce75ac18435aefbb3a11092bfab649",
+    "report.md": "7c4ebedacae254c39b7431a2cc3a3010d985215c89682ff95009f872affe82b9",
+    "report.pdf": "e482432ade5639ba2b8fbe8b772c863a9b405b23e3876e3a40a9f4054dc83084",
     "research_answers.json": "77986e74dce9c96776f0e472645cd622f476df975e59e8946b24da17db68fe59",
     "skipgram.npz": "0ca4b1ac52018ad706c68ad6837bca2d5f53e1e0010d4f7414bf526c88da5b07",
     "tables\\A_frequency.csv": "0638a61aec0e298313554aa6949f032ce80a7e684d6cdb75bfa181b50e2e96ae",
@@ -2077,7 +2078,7 @@
     "tables\\D_frequency.csv": "6231635dfb1c473783aed0fa685b24739d591ec36c19fcc039544366ecbecd8d",
     "tables\\D_selected_terms.csv": "1df5c0fa1f56625c6470b6cd2a213c92107589ed06085961754dc885c04667cc",
     "tables\\D_spectrum.csv": "843e44a9bef40b78724357b75a98a0365effff4b88eb26cac2c74afab6eb3f68",
-    "tables\\domain_comparison.csv": "2d0fdb56444a029f0ec604a2d14851c2a056f573bcaa4fcb0f2d0abd0791227c",
+    "tables\\domain_comparison.csv": "eaa5ffac83f4747718a84e6492c042f5111e8e565388a2ddea86a9f202bb01d7",
     "tables\\neighbors.csv": "61f999b29796274796a7351baf02c74ace49935656bc9bab3fce6702e0ff7b46",
     "tables\\pca_coordinates.csv": "1e6018b7c230f0c98250c638a9136e43c51b0356e4bc0ef8bb0633f6f731c311",
     "tables\\porter_groups.csv": "8bb1d012ee65740ed1f114d8e0b11b69dffe4dd46f1ff21251cd374e9b26b31f",

@@ -66,7 +66,7 @@ def render(corpus, result):
         st.graphviz_chart(PIPELINE, width='stretch')
         common.html_table(['Module', 'Responsibility'], [[f'<code>{escape(m)}</code>', escape(r)] for m, r in MODULES])
         st.code('.\\.venv\\python.exe -m streamlit run app.py\n'
-                '.\\.venv\\python.exe scripts\\run_project2.py --domain-b data\\experiments\\1649fed9869439267d9a\\corpus_snapshot.json',
+                '.\\.venv\\python.exe scripts\\run_project2.py --domain-b data\\experiments\\9d8fa747786d1c01c921\\corpus_snapshot.json',
                 language='powershell')
 
     current, _ = common.report_status(result)

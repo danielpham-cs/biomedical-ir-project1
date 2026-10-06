@@ -44,6 +44,89 @@ def set_archived(root, corpus_id, archived=True):
         db.execute('UPDATE corpora SET deleted_at=? WHERE id=?', (datetime.now(timezone.utc).isoformat() if archived else None, corpus_id))
 
 
+def delete_corpus(root, corpus_id):
+    """Permanently remove an extra corpus: its registry row and its directory (XML, snapshot, analysis, models)."""
+    import shutil
+    directory = corpus_directory(root, corpus_id)
+    with closing(_connect(root)) as db, db:
+        db.execute('DELETE FROM corpora WHERE id=?', (corpus_id,))
+    if directory.exists():
+        shutil.rmtree(directory)
+
+
+# --------------------------------------------------------------------------- arXiv
+# Ten computer-science subfields, equally represented, so no single area (e.g. machine learning) dominates.
+ARXIV_CATEGORIES = ('cs.AI', 'cs.LG', 'cs.CL', 'cs.CV', 'cs.CR', 'cs.DB', 'cs.DS', 'cs.IR', 'cs.SE', 'cs.NI')
+ARXIV_API = 'https://export.arxiv.org/api/query'
+ATOM = {'a': 'http://www.w3.org/2005/Atom', 'arxiv': 'http://arxiv.org/schemas/atom'}
+
+
+def parse_arxiv_feed(xml: bytes) -> list[dict]:
+    """Entries of an arXiv Atom feed: versionless new-style id, title, abstract, year, primary category."""
+    entries = []
+    for entry in ET.fromstring(xml).findall('a:entry', ATOM):
+        match = re.search(r'abs/([0-9]{4}\.[0-9]{4,5})(v[0-9]+)?$', entry.findtext('a:id', '', ATOM))
+        primary = entry.find('arxiv:primary_category', ATOM)
+        if not match or primary is None:
+            continue  # old-style ids (e.g. cs/0101001) or malformed entries
+        text = lambda tag: ' '.join(entry.findtext(f'a:{tag}', '', ATOM).split())
+        entries.append({'id': match.group(1), 'title': text('title'), 'abstract': text('summary'),
+                        'year': entry.findtext('a:published', '', ATOM)[:4], 'primary': primary.get('term', '')})
+    return entries
+
+
+def _download(url):
+    import urllib.request
+    with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'helix-course-project'}), timeout=60) as response:
+        return response.read()
+
+
+def fetch_arxiv_corpus(root, *, categories=ARXIV_CATEGORIES, per_category=50, progress=None, download=_download, pause=3.0):
+    """Computer-science abstracts from the arXiv API: the newest `per_category` papers whose *primary* category is each subfield.
+
+    Mirrors fetch_corpus: the corpus is registered only after a complete, valid snapshot exists, and an identical
+    request reuses it. `download` and `pause` are injectable for offline tests (the arXiv API asks for ~3 s between calls).
+    """
+    import time
+    from src.parse_pmc import Document
+    from src.zipf_experiment import AbstractCorpus, corpus_fingerprint
+    query = f"arXiv computer science: {', '.join(categories)} ({per_category} newest per primary category)"
+    corpus_id = hashlib.sha256(json.dumps(['arxiv', list(categories), per_category]).encode()).hexdigest()[:20]
+    directory = corpus_directory(root, corpus_id)
+    previous = next((r for r in list_corpora(root, True) if r['id'] == corpus_id), None)
+    if previous:
+        load_snapshot(directory/'corpus_snapshot.json')
+        return previous
+    chosen, seen = [], set()
+    for done, category in enumerate(categories):
+        if done:
+            time.sleep(pause)
+        url = (f'{ARXIV_API}?search_query=cat:{category}&start=0&max_results={per_category * 4}'
+               '&sortBy=submittedDate&sortOrder=descending')
+        entries = [e for e in parse_arxiv_feed(download(url))
+                   if e['primary'] == category and e['id'] not in seen and e['abstract']]
+        if len(entries) < per_category:
+            raise RuntimeError(f'arXiv returned only {len(entries)} usable {category} abstracts; retry later.')
+        for entry in entries[:per_category]:
+            seen.add(entry['id'])
+            chosen.append(entry)
+        if progress:
+            progress(len(chosen), per_category * len(categories))
+    documents = [Document(f"arXiv:{e['id']}", e['id'], '', e['title'], e['abstract'], '', f"arXiv {e['primary']}", e['year'])
+                 for e in chosen]
+    hashes = {e['id']: hashlib.sha256(e['abstract'].encode('utf8')).hexdigest() for e in chosen}
+    corpus = AbstractCorpus(documents, query, corpus_fingerprint(query, documents), hashes, 'arxiv')
+    directory.mkdir(parents=True, exist_ok=True)
+    _write_atomic(directory/'corpus_snapshot.json',
+                  json.dumps({'metadata': corpus.metadata(), 'documents': [d.to_dict() for d in documents]}, ensure_ascii=False).encode('utf8'))
+    load_snapshot(directory/'corpus_snapshot.json')  # validate before registering
+    row = dict(id=corpus_id, query=query, document_count=len(documents), requested=per_category * len(categories),
+               created_at=datetime.now(timezone.utc).isoformat(), fingerprint=corpus.fingerprint, deleted_at=None)
+    with closing(_connect(root)) as db, db:
+        db.execute('INSERT INTO corpora VALUES (:id,:query,:document_count,:requested,:created_at,:fingerprint,:deleted_at)', row)
+    return row
+
+
 def fetch_corpus(root, query, count, *, progress=None, excluded_pmids=()):
     """Resume staged batches; expose a corpus only after a complete valid snapshot.
 

@@ -64,6 +64,6 @@ def domain_answer(comparison: dict, names=("A", "B")) -> str:
         f"name each domain's subject ({', '.join(t for t in a['top_terms'] if t not in comparison['shared_top10'])} "
         f"vs {', '.join(t for t in b['top_terms'] if t not in comparison['shared_top10'])}). "
         "Domain specificity thus changes which terms occupy the head and how large the tail is, while the heavy-tailed "
-        "form persists. Two single-topic samples cannot establish a general effect size; the exponent also depends on "
+        "form persists. Two samples cannot establish a general effect size; the exponent also depends on "
         "preprocessing and the fitted rank range."
     )
