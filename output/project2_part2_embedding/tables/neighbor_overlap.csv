@@ -1,0 +1,55 @@
+﻿comparison,frequency_band,words,mean_overlap
+Skip-gram | seed 42 vs seed 7 (same setting),2-4,4818,0.7065172270651723
+Skip-gram | seed 42 vs seed 7 (same setting),5-9,1897,0.7162361623616236
+Skip-gram | seed 42 vs seed 7 (same setting),10-49,2026,0.7141658440276407
+Skip-gram | seed 42 vs seed 7 (same setting),50-199,572,0.7113636363636363
+Skip-gram | seed 42 vs seed 7 (same setting),>=200,114,0.7008771929824563
+Skip-gram | seed 42 vs seed 7 (same setting),all,9427,0.7103426328630529
+CBOW | seed 42 vs seed 7 (same setting),2-4,4818,0.3018887505188875
+CBOW | seed 42 vs seed 7 (same setting),5-9,1897,0.3674749604638904
+CBOW | seed 42 vs seed 7 (same setting),10-49,2026,0.4845508390918065
+CBOW | seed 42 vs seed 7 (same setting),50-199,572,0.6326923076923077
+CBOW | seed 42 vs seed 7 (same setting),>=200,114,0.6614035087719298
+CBOW | seed 42 vs seed 7 (same setting),all,9427,0.37876312718786465
+Skip-gram | window 5 vs window 2,2-4,4818,0.15616438356164383
+Skip-gram | window 5 vs window 2,5-9,1897,0.18402741170268846
+Skip-gram | window 5 vs window 2,10-49,2026,0.21362290227048372
+Skip-gram | window 5 vs window 2,50-199,572,0.32010489510489515
+Skip-gram | window 5 vs window 2,>=200,114,0.3078947368421053
+Skip-gram | window 5 vs window 2,all,9427,0.18590219582051554
+CBOW | window 5 vs window 2,2-4,4818,0.03839767538397675
+CBOW | window 5 vs window 2,5-9,1897,0.055561412756984715
+CBOW | window 5 vs window 2,10-49,2026,0.12334649555774926
+CBOW | window 5 vs window 2,50-199,572,0.24597902097902097
+CBOW | window 5 vs window 2,>=200,114,0.31140350877192974
+CBOW | window 5 vs window 2,all,9427,0.07600509175771719
+Skip-gram | 100 vs 50 dimensions,2-4,4818,0.6738065587380656
+Skip-gram | 100 vs 50 dimensions,5-9,1897,0.6785977859778599
+Skip-gram | 100 vs 50 dimensions,10-49,2026,0.6586870681145114
+Skip-gram | 100 vs 50 dimensions,50-199,572,0.6363636363636364
+Skip-gram | 100 vs 50 dimensions,>=200,114,0.5964912280701754
+Skip-gram | 100 vs 50 dimensions,all,9427,0.6683144160390367
+CBOW | 100 vs 50 dimensions,2-4,4818,0.296409298464093
+CBOW | 100 vs 50 dimensions,5-9,1897,0.36404849762783337
+CBOW | 100 vs 50 dimensions,10-49,2026,0.4809970384995064
+CBOW | 100 vs 50 dimensions,50-199,572,0.6298951048951048
+CBOW | 100 vs 50 dimensions,>=200,114,0.6447368421052633
+CBOW | 100 vs 50 dimensions,all,9427,0.374138113928079
+Skip-gram | min_count 2 vs 5,2-4,0,
+Skip-gram | min_count 2 vs 5,5-9,1897,0.20374275171323142
+Skip-gram | min_count 2 vs 5,10-49,2026,0.2807502467917078
+Skip-gram | min_count 2 vs 5,50-199,572,0.37097902097902097
+Skip-gram | min_count 2 vs 5,>=200,114,0.44035087719298244
+Skip-gram | min_count 2 vs 5,all,4609,0.264200477326969
+CBOW | min_count 2 vs 5,2-4,0,
+CBOW | min_count 2 vs 5,5-9,1897,0.21660516605166052
+CBOW | min_count 2 vs 5,10-49,2026,0.35695952615992105
+CBOW | min_count 2 vs 5,50-199,572,0.5347902097902097
+CBOW | min_count 2 vs 5,>=200,114,0.58859649122807
+CBOW | min_count 2 vs 5,all,4609,0.3269906704274246
+Skip-gram vs CBOW | main,2-4,4818,0.08630136986301369
+Skip-gram vs CBOW | main,5-9,1897,0.1014760147601476
+Skip-gram vs CBOW | main,10-49,2026,0.11515301085883514
+Skip-gram vs CBOW | main,50-199,572,0.15874125874125877
+Skip-gram vs CBOW | main,>=200,114,0.2052631578947369
+Skip-gram vs CBOW | main,all,9427,0.1013896255436512

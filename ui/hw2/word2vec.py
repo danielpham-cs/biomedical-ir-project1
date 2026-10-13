@@ -1,4 +1,4 @@
-"""Page 4 (≈45 s): Skip-gram word embeddings (Brief · Word2Vec)."""
+"""Page 4 (≈45 s): CBOW and Skip-gram word embeddings and their comparison (Brief · Word2Vec)."""
 from html import escape
 from pathlib import Path
 
@@ -7,7 +7,7 @@ import streamlit as st
 from src.eos import split_sentences
 from src.word2vec import ARCHITECTURES, Word2VecConfig, context_window, model_key, pair_scores
 from src.zipf_experiment import embedding_preprocessing, embedding_sentences, token_trace, tokens
-from ui.hw2 import common, training
+from ui.hw2 import architecture_eval, common, training
 from ui.hw2.embedding_map import embedding_map
 
 ARCHITECTURE_LABELS = {'skipgram': 'Skip-gram', 'cbow': 'CBOW'}
@@ -56,6 +56,13 @@ def training_progress():
             st.error(f"Training failed: {job['error']}")
 
 
+def model_candidates():
+    """Published Skip-gram, the part 2 CBOW/Skip-gram pair, then models trained on this page."""
+    default = common.selected_output() / 'skipgram.npz'
+    candidates = [p for p in [default, *architecture_eval.main_models()] if p.exists()]
+    return candidates + sorted(common.MODELS.glob('skipgram_*.npz'))
+
+
 def load_model(corpus, prep):
     """Pick a saved model for this corpus (or train one); return it or None."""
     default = common.selected_output() / 'skipgram.npz'
@@ -89,10 +96,7 @@ def load_model(corpus, prep):
             st.session_state.pop('p2_model_path', None)
             st.session_state.p2_select_trained_model = True
             st.rerun()
-    candidates = list(common.MODELS.glob('skipgram_*.npz'))
-    if default.exists():
-        candidates.insert(0, default)
-    catalog = common.model_catalog(tuple(common.file_stamp(p) for p in candidates), corpus.fingerprint)
+    catalog = common.model_catalog(tuple(common.file_stamp(p) for p in model_candidates()), corpus.fingerprint)
     if catalog:
         options = list(catalog)
         preferred = str(path) if str(path) in options else options[0]
@@ -151,10 +155,9 @@ def training_pairs(corpus):
 
 def compare_architectures(corpus, prep, word):
     """Neighbours of one word under the Skip-gram and the CBOW model of this corpus, side by side."""
-    candidates = list(common.MODELS.glob('skipgram_*.npz'))
-    default = common.selected_output() / 'skipgram.npz'
-    if default.exists():
-        candidates.insert(0, default)
+    # Prefer the part 2 pair: identical settings, only the architecture differs.
+    pair = [p for p in architecture_eval.main_models() if p.exists()]
+    candidates = pair + [p for p in model_candidates() if p not in pair]
     catalog = common.model_catalog(tuple(common.file_stamp(p) for p in candidates), corpus.fingerprint)
     chosen = {}
     for path in catalog:
@@ -167,7 +170,8 @@ def compare_architectures(corpus, prep, word):
     for column, name in zip(columns, ('skipgram', 'cbow')):
         model = common.saved_model(chosen[name], common.file_stamp(Path(chosen[name])))
         with column:
-            st.markdown(f'**{ARCHITECTURE_LABELS[name]}**')
+            title, settings = catalog[chosen[name]].split(' · ', 1)
+            st.markdown(f'**{title}** · {settings}')
             if word in model.words:
                 st.dataframe([{'word': r['word'], 'cosine': round(r['cosine_similarity'], 3)} for r in model.most_similar(word, 8)],
                              hide_index=True, width='stretch')
@@ -182,6 +186,9 @@ def render(corpus, result):
                              'Condition C tokens (stopwords removed, no stemming); windows never cross sentences.')
     learned_card = common.card('What the trained vectors learned', 'Cosine similarity of learned center vectors; PCA of all vectors.')
     compare_card = common.card('Skip-gram vs CBOW on the same corpus', 'Same settings except the architecture; nearest words of the word explored above.')
+    eval_card = common.card('Evaluation: CBOW vs Skip-gram',
+                            'Ten models (5 settings × 2 architectures) trained from scratch on the 1,000 abstracts; '
+                            'training cost, loss, semantic pairs and groups, neighbour stability and projection purity.')
     common.more('Model & training', 'NumPy implementation (src/word2vec.py); no pretrained vectors or Word2Vec library.')
     details = st.container()
     with details:
@@ -193,7 +200,7 @@ def render(corpus, result):
     with learned_card:
         left, right = st.columns([1, 2])
         with left:
-            query = st.text_input('Explore a word', 'semaglutide', key='p2_embedding_query')
+            query = st.text_input('Explore a word', 'glp-1', key='p2_embedding_query')
             words_q = tokens(query, 'C')
             valid = len(words_q) == 1 and words_q[0] in model.words
             if valid:
@@ -206,6 +213,8 @@ def render(corpus, result):
     with compare_card:
         if words_q:
             compare_architectures(corpus, prep, words_q[0])
+    with eval_card:
+        architecture_eval.render(words_q[0] if valid else architecture_eval.EXAMPLE)
     with details:
         config = Word2VecConfig.from_dict(model.metadata['config'])
         cols = st.columns(5)

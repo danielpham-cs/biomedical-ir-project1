@@ -14,6 +14,8 @@ data/staging/
 data/experiments/
 output/project2_glp1/*.npz
 output/project2_glp1/*.zip
+output/project2_part2_embedding/models/
+output/project2_part2_embedding/*.zip
 tmp/
 output/homework2/*.npz
 !data/raw/.gitkeep

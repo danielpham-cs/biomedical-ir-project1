@@ -1,4 +1,4 @@
-"""Homework 2 · Skip-gram word embeddings (Brief)."""
+"""Homework 2 · CBOW and Skip-gram word embeddings (Brief)."""
 import sys
 from pathlib import Path
 
