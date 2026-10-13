@@ -179,3 +179,23 @@ def projection_subset(model, frequent: int = 300) -> list[int]:
         if index not in ids:
             ids.append(index)
     return [int(i) for i in ids]
+
+
+def training_samples(sentences: list[tuple[str, str, list[str]]], window: int = 2, word: str = "glp-1",
+                     length: tuple[int, int] = (7, 10)) -> dict:
+    """Skip-gram pairs and CBOW examples built from one real sentence (pmid, text, condition C tokens).
+
+    Picks the first sentence of the given length with `word` at least `window` tokens from either end,
+    so every position of the example shows a full window somewhere.
+    """
+    for pmid, text, words in sentences:
+        if length[0] <= len(words) <= length[1] and word in words[window:-window]:
+            break
+    else:
+        raise ValueError(f"No sentence of {length[0]}-{length[1]} tokens contains '{word}' away from its ends.")
+    skipgram, cbow = [], []
+    for center, target in enumerate(words):
+        context = [words[p] for p in range(max(0, center - window), min(len(words), center + window + 1)) if p != center]
+        skipgram += [[target, c] for c in context]
+        cbow.append({"context": context, "target": target})
+    return {"pmid": pmid, "sentence": text, "tokens": words, "window": window, "skipgram": skipgram, "cbow": cbow}

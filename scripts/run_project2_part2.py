@@ -28,6 +28,7 @@ from src.word2vec import Word2VecModel, train_skipgram, model_key
 from src import embedding_study as study
 from src.embedding_view import pca_2d
 from src.tsne import tsne_2d
+from src.eos import split_sentences
 
 DEFAULT_SNAPSHOT = ROOT/'output/project2_glp1/corpus_snapshot.json'
 
@@ -151,6 +152,11 @@ def analyze(models, corpus):
     results['overlap']['Skip-gram vs CBOW | main'] = study.neighbor_overlap(main['skipgram'], main['cbow'])
 
     documents = [set(tokens(d.abstract, 'C')) for d in corpus.documents]
+    results['corpus'].update(words_before_stopwords=sum(len(tokens(d.abstract, 'B')) for d in corpus.documents),
+                             distinct_words=len(set().union(*documents)))
+    sentences = [(d.pmid, s, words) for d in corpus.documents for paragraph in d.abstract.split('\n\n')
+                 for s in split_sentences(paragraph) if (words := tokens(s, 'C'))]
+    results['samples'] = study.training_samples(sentences)
     results['cooccurrence'] = {study.LABELS[a]: study.cooccurrence_share(m, documents) for a, m in main.items()}
 
     print('PCA and t-SNE projections...', flush=True)

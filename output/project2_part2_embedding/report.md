@@ -2,19 +2,34 @@
 
 Project 2, part 2 · Biomedical Information Retrieval
 
+Daniel · P76157022
+
 **Central question:** can about 1,000 scientific abstracts learn a meaningful semantic representation of words?
 
-**Short answer:** partly. Frequent core terms of the domain form clear, measurable relations in both models: drugs, organs, adverse events. Rare terms are stable only in Skip-gram, and general medical relations that are marginal in the corpus are not learned.
+**Short answer:** yes, within the domain. 1,000 abstracts (177,052 tokens, 2–4 minutes of CPU training per model, no pretrained vectors) are enough to learn measurable semantic structure for the core terms of the domain. Drug classes, organs, adverse events and animal models are closer to each other than to other groups in both models (9 of 9 groups), and nearest labeled words share the group 66% of the time against 10% by chance. Skip-gram also places rare terms correctly and stably. The limits are words that are very rare or marginal to the topic (RQ5).
 
 ## 1. Data and preprocessing
 
-Corpus: the same frozen 1,000 English PubMed abstracts on GLP-1 used in part 1 (corpus fingerprint 43be97743f89d09e…). Only abstract text is used. Preprocessing is part 1's condition C: lowercasing; whitespace tokenization; punctuation stripped from token boundaries while internal hyphens are kept (glp-1); NLTK English stopwords removed; no stemming. Abstracts are split into sentences and context windows never cross a sentence. Result: 10,680 sentences, 177,052 tokens. With min_count 2 the vocabulary has 9,427 words (167,364 retained tokens). Stopwords were removed because they would dominate every window. The threshold of 2 keeps rare domain terms, so their behaviour can be studied; min_count 5 is tested in RQ4.
+Corpus: the same frozen 1,000 English PubMed abstracts on GLP-1 used in part 1 (corpus fingerprint 43be97743f89d09e…). Only abstract text is used. Preprocessing is part 1's condition C: lowercasing; whitespace tokenization; punctuation stripped from token boundaries while internal hyphens are kept (glp-1); NLTK English stopwords removed; no stemming. Abstracts are split into sentences and context windows never cross a sentence. Result: 1,000 documents and 10,680 sentences. The abstracts contain 243,843 words before and 177,052 tokens after stopword removal, with 19,115 distinct words. With min_count 2 the vocabulary has 9,427 words (167,364 retained tokens). Stopwords were removed because they would dominate every window. The threshold of 2 keeps rare domain terms, so their behaviour can be studied; min_count 5 is tested in RQ4.
 
 Most frequent words: glp-1 (1606), receptor (1200), patients (1104), weight (1050), obesity (977), metabolic (951), risk (911), agonists (848), diabetes (801), treatment (761), clinical (745), outcomes (742), glucagon-like (741), evidence (739), associated (710), peptide-1 (697), 95% (689), 2 (681), disease (678), effects (653).
 
 ## 2. Training samples and models
 
 Both models use the same window definition (±5 words). Skip-gram creates one (center → context) pair for every word in the window. CBOW creates one (window → center) example per position, with the window's vectors averaged (word2vec cbow_mean=1). Frequent words are randomly subsampled (t = 0.001) each epoch, so example counts vary slightly between runs. Both are trained from scratch in NumPy (src/word2vec.py) with negative sampling: 5 noise words from the unigram^0.75 distribution, learning rate 0.025 decaying linearly, batch 128, 15 epochs, seed 42. No pretrained vectors are used. The loss is measured on a fixed probe of 2,048 training examples and noise words, not on held-out data.
+
+Example from one real sentence (PMID 42805118), shown with window 2 so it fits on a page: "Fasting serum GLP-1 levels were measured by enzyme-linked immunosorbent assay." After preprocessing it has 8 tokens: fasting serum glp-1 levels measured enzyme-linked immunosorbent assay. Every position is a center word once. Skip-gram turns it into 26 (center, context) pairs, CBOW into 8 (context → center) examples. Subsampling and negative words are left out of the example.
+
+| # | Center word | Skip-gram examples (center, context) | CBOW example (context → center) |
+|---|---|---|---|
+| 1 | fasting | (fasting, serum), (fasting, glp-1) | (serum, glp-1) → fasting |
+| 2 | serum | (serum, fasting), (serum, glp-1), (serum, levels) | (fasting, glp-1, levels) → serum |
+| 3 | glp-1 | (glp-1, fasting), (glp-1, serum), (glp-1, levels), (glp-1, measured) | (fasting, serum, levels, measured) → glp-1 |
+| 4 | levels | (levels, serum), (levels, glp-1), (levels, measured), (levels, enzyme-linked) | (serum, glp-1, measured, enzyme-linked) → levels |
+| 5 | measured | (measured, glp-1), (measured, levels), (measured, enzyme-linked), (measured, immunosorbent) | (glp-1, levels, enzyme-linked, immunosorbent) → measured |
+| 6 | enzyme-linked | (enzyme-linked, levels), (enzyme-linked, measured), (enzyme-linked, immunosorbent), (enzyme-linked, assay) | (levels, measured, immunosorbent, assay) → enzyme-linked |
+| 7 | immunosorbent | (immunosorbent, measured), (immunosorbent, enzyme-linked), (immunosorbent, assay) | (measured, enzyme-linked, assay) → immunosorbent |
+| 8 | assay | (assay, enzyme-linked), (assay, immunosorbent) | (enzyme-linked, immunosorbent) → assay |
 
 | Run | Model | Dim | Win. | Min count | Seed | Vocab | Examples / epoch | Sec. | Probe loss |
 |---|---|---|---|---|---|---|---|---|---|
@@ -172,7 +187,7 @@ Training. With the same corpus and settings (100 dimensions, window 5, 15 epochs
 
 Training loss. The fixed training-probe loss fell from 4.157 to 1.810 for Skip-gram and from 4.156 to 1.697 for CBOW. Skip-gram flattens after about ten epochs, while CBOW is still decreasing slowly at epoch 15. The two values are not directly comparable: they score different prediction tasks (one averaged context → word vs. word → each context word). A lower loss is not evidence of a better embedding.
 
-Neighbors. The two models agree surprisingly little. For the 15 query words they share on average 1.5 of 5 nearest words, and across the whole vocabulary only 10% of top-10 neighbors coincide. They also have a different style. CBOW cosines are uniformly high (mean of random word pairs 0.44 vs 0.22 for Skip-gram), and its neighbors are words that fill the same slot in a sentence: semaglutide → tirzepatide 0.92, liraglutide, dulaglutide; kidney → hf, failure, heart (they occur in lists such as 'heart failure and kidney disease'). Skip-gram neighbors are more topical: kidney → ckd, end-stage, glomerular; cancer → breast, endometrial, colorectal; insulin → resistance, basal. But they also include very rare noise words (obesity → '2030', '589').
+Neighbors. The two models agree surprisingly little. For the 15 query words they share on average 1.5 of 5 nearest words, and across the whole vocabulary only 10% of top-10 neighbors coincide. They also have a different style. CBOW cosines are uniformly high (mean of random word pairs 0.44 vs 0.22 for Skip-gram), and its neighbors are words that fill the same slot in a sentence: semaglutide → tirzepatide 0.92, liraglutide, dulaglutide; kidney → hf, failure, heart (they occur in lists such as 'heart failure and kidney disease'). Skip-gram neighbors are more topical: kidney → ckd, end-stage, glomerular; cancer → breast, endometrial, colorectal; insulin → resistance, basal. But they also include very rare noise words (obesity → '2030', '589'). glp-1 itself shows the difference best: Skip-gram returns the words it appears with ('ras', 'ra' from 'GLP-1 RAs', i.e. receptor agonists), CBOW the words that can replace it in a sentence, mostly other spellings ('glp1', 'glp)-1', 'glp-1/gip'); the two top-5 lists share no word.
 
 Rare words. When only the random seed changes, Skip-gram keeps 71% of the top-10 neighbors of words seen 2–4 times. That is about the same as for frequent words (70%). CBOW keeps only 30% for rare words but 66% for frequent words. So CBOW's rare-word vectors are largely an accident of initialization and sampling. Skip-gram's stable rare-word neighbors are not simply memorized from one abstract: only 21% of them ever share an abstract with the word. Both models still connect some rare terms correctly (lixisenatide → exenatide; diarrhea → constipation), but CBOW's rare-word lists also contain numbers such as '4.1%' and '5.4%' with cosines around 0.9.
 
@@ -198,7 +213,9 @@ Each variant changes exactly one parameter of the main model. Changing only the 
 
 Context window (5 → 2) is by far the strongest factor. Only 19% (Skip-gram) and 8% (CBOW) of neighbors survive. With a narrow window, a word's vector is built from its immediate neighbors (syntactic, same-slot similarity). This raises all cosines (Skip-gram within-group 'GLP-1 drugs' 0.43 → 0.62, but between-group 0.17 → 0.24 too). The mean group margin moves from 0.26 to 0.27 (Skip-gram) and from 0.35 to 0.26 (CBOW). Cosine group purity goes 0.67 → 0.66 (Skip-gram) and 0.59 → 0.49 (CBOW). The window-2 Skip-gram has a lower training loss (1.746 vs 1.810) despite no better groups, which again shows loss is not embedding quality.
 
-Dimensions (100 → 50) barely matter. Neighbor overlap is 67% / 37%, about the same as the seed-only overlap, and the t-SNE maps look alike. With 167,364 training tokens, 50 dimensions already have enough capacity.
+Visualization. The window also changes the maps most (figure below). t-SNE purity drops from 0.66 to 0.63 for Skip-gram and from 0.59 to 0.41 for CBOW. In the window-2 CBOW map most groups merge into one region (obesity sits next to ckd and masld, cancer and overweight drift away from their groups), and the animal-model words split in two, while the GLP-1 drugs stay tight in all six maps. A narrow window therefore keeps the most interchangeable words together but loses the topical groups that a wider window builds.
+
+Dimensions (100 → 50) barely matter. Neighbor overlap is 67% / 37%, about the same as the seed-only overlap, and the t-SNE maps look alike (t-SNE purity 0.70 vs 0.66 for Skip-gram, 0.56 vs 0.59 for CBOW). With 167,364 training tokens, 50 dimensions already have enough capacity.
 
 Minimum frequency (2 → 5) halves the vocabulary (9,427 → 4,609) and changes even frequent words' neighbors: only 44% (Skip-gram) / 59% (CBOW) of the top-10 of words seen ≥ 200 times survive. Removing rare words takes noisy candidates out of the neighbor lists (such as '2030' and '589'), and it also removes context words that shaped the remaining vectors.
 
@@ -212,7 +229,7 @@ Domain. The corpus is about GLP-1, so the space is GLP-1 shaped. 'ras' and 'ra' 
 
 Terminology and tokenization. Spelling variants (diarrhea / diarrhoea), punctuation variants (glp-1 / glp1 / glp)-1) and multi-word terms (heart failure, insulin resistance) are split into separate or partial tokens, which spreads the little data each concept has.
 
-Conclusion: 1,000 abstracts are enough to learn coarse, recognisable relations among the frequent core terms of one domain (drug names, organs, adverse events). They are not enough for stable vectors for rare terms, or for general biomedical semantics. Remedies are more text, phrase detection, subword models (fastText), pretrained biomedical vectors (e.g. BioWordVec), and averaging results over several seeds.
+Conclusion: 1,000 abstracts are enough to train useful embeddings for one domain. The frequent core terms (drug names, organs, adverse events) form recognisable, measurable relations, and Skip-gram is the better choice when data is this limited because it keeps rare terms stable. The corpus is not enough for words seen only a few times in CBOW, or for general biomedical relations outside the topic. Remedies are more text, phrase detection, subword models (fastText), pretrained biomedical vectors (e.g. BioWordVec), and averaging results over several seeds.
 
 ## Limitations
 

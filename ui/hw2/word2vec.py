@@ -153,30 +153,18 @@ def training_pairs(corpus):
     return words[center], contexts
 
 
-def compare_architectures(corpus, prep, word):
-    """Neighbours of one word under the Skip-gram and the CBOW model of this corpus, side by side."""
-    # Prefer the part 2 pair: identical settings, only the architecture differs.
-    pair = [p for p in architecture_eval.main_models() if p.exists()]
-    candidates = pair + [p for p in model_candidates() if p not in pair]
-    catalog = common.model_catalog(tuple(common.file_stamp(p) for p in candidates), corpus.fingerprint)
-    chosen = {}
-    for path in catalog:
-        name = 'cbow' if catalog[path].startswith('CBOW') else 'skipgram'
-        chosen.setdefault(name, path)
-    if len(chosen) < 2:
-        st.caption('Train a CBOW model (Model & training below) to compare it with Skip-gram here.')
-        return
-    columns = st.columns(2)
-    for column, name in zip(columns, ('skipgram', 'cbow')):
-        model = common.saved_model(chosen[name], common.file_stamp(Path(chosen[name])))
-        with column:
-            title, settings = catalog[chosen[name]].split(' · ', 1)
-            st.markdown(f'**{title}** · {settings}')
-            if word in model.words:
-                st.dataframe([{'word': r['word'], 'cosine': round(r['cosine_similarity'], 3)} for r in model.most_similar(word, 8)],
-                             hide_index=True, width='stretch')
-            else:
-                st.caption(f"'{word}' is not in this model's vocabulary.")
+def learned_model(corpus, fallback):
+    """Skip-gram or CBOW (the part 2 pair, identical settings) for this card; the model chosen below if the pair is missing."""
+    pair = {m: architecture_eval.load(f'{architecture_eval.ARCH[m]}_main') for m in architecture_eval.MODELS}
+    if not all(m is not None and m.metadata['corpus']['fingerprint'] == corpus.fingerprint for m in pair.values()):
+        return fallback
+    name = st.radio('Model', architecture_eval.MODELS, horizontal=True, key='p2_learned_model',
+                    help='Both trained on the same abstracts with the same settings; only the architecture differs.')
+    model = pair[name]
+    config = model.metadata['config']
+    st.caption(f"{name} · {config['dimensions']} dimensions · window {config['window']} · {config['epochs']} epochs · "
+               f"{len(model.words):,} words in the vocabulary")
+    return model
 
 
 def render(corpus, result):
@@ -185,7 +173,8 @@ def render(corpus, result):
                              'Skip-gram predicts the window from the word; CBOW predicts the word from the window. '
                              'Condition C tokens (stopwords removed, no stemming); windows never cross sentences.')
     learned_card = common.card('What the trained vectors learned', 'Cosine similarity of learned center vectors; PCA of all vectors.')
-    compare_card = common.card('Skip-gram vs CBOW on the same corpus', 'Same settings except the architecture; nearest words of the word explored above.')
+    maps_card = common.card('t-SNE map: do related words form clusters?',
+                            'Words of nine GLP-1 groups, coloured and labelled, for both models and three settings.')
     eval_card = common.card('Evaluation: CBOW vs Skip-gram',
                             'Ten models (5 settings × 2 architectures) trained from scratch on the 1,000 abstracts; '
                             'training cost, loss, semantic pairs and groups, neighbour stability and projection purity.')
@@ -198,21 +187,21 @@ def render(corpus, result):
     if model is None:
         return
     with learned_card:
+        shown = learned_model(corpus, model)
         left, right = st.columns([1, 2])
         with left:
             query = st.text_input('Explore a word', 'glp-1', key='p2_embedding_query')
             words_q = tokens(query, 'C')
-            valid = len(words_q) == 1 and words_q[0] in model.words
+            valid = len(words_q) == 1 and words_q[0] in shown.words
             if valid:
-                neighbors = model.most_similar(words_q[0], 10)
+                neighbors = shown.most_similar(words_q[0], 10)
                 st.dataframe([{'word': r['word'], 'cosine': round(r['cosine_similarity'], 3)} for r in neighbors], hide_index=True, width='stretch')
             else:
                 st.info('Enter one word in the trained vocabulary, e.g. glp-1, semaglutide, receptor, insulin.')
         with right:
-            embedding_map(model, words_q[0] if valid else None, model.metadata.get('model_key', 'model'))
-    with compare_card:
-        if words_q:
-            compare_architectures(corpus, prep, words_q[0])
+            embedding_map(shown, words_q[0] if valid else None, shown.metadata.get('model_key', 'model'))
+    with maps_card:
+        architecture_eval.render_maps()
     with eval_card:
         architecture_eval.render(words_q[0] if valid else architecture_eval.EXAMPLE)
     with details:
@@ -235,7 +224,7 @@ def render(corpus, result):
             st.markdown(f'**σ(v·u) for the demo pairs** (center "{center}")')
             st.dataframe(scored, hide_index=True, width='stretch')
         if valid:
-            common.csv_download('Download nearest words', model.most_similar(words_q[0], 10), 'nearest_words.csv')
+            common.csv_download('Download nearest words', shown.most_similar(words_q[0], 10), 'nearest_words.csv')
         with st.expander('Model configuration and corpus evidence'):
             st.json(model.metadata)
         st.download_button('Download trained model', model.to_bytes(), 'skipgram.npz', 'application/octet-stream')

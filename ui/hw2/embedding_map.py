@@ -55,7 +55,7 @@ def embedding_map(model, query, key):
                                selection_mode="pick_word", key=f"word_map_{key[:12]}")
     st.caption("Orange: the query; green: its nearest words. Hover for frequency and cosine; scroll to zoom, drag to pan, "
                "double-click to reset; click a point to list its own nearest words. Distances in 2D only approximate the "
-               "64-dimensional vectors; the table on the left is ranked in the original vector space.")
+               f"{model.vectors.shape[1]}-dimensional vectors; the table on the left is ranked in the original vector space.")
     word = selected_map_word(event.selection.get("pick_word", {}))
     if word in {row["word"] for row in rows}:
         st.write(f"Selected word: **{word}**")

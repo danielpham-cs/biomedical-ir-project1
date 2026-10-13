@@ -399,7 +399,9 @@
     "retained_tokens": 167364,
     "sentence_count": 10680,
     "document_count": 1000,
-    "fingerprint": "43be97743f89d09e7e8821d116d4a352d3b9b9527196180be215b8a420dd1de1"
+    "fingerprint": "43be97743f89d09e7e8821d116d4a352d3b9b9527196180be215b8a420dd1de1",
+    "words_before_stopwords": 243843,
+    "distinct_words": 19115
   },
   "top_words": [
     {
@@ -3396,6 +3398,195 @@
         "frequency_band": "all",
         "words": 9427,
         "mean_overlap": 0.1013896255436512
+      }
+    ]
+  },
+  "samples": {
+    "pmid": "42805118",
+    "sentence": "Fasting serum GLP-1 levels were measured by enzyme-linked immunosorbent assay.",
+    "tokens": [
+      "fasting",
+      "serum",
+      "glp-1",
+      "levels",
+      "measured",
+      "enzyme-linked",
+      "immunosorbent",
+      "assay"
+    ],
+    "window": 2,
+    "skipgram": [
+      [
+        "fasting",
+        "serum"
+      ],
+      [
+        "fasting",
+        "glp-1"
+      ],
+      [
+        "serum",
+        "fasting"
+      ],
+      [
+        "serum",
+        "glp-1"
+      ],
+      [
+        "serum",
+        "levels"
+      ],
+      [
+        "glp-1",
+        "fasting"
+      ],
+      [
+        "glp-1",
+        "serum"
+      ],
+      [
+        "glp-1",
+        "levels"
+      ],
+      [
+        "glp-1",
+        "measured"
+      ],
+      [
+        "levels",
+        "serum"
+      ],
+      [
+        "levels",
+        "glp-1"
+      ],
+      [
+        "levels",
+        "measured"
+      ],
+      [
+        "levels",
+        "enzyme-linked"
+      ],
+      [
+        "measured",
+        "glp-1"
+      ],
+      [
+        "measured",
+        "levels"
+      ],
+      [
+        "measured",
+        "enzyme-linked"
+      ],
+      [
+        "measured",
+        "immunosorbent"
+      ],
+      [
+        "enzyme-linked",
+        "levels"
+      ],
+      [
+        "enzyme-linked",
+        "measured"
+      ],
+      [
+        "enzyme-linked",
+        "immunosorbent"
+      ],
+      [
+        "enzyme-linked",
+        "assay"
+      ],
+      [
+        "immunosorbent",
+        "measured"
+      ],
+      [
+        "immunosorbent",
+        "enzyme-linked"
+      ],
+      [
+        "immunosorbent",
+        "assay"
+      ],
+      [
+        "assay",
+        "enzyme-linked"
+      ],
+      [
+        "assay",
+        "immunosorbent"
+      ]
+    ],
+    "cbow": [
+      {
+        "context": [
+          "serum",
+          "glp-1"
+        ],
+        "target": "fasting"
+      },
+      {
+        "context": [
+          "fasting",
+          "glp-1",
+          "levels"
+        ],
+        "target": "serum"
+      },
+      {
+        "context": [
+          "fasting",
+          "serum",
+          "levels",
+          "measured"
+        ],
+        "target": "glp-1"
+      },
+      {
+        "context": [
+          "serum",
+          "glp-1",
+          "measured",
+          "enzyme-linked"
+        ],
+        "target": "levels"
+      },
+      {
+        "context": [
+          "glp-1",
+          "levels",
+          "enzyme-linked",
+          "immunosorbent"
+        ],
+        "target": "measured"
+      },
+      {
+        "context": [
+          "levels",
+          "measured",
+          "immunosorbent",
+          "assay"
+        ],
+        "target": "enzyme-linked"
+      },
+      {
+        "context": [
+          "measured",
+          "enzyme-linked",
+          "assay"
+        ],
+        "target": "immunosorbent"
+      },
+      {
+        "context": [
+          "enzyme-linked",
+          "immunosorbent"
+        ],
+        "target": "assay"
       }
     ]
   },

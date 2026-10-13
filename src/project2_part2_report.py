@@ -12,6 +12,8 @@ import numpy as np
 from .embedding_study import GROUPS, PAIRS, QUERIES
 from .project2_part2_figures import plot_all
 
+AUTHOR = 'Daniel · P76157022'
+
 BACKGROUND = [
     ('Input', 'The context words in the window (their vectors are averaged into one hidden vector h)',
      'The single center word'),
@@ -31,6 +33,36 @@ SKIPGRAM_RARE = (
     "pair it forms, so each occurrence produces up to 2·window separate gradient updates that pull it toward the actual words around it. "
     "The rare word's vector is therefore determined by its contexts rather than by its random initialization. Its neighbors can be traced "
     "to specific contexts, which matters when the term is the thing a biomedical user is searching for.")
+
+
+def short_answer(r):
+    sg, cb = (next(x for x in r['training'] if x['experiment'] == 'main' and x['model'] == m) for m in ('Skip-gram', 'CBOW'))
+    tsne = r['projections']['skipgram_main']['purity']['tsne_2d']
+    groups = [{g['group'] for g in r['group_cosines'][f'{m} / main'] if g['margin'] > 0} for m in ('Skip-gram', 'CBOW')]
+    total = len(r['group_cosines']['Skip-gram / main'])
+    return (f"Short answer: yes, within the domain. {r['corpus']['document_count']:,} abstracts ({r['corpus']['raw_tokens']:,} tokens, "
+            f"{cb['seconds'] / 60:.0f}–{sg['seconds'] / 60:.0f} minutes of CPU training per model, no pretrained vectors) are enough to learn measurable "
+            "semantic structure for the core terms of the domain. Drug classes, organs, adverse events and animal models are closer to each other than to "
+            f"other groups in both models ({len(groups[0] & groups[1])} of {total} groups), and nearest labeled words share the group {tsne:.0%} of the time against {r['chance_purity']:.0%} by chance. "
+            "Skip-gram also places rare terms correctly and stably. The limits are words that are very rare or marginal to the topic (RQ5).")
+
+
+def sample_rows(r):
+    """[position, center word, Skip-gram pairs, CBOW example] for the worked training-sample example."""
+    s = r['samples']
+    pairs = {}
+    for center, context in s['skipgram']:
+        pairs.setdefault(center, []).append(context)
+    return [[str(i + 1), w, ', '.join(f'({w}, {c})' for c in pairs[w]), f"({', '.join(e['context'])}) → {w}"]
+            for i, (w, e) in enumerate(zip(s['tokens'], s['cbow']))]
+
+
+def sample_text(r):
+    s = r['samples']
+    return (f"Example from one real sentence (PMID {s['pmid']}), shown with window {s['window']} so it fits on a page: \"{s['sentence']}\" "
+            f"After preprocessing it has {len(s['tokens'])} tokens: {' '.join(s['tokens'])}. Every position is a center word once. "
+            f"Skip-gram turns it into {len(s['skipgram'])} (center, context) pairs, CBOW into {len(s['cbow'])} (context → center) examples. "
+            "Subsampling and negative words are left out of the example.")
 
 
 def fmt(value, digits=3):
@@ -100,7 +132,9 @@ def answers(r):
         f"CBOW cosines are uniformly high (mean of random word pairs {base['CBOW']['mean']:.2f} vs {base['Skip-gram']['mean']:.2f} for Skip-gram), and its neighbors are words that "
         "fill the same slot in a sentence: semaglutide → tirzepatide 0.92, liraglutide, dulaglutide; kidney → hf, failure, heart (they occur in lists such as "
         "'heart failure and kidney disease'). Skip-gram neighbors are more topical: kidney → ckd, end-stage, glomerular; cancer → breast, endometrial, colorectal; "
-        "insulin → resistance, basal. But they also include very rare noise words (obesity → '2030', '589').\n\n"
+        "insulin → resistance, basal. But they also include very rare noise words (obesity → '2030', '589'). "
+        "glp-1 itself shows the difference best: Skip-gram returns the words it appears with ('ras', 'ra' from 'GLP-1 RAs', i.e. receptor agonists), "
+        "CBOW the words that can replace it in a sentence, mostly other spellings ('glp1', 'glp)-1', 'glp-1/gip'); the two top-5 lists share no word.\n\n"
         f"Rare words. When only the random seed changes, Skip-gram keeps {seed['Skip-gram']['2-4']['mean_overlap']:.0%} of the top-10 neighbors of words seen 2–4 times. "
         f"That is about the same as for frequent words ({seed['Skip-gram']['>=200']['mean_overlap']:.0%}). CBOW keeps only {seed['CBOW']['2-4']['mean_overlap']:.0%} for rare words but "
         f"{seed['CBOW']['>=200']['mean_overlap']:.0%} for frequent words. So CBOW's rare-word vectors are largely an accident of initialization and sampling. "
@@ -159,7 +193,14 @@ def answers(r):
         f"to {f['margin']['CBOW / window2']:.2f} (CBOW). Cosine group purity goes {proj['skipgram_main']['purity']['cosine']:.2f} → {proj['skipgram_window2']['purity']['cosine']:.2f} "
         f"(Skip-gram) and {proj['cbow_main']['purity']['cosine']:.2f} → {proj['cbow_window2']['purity']['cosine']:.2f} (CBOW). The window-2 Skip-gram has a lower training loss "
         f"({t[('window2', 'Skip-gram')]['loss_end']:.3f} vs {sg['loss_end']:.3f}) despite no better groups, which again shows loss is not embedding quality.\n\n"
-        f"Dimensions (100 → 50) barely matter. Neighbor overlap is {d50['Skip-gram']:.0%} / {d50['CBOW']:.0%}, about the same as the seed-only overlap, and the t-SNE maps look alike. "
+        f"Visualization. The window also changes the maps most (figure below). t-SNE purity drops from {proj['skipgram_main']['purity']['tsne_2d']:.2f} to "
+        f"{proj['skipgram_window2']['purity']['tsne_2d']:.2f} for Skip-gram and from {proj['cbow_main']['purity']['tsne_2d']:.2f} to "
+        f"{proj['cbow_window2']['purity']['tsne_2d']:.2f} for CBOW. In the window-2 CBOW map most groups merge into one region (obesity sits next to ckd and masld, "
+        "cancer and overweight drift away from their groups), and the animal-model words split in two, while the GLP-1 drugs stay tight in all six maps. "
+        "A narrow window therefore keeps the most interchangeable words together but loses the topical groups that a wider window builds.\n\n"
+        f"Dimensions (100 → 50) barely matter. Neighbor overlap is {d50['Skip-gram']:.0%} / {d50['CBOW']:.0%}, about the same as the seed-only overlap, and the t-SNE maps look alike "
+        f"(t-SNE purity {proj['skipgram_dim50']['purity']['tsne_2d']:.2f} vs {proj['skipgram_main']['purity']['tsne_2d']:.2f} for Skip-gram, "
+        f"{proj['cbow_dim50']['purity']['tsne_2d']:.2f} vs {proj['cbow_main']['purity']['tsne_2d']:.2f} for CBOW). "
         f"With {f['corpus']['retained_tokens']:,} training tokens, 50 dimensions already have enough capacity.\n\n"
         f"Minimum frequency (2 → 5) halves the vocabulary ({t[('main', 'Skip-gram')]['vocabulary']:,} → {t[('mincount5', 'Skip-gram')]['vocabulary']:,}) and changes even "
         f"frequent words' neighbors: only {mc5['Skip-gram']['>=200']['mean_overlap']:.0%} (Skip-gram) / {mc5['CBOW']['>=200']['mean_overlap']:.0%} (CBOW) of the "
@@ -179,8 +220,9 @@ def answers(r):
         "words would have different neighbors in an oncology corpus.\n\n"
         "Terminology and tokenization. Spelling variants (diarrhea / diarrhoea), punctuation variants (glp-1 / glp1 / glp)-1) and multi-word terms "
         "(heart failure, insulin resistance) are split into separate or partial tokens, which spreads the little data each concept has.\n\n"
-        "Conclusion: 1,000 abstracts are enough to learn coarse, recognisable relations among the frequent core terms of one domain (drug names, organs, "
-        "adverse events). They are not enough for stable vectors for rare terms, or for general biomedical semantics. Remedies are more text, "
+        "Conclusion: 1,000 abstracts are enough to train useful embeddings for one domain. The frequent core terms (drug names, organs, adverse events) "
+        "form recognisable, measurable relations, and Skip-gram is the better choice when data is this limited because it keeps rare terms stable. "
+        "The corpus is not enough for words seen only a few times in CBOW, or for general biomedical relations outside the topic. Remedies are more text, "
         "phrase detection, subword models (fastText), pretrained biomedical vectors (e.g. BioWordVec), and averaging results over several seeds.")
     return out
 
@@ -213,7 +255,9 @@ def export_report(results, output):
         'data': (f"Corpus: the same frozen {corpus['document_count']:,} English PubMed abstracts on GLP-1 used in part 1 (corpus fingerprint {corpus['fingerprint'][:16]}…). "
                  "Only abstract text is used. Preprocessing is part 1's condition C: lowercasing; whitespace tokenization; punctuation stripped from token boundaries while "
                  "internal hyphens are kept (glp-1); NLTK English stopwords removed; no stemming. Abstracts are split into sentences and context windows never cross a sentence. "
-                 f"Result: {corpus['sentence_count']:,} sentences, {corpus['raw_tokens']:,} tokens. With min_count 2 the vocabulary has {corpus['vocabulary_size']:,} words "
+                 f"Result: {corpus['document_count']:,} documents and {corpus['sentence_count']:,} sentences. The abstracts contain {corpus.get('words_before_stopwords', 0):,} words "
+                 f"before and {corpus['raw_tokens']:,} tokens after stopword removal, with {corpus.get('distinct_words', 0):,} distinct words. "
+                 f"With min_count 2 the vocabulary has {corpus['vocabulary_size']:,} words "
                  f"({corpus['retained_tokens']:,} retained tokens). Stopwords were removed because they would dominate every window. The threshold of 2 keeps rare "
                  "domain terms, so their behaviour can be studied; min_count 5 is tested in RQ4."),
         'samples': (f"Both models use the same window definition (±{cfg['window']} words). Skip-gram creates one (center → context) pair for every word in the window. CBOW creates one "
@@ -225,13 +269,14 @@ def export_report(results, output):
     }
     top_words = ', '.join(f"{w['word']} ({w['count']})" for w in results['top_words'][:20])
 
-    md = ['# GLP-1 abstracts: word embeddings with CBOW and Skip-gram', '', 'Project 2, part 2 · Biomedical Information Retrieval', '',
+    md = ['# GLP-1 abstracts: word embeddings with CBOW and Skip-gram', '', 'Project 2, part 2 · Biomedical Information Retrieval', '', AUTHOR, '',
           '**Central question:** can about 1,000 scientific abstracts learn a meaningful semantic representation of words?', '',
-          '**Short answer:** partly. Frequent core terms of the domain form clear, measurable relations in both models: drugs, organs, adverse events. '
-          'Rare terms are stable only in Skip-gram, and general medical relations that are marginal in the corpus are not learned.', '',
+          '**' + short_answer(results).replace(': ', ':** ', 1), '',
           '## 1. Data and preprocessing', '', sections['data'], '', f'Most frequent words: {top_words}.', '',
-          '## 2. Training samples and models', '', sections['samples'], '',
-          '| ' + ' | '.join(training_head) + ' |', '|' + '---|' * len(training_head)]
+          '## 2. Training samples and models', '', sections['samples'], '', sample_text(results), '',
+          '| # | Center word | Skip-gram examples (center, context) | CBOW example (context → center) |', '|---|---|---|---|']
+    md += ['| ' + ' | '.join(row) + ' |' for row in sample_rows(results)]
+    md += ['', '| ' + ' | '.join(training_head) + ' |', '|' + '---|' * len(training_head)]
     md += ['| ' + ' | '.join(map(str, row)) + ' |' for row in training_rows]
     md += ['', '![Loss curves](figures/loss_curves.png)', '',
            '## 3. Background: CBOW vs Skip-gram', '', '| Property | CBOW | Skip-gram |', '|---|---|---|']
@@ -273,6 +318,7 @@ def export_report(results, output):
     (output/'README.md').write_text(
         'Project 2 part 2 submission: word embeddings (CBOW vs Skip-gram)\n\n'
         'report.pdf / report.md: full report with the background table and RQ1-RQ5.\n'
+        'summary.pdf: one-page summary covering every item of the brief.\n'
         'experiments.json: every measured number used in the report.\n'
         'tables/: training summary, top-5 neighbors, rare-word neighbors, pair and group cosines, neighbor overlap, co-occurrence, projection purity and coordinates.\n'
         'figures/: loss curves, PCA and t-SNE maps, parameter and perplexity comparisons, seed stability, group cosines.\n'
@@ -280,6 +326,7 @@ def export_report(results, output):
         'Reproduce: .\\.venv\\python.exe scripts\\run_project2_part2.py\n', encoding='utf-8')
     build_pdf(results, output, ans, sections, top_words, dict(training=(training_head, training_rows), pairs=(pair_head, pair_rows),
               groups=(group_head, group_rows), overlap=(overlap_head, overlap_rows), purity=(purity_head, purity_rows), co=co_rows), f)
+    build_summary(results, output)
 
 
 def build_pdf(results, output, ans, sections, top_words, tables, f):
@@ -330,12 +377,13 @@ def build_pdf(results, output, ans, sections, top_words, tables, f):
         canvas.drawString(44, 25, 'Helix | GLP-1 | Project 2 part 2 · word embeddings'); canvas.drawRightString(A4[0] - 44, 25, str(doc.page))
 
     rq = list(ans.items())
-    story = [p('GLP-1 abstracts: word embeddings with CBOW and Skip-gram', 'Title2'), p('Project 2, part 2 · Biomedical Information Retrieval', 'Section'),
+    story = [p('GLP-1 abstracts: word embeddings with CBOW and Skip-gram', 'Title2'), p('Project 2, part 2 · Biomedical Information Retrieval', 'Section'), p(AUTHOR),
              p('Central question: can about 1,000 scientific abstracts learn a meaningful semantic representation of words?'),
-             p('Short answer: partly. Frequent core terms of the domain form clear, measurable relations in both models: drugs, organs, adverse events. '
-               'Rare terms are stable only in Skip-gram, and general medical relations that are marginal in the corpus are not learned.'),
+             p(short_answer(results)),
              p('1. Data and preprocessing', 'Section'), p(sections['data']), p(f'Most frequent words: {top_words}.'),
-             p('2. Training samples and models', 'Section'), p(sections['samples']),
+             p('2. Training samples and models', 'Section'), p(sections['samples']), p(sample_text(results)),
+             table(['#', 'Center word', 'Skip-gram examples (center, context)', 'CBOW example (context → center)'], sample_rows(results),
+                   [18, 78, (width - 96) * 0.55, (width - 96) * 0.45]), Spacer(1, 8),
              table(*tables['training'], widths=[54, 52, 30, 30, 40, 30, 46, 64, 32, width - 378]), Spacer(1, 8), figure('loss_curves'), PageBreak(),
              p('3. Background: CBOW vs Skip-gram', 'Title2'), table(['Property', 'CBOW', 'Skip-gram'], BACKGROUND, [90, (width - 90) / 2, (width - 90) / 2]), Spacer(1, 10),
              p('Why might Skip-gram be particularly useful for rare or domain-specific scientific terms?', 'Section'), p(SKIPGRAM_RARE),
@@ -364,3 +412,96 @@ def build_pdf(results, output, ans, sections, top_words, tables, f):
                'Implementation: src/word2vec.py, src/tsne.py, src/embedding_study.py.')]
     SimpleDocTemplate(str(output/'report.pdf'), pagesize=A4, rightMargin=44, leftMargin=44, topMargin=40, bottomMargin=42,
                       title='GLP-1 Project 2 part 2: word embeddings').build(story, onFirstPage=footer, onLaterPages=footer)
+
+
+def summary_sections(r):
+    """(heading, paragraphs) for the one-page summary, in plain English: theory first, a few measured numbers as evidence."""
+    f = facts(r)
+    corpus, s, seed, proj = r['corpus'], r['samples'], f['seed'], f['proj']
+    center = s['tokens'].index('glp-1')
+    pairs = [c for w, c in s['skipgram'] if w == 'glp-1']
+    sgm = proj['skipgram_main']
+    return [
+        ('Central question: can about 1,000 abstracts learn meaningful word vectors?', [
+            f"Yes, for the main topic of the texts. We used {corpus['document_count']:,} abstracts about GLP-1 ({corpus['raw_tokens']:,} words after removing "
+            "stopwords). Both models learned that drug names, organs and side effects belong together. They did not learn words that are very rare, "
+            "or topics the abstracts seldom talk about."]),
+        ('1. How the two models learn', [
+            "The main idea: words that appear in similar contexts get similar vectors. Each model is a small neural network with two sets of word vectors. "
+            "We slide a window over each sentence; the window holds c words on each side of a center word.",
+            "Skip-gram uses the center word to guess each word around it, so one position gives up to 2c training pairs. "
+            "CBOW does the opposite: it takes the average of the words around the center and uses it to guess the center word, so one position gives one example. "
+            f"Example (window {s['window']}): in \"{s['sentence'].rstrip('.')}\", the center word glp-1 gives Skip-gram {len(pairs)} pairs "
+            f"(glp-1 → {', '.join(pairs)}), but gives CBOW only one example ({', '.join(s['cbow'][center]['context'])} → glp-1).",
+            "Checking every word in the vocabulary at each step would be too slow. So both models use negative sampling: they learn to give a high score "
+            "to the real pair and a low score to a few random \"noise\" words. We wrote both models ourselves in NumPy (100 dimensions, window 5, 15 epochs) "
+            "and recorded the loss after every epoch."]),
+        ('2. Why Skip-gram is better for rare and technical words', [
+            "In Skip-gram, a rare word is the input of every pair it makes. So each time it appears, its own vector is updated several times, and each update "
+            "moves it toward the words that really appear next to it. In CBOW, the rare word is only one of several words that are averaged together, so its "
+            "update is small and mixed with the others. When a word appears only a few times, this decides whether its vector is learned or is still mostly random. "
+            f"Our test: when we only changed the random seed, rare words kept {seed['Skip-gram']['2-4']['mean_overlap']:.0%} of their nearest words in "
+            f"Skip-gram but only {seed['CBOW']['2-4']['mean_overlap']:.0%} in CBOW."]),
+        ('RQ1 · How are CBOW and Skip-gram different?', [
+            "Training: Skip-gram makes many more updates, so it is slower but learns more from each word. CBOW is faster. "
+            "Loss: the loss goes down for both, but the two models solve different tasks, so their losses cannot be compared. A low loss also does not mean "
+            "good word vectors. Nearest words: the models give quite different answers. Skip-gram finds words that appear together with the query "
+            "(glp-1 → ras, ra, from \"GLP-1 RAs\" = receptor agonists). CBOW finds words that could replace the query in a sentence (glp-1 → glp1, glp-1/gip). "
+            "Rare words: Skip-gram handles them well; for CBOW they are mostly noise."]),
+        ('RQ2 · Do the word vectors carry meaning?', [
+            "We measure how close two words are with cosine similarity, which compares the direction of the two vectors. A cosine number alone can mislead "
+            "(CBOW gives high scores even to random pairs), so we compared each pair with many random pairs. Related pairs such as semaglutide – liraglutide, "
+            "nausea – vomiting and kidney – renal clearly beat random pairs in both models, and words from the same group (for example GLP-1 drugs, or stomach "
+            "side effects) are closer to each other than to other groups. But cancer – tumor and treatment – diagnosis are weak, because these words are side "
+            "topics in GLP-1 abstracts. So yes, the vectors carry meaning, but only the meaning found in this collection of texts."]),
+        ('RQ3 · How are PCA and t-SNE pictures different?', [
+            "Both squeeze 100 dimensions into 2 so we can draw the words. PCA is a straight (linear) projection that keeps the directions with the most "
+            "spread. It is simple and always gives the same result, but two directions keep too little information, so the words form one big cloud "
+            f"(how often a word's nearest words are in its own group: {sgm['purity']['pca_2d']:.2f} in PCA vs {sgm['purity']['cosine']:.2f} in the full vectors). "
+            "t-SNE tries to keep each word next to its nearest neighbors, so it shows clear clusters "
+            f"({sgm['purity']['tsne_2d']:.2f}). But in t-SNE the distance between clusters and the size of a cluster mean nothing, and the picture changes with "
+            "its settings. A cluster in a picture is not proof of meaning, so we always checked our claims on the full vectors."]),
+        ('RQ4 · How do the model settings change the results?', [
+            "Window size has the biggest effect. A small window (2) only sees the next word or two, so it groups words that play the same grammar role. "
+            "A larger window (5) sees more of the sentence, so it groups words by topic. Changing it replaced most nearest words and made the t-SNE groups "
+            "weaker, especially for CBOW. Vector size: with this little data, 50 dimensions are already enough; 100 vs 50 changed the results no more than a "
+            "new random seed. Minimum word count: a higher limit removes noisy rare words, but also removes rare terms we may want."]),
+        ('RQ5 · What are the limits of a small collection?', [
+            "Every vector is learned only from the sentences we have. With little data, many words are seen just a few times (about half of our vocabulary "
+            "appears only 2–4 times), so their vectors are uncertain and change with the random seed. Meaning also depends on the topic: here \"tzp\" means "
+            "tirzepatide, and cancer is a side topic. Technical terms are split up: different spellings (diarrhea / diarrhoea), different writing (glp-1 / glp1) "
+            "and multi-word terms (heart failure). Ways to improve: more text, joining multi-word terms, fastText (which uses word parts), and vectors "
+            "pre-trained on large biomedical text."]),
+        ('Conclusion', [
+            "A small collection of abstracts is enough to learn useful word vectors for its main topic. Skip-gram is the better choice here because it learns "
+            "rare technical words well; CBOW is faster and works well for common words."]),
+    ]
+
+
+def build_summary(results, output):
+    """One A4 page: theory and answers to the brief's questions, with a few measured numbers as evidence."""
+    import matplotlib
+    from html import escape
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.styles import ParagraphStyle
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    from reportlab.platypus import SimpleDocTemplate, Paragraph
+    fonts = Path(matplotlib.get_data_path())/'fonts/ttf'
+    for name, file in [('DejaVu', 'DejaVuSans.ttf'), ('DejaVu-Bold', 'DejaVuSans-Bold.ttf')]:
+        if name not in pdfmetrics.getRegisteredFontNames():
+            pdfmetrics.registerFont(TTFont(name, str(fonts/file)))
+    ink, teal = colors.HexColor('#152e3a'), colors.HexColor('#087f78')
+    body = ParagraphStyle('SBody', fontName='DejaVu', fontSize=8.2, leading=11, spaceAfter=3, textColor=ink, alignment=4)
+    head = ParagraphStyle('SHead', parent=body, fontName='DejaVu-Bold', fontSize=9, leading=11.5, spaceBefore=4.5, spaceAfter=1.5, textColor=teal, alignment=0)
+    title = ParagraphStyle('STitle', parent=body, fontName='DejaVu-Bold', fontSize=13, leading=16, spaceAfter=1, alignment=0)
+    note = ParagraphStyle('SNote', parent=body, fontSize=8.2, leading=11, textColor=colors.HexColor('#566b76'), alignment=0)
+    author = ParagraphStyle('SAuthor', parent=body, fontName='DejaVu-Bold', fontSize=11, leading=14, spaceAfter=6, alignment=0)
+    story = [Paragraph(AUTHOR, author),
+             Paragraph('Word embeddings: CBOW vs Skip-gram on 1,000 GLP-1 abstracts', title)]
+    for heading, paragraphs in summary_sections(results):
+        story.append(Paragraph(escape(heading), head))
+        story += [Paragraph(escape(text), body) for text in paragraphs]
+    SimpleDocTemplate(str(output/'summary.pdf'), pagesize=A4, rightMargin=36, leftMargin=36, topMargin=28, bottomMargin=24,
+                      title='Word embeddings: one-page summary').build(story)

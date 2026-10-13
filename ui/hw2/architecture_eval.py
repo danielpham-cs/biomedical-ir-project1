@@ -3,6 +3,7 @@ import json
 from statistics import mean
 
 import numpy as np
+import pandas as pd
 import streamlit as st
 
 from src import embedding_study as study
@@ -38,6 +39,74 @@ def experiments(stamp):
     return json.loads((PART2 / 'experiments.json').read_text(encoding='utf8'))
 
 
+SETTINGS = {'main': 'Main (100 dimensions, window 5)', 'window2': 'Window 2', 'dim50': '50 dimensions'}
+# Same group colours as the report figures (src/project2_part2_figures.py).
+GROUP_COLORS = dict(zip(study.GROUPS, ['#087f78', '#c07828', '#7654a3', '#c64f4f', '#2f6db5', '#5b8c2a', '#b5487f', '#8a6d3b', '#4a5560']))
+OTHER = 'Other frequent words'
+MAP_NOTE = '''
+**What the map shows.** Each dot is one word. t-SNE squeezes the 100-dimensional vectors into 2 dimensions so they can be drawn.
+Coloured, labelled dots are the words of nine groups chosen from the GLP-1 domain before training; grey dots are the 300 most frequent words.
+If the model learned meaning, words of the same colour should sit together.
+
+**How t-SNE works.** It looks at which words are close to each word in the full vectors and tries to keep those words close in 2-D.
+That is why it shows clear clusters, while the PCA map above (a straight, linear projection that keeps only the two directions with the most
+spread) shows mostly one cloud.
+
+**Be careful when reading it:**
+- the distance between two clusters and the size of a cluster mean nothing;
+- the picture changes with its settings (perplexity) and with the random start;
+- it can only rearrange what the vectors already contain.
+
+**Purity** puts a number on the picture: for each coloured word, the share of its 3 nearest coloured words that are in the same group.
+Random placement would give about {chance:.0%}. t-SNE keeps about the same purity as the full vectors; PCA loses most of it.
+
+**A cluster in a picture is not proof of meaning.** Words can also cluster because they come from the same abstracts or have similar frequency.
+That is why every claim on this page is checked with cosine similarity in the full vectors, not on the map.
+
+**Settings.** With *Window 2* the model only sees the next word or two, so it groups words that play the same grammar role; most topic groups
+become weaker, especially for CBOW. *50 dimensions* gives a map very close to the main model: with this little data, 50 dimensions are enough.
+'''
+
+
+def projection_chart(points, x, y, title, legend, key):
+    rows = [{'word': p['word'], 'count': p['count'], 'group': p['group'] or OTHER, 'x': p[x], 'y': p[y], 'labelled': p['group'] is not None}
+            for p in points]
+    rows.sort(key=lambda r: r['labelled'])  # grey points first, so the coloured ones are drawn on top
+    color = {'field': 'group', 'type': 'nominal', 'title': None,
+             'scale': {'domain': list(GROUP_COLORS) + [OTHER], 'range': list(GROUP_COLORS.values()) + ['#cfd8dc']},
+             'legend': {'orient': 'right', 'symbolSize': 60} if legend else None}
+    axis = {'title': None, 'labels': False, 'ticks': False, 'grid': False, 'domain': False}
+    common.chart({'data': {'values': rows}, 'height': 520, 'title': title,
+                  'encoding': {'x': {'field': 'x', 'type': 'quantitative', 'axis': axis, 'scale': {'zero': False}},
+                               'y': {'field': 'y', 'type': 'quantitative', 'axis': axis, 'scale': {'zero': False}}},
+                  'layer': [{'mark': {'type': 'circle', 'opacity': 0.9},
+                             'params': [{'name': f'{key}_zoom', 'select': 'interval', 'bind': 'scales'}],
+                             'encoding': {'color': color,
+                                          'size': {'condition': {'test': 'datum.labelled', 'value': 70}, 'value': 18},
+                                          'tooltip': [{'field': 'word', 'title': 'Word'}, {'field': 'group', 'title': 'Group'},
+                                                      {'field': 'count', 'title': 'Corpus frequency'}]}},
+                            {'transform': [{'filter': 'datum.labelled'}],
+                             'mark': {'type': 'text', 'align': 'left', 'dx': 6, 'dy': -5, 'fontSize': 10},
+                             'encoding': {'text': {'field': 'word'}, 'color': color}}]},
+                 key=key)
+
+
+def projection_maps(d):
+    """Labelled t-SNE map of either model, read from experiments.json (no t-SNE is run in the page)."""
+    a, b = st.columns(2)
+    model = a.radio('Model', MODELS, horizontal=True, key='p2_map_model')
+    setting = b.radio('Setting', list(SETTINGS), horizontal=True, format_func=SETTINGS.get, key='p2_map_setting')
+    projection = d['projections'][f'{ARCH[model]}_{setting}']
+    purity = projection['purity']
+    projection_chart(projection['points'], 'tsne_x', 'tsne_y',
+                     f"{model} · {SETTINGS[setting].lower()} · t-SNE (perplexity {projection['perplexity']:.0f})", True, 'p2_map_tsne')
+    st.caption(f"Purity (share of a word's 3 nearest coloured words in its own group): t-SNE {purity['tsne_2d']:.2f}, full vectors "
+               f"{purity['cosine']:.2f}, PCA {purity['pca_2d']:.2f}, random {d['chance_purity']:.2f}. "
+               'Hover a dot for the word; scroll to zoom into a dense cluster, drag to move, double-click to reset.')
+    with st.expander('How to read the t-SNE map'):
+        st.markdown(MAP_NOTE.replace('{chance:.0%}', f"{d['chance_purity']:.0%}"))
+
+
 def load(name):
     path = PART2 / 'models' / f'{name}.npz'
     return common.saved_model(str(path), common.file_stamp(path)) if path.exists() else None
@@ -57,20 +126,39 @@ def worked_example(d, word):
         return
     count = int(models['Skip-gram'].counts[models['Skip-gram'].words.index(word)])
     st.markdown(f'**Worked example: {common.md_escape(word)}** (seen {count:,} times)')
+    st.caption('The word explored above, in both models side by side. Same corpus and settings (100 dimensions, window 5, 15 epochs, seed 42); only the architecture differs, so every difference comes from Skip-gram vs CBOW.')
     top = {m: models[m].most_similar(word, 10) for m in MODELS}
     tops = {m: [r['word'] for r in top[m]] for m in MODELS}
     columns = st.columns(2)
     for column, m in zip(columns, MODELS):
         other = MODELS[1 - MODELS.index(m)]
-        kept = None
+        retrained = None
         if seeds[m] is not None and word in seeds[m].words:
-            kept = len(set(tops[m]) & {r['word'] for r in seeds[m].most_similar(word, 10)})
+            retrained = [r['word'] for r in seeds[m].most_similar(word, 10)]
+        rows = []
+        for r in top[m]:
+            row = {'word': r['word'], 'cosine': round(r['cosine_similarity'], 3),
+                   'corpus count': int(models[m].counts[models[m].words.index(r['word'])])}
+            if retrained is not None:
+                row['seed 7'] = '✓ kept' if r['word'] in retrained else '✗ dropped'
+            row[f'also in {other} top 10'] = '✓' if r['word'] in tops[other] else ''
+            rows.append(row)
         with column:
-            st.markdown(f'**{m}** · top 10' + (f' · {kept}/10 kept with seed 7' if kept is not None else ''))
-            st.dataframe([{'word': r['word'], 'cosine': round(r['cosine_similarity'], 3),
-                           'corpus count': int(models[m].counts[models[m].words.index(r['word'])]),
-                           f'also in {other} top 10': '✓' if r['word'] in tops[other] else ''}
-                          for r in top[m]], hide_index=True, width='stretch')
+            if retrained is None:
+                st.markdown(f'**{m}** · top 10')
+                st.dataframe(rows, hide_index=True, width='stretch')
+                continue
+            kept = sum(row['seed 7'] == '✓ kept' for row in rows)
+            st.markdown(f'**{m}** · top 10 · {kept}/10 kept when retrained with seed 7')
+            # Highlight the neighbours that disappear when only the random seed changes.
+            frame = pd.DataFrame(rows)
+            st.dataframe(frame.style.apply(lambda row: ['background-color:#fbe8d9;color:#5a2a0c' if row['seed 7'] == '✗ dropped' else ''] * len(row),
+                                           axis=1).format({'cosine': '{:.3f}'}),
+                         hide_index=True, width='stretch')
+            dropped = [w for w in tops[m] if w not in retrained]
+            new = [w for w in retrained if w not in tops[m]]
+            if dropped:
+                st.caption(f"Highlighted = dropped with seed 7: {', '.join(dropped)}. Replaced by: {', '.join(new)}.")
     shared = len(set(tops['Skip-gram']) & set(tops['CBOW']))
     st.caption(f'Shared top-10 neighbours: {shared} of 10.')
     # Score each model's top-5 in both spaces; z = (cosine − mean random-pair cosine) / SD, so the two spaces are comparable.
@@ -85,12 +173,13 @@ def worked_example(d, word):
                 row[f'{m} cosine'] = round(c, 3)
                 row[f'{m} z vs random'] = round((c - d['baseline'][m]['mean']) / d['baseline'][m]['std'], 1)
         rows.append(row)
-    st.markdown("**How each model scores the other model's neighbours**")
-    st.dataframe(rows, hide_index=True, width='stretch')
-    st.caption('z = (cosine − mean cosine of random word pairs) ÷ their SD in that model; '
-               'CBOW cosines are high everywhere, so compare z, not raw cosine.')
     if word == EXAMPLE:
-        st.markdown(EXAMPLE_NOTE)
+        with st.expander('What the glp-1 example shows: Skip-gram finds words used with glp-1, CBOW finds words that replace it'):
+            st.markdown(EXAMPLE_NOTE)
+    with st.expander("Extra: how each model scores the other model's neighbours"):
+        st.dataframe(rows, hide_index=True, width='stretch')
+        st.caption('z = (cosine − mean cosine of random word pairs) ÷ their SD in that model; '
+                   'CBOW cosines are high everywhere, so compare z, not raw cosine.')
 
 
 def scorecard(d):
@@ -157,7 +246,7 @@ def loss_chart(d):
 def stability_chart(seed):
     values = [{'model': m, 'band': band, 'overlap': round(seed[m][band], 3)} for m in MODELS for band in BANDS]
     common.chart({'data': {'values': values}, 'height': 230,
-                  'title': 'Top-10 neighbours kept when only the seed changes, by word frequency',
+                  'title': 'Neighbours kept when only the seed changes',
                   'mark': {'type': 'bar', 'cornerRadiusEnd': 4, 'width': {'band': 0.85}},
                   'encoding': {'x': {'field': 'band', 'type': 'ordinal', 'sort': BANDS, 'title': 'Times the word occurs in the corpus',
                                      'axis': {'labelAngle': 0}},
@@ -170,6 +259,14 @@ def stability_chart(seed):
                                'tooltip': [{'field': 'model'}, {'field': 'band', 'title': 'frequency'},
                                            {'field': 'overlap', 'title': 'kept', 'format': '.0%'}]}},
                  key='p2_arch_stability')
+
+
+def render_maps():
+    path = PART2 / 'experiments.json'
+    if not path.exists():
+        st.info('Run scripts/run_project2_part2.py to compute the PCA and t-SNE maps.')
+        return
+    projection_maps(experiments(common.file_stamp(path)))
 
 
 def render(word=EXAMPLE):
@@ -199,18 +296,21 @@ def render(word=EXAMPLE):
         st.caption('Skip-gram is equally stable at every frequency. CBOW is stable only for frequent words: '
                    'a rare word\'s vector is mostly its random start.')
     worked_example(d, word or EXAMPLE)
-    st.markdown('**Scorecard** (same corpus, dimensions 100, window 5, 15 epochs, seed 42; only the architecture differs)')
-    st.dataframe(rows, hide_index=True, width='stretch')
     wins = {m: sum(r['Better'] == m for r in rows) for m in MODELS}
-    st.markdown(
-        f"**Verdict.** Skip-gram is better on {wins['Skip-gram']} of the measured criteria and CBOW on {wins['CBOW']}. "
-        f"CBOW is about {sg['seconds'] / cb['seconds']:.1f}× faster and gives tight, high-cosine clusters of interchangeable "
-        'frequent words (drug names, adverse events). But all its cosines are high (random pairs '
-        f"{d['baseline']['CBOW']['mean']:.2f} vs {d['baseline']['Skip-gram']['mean']:.2f}), so once that is accounted for its groups "
-        'separate less, and its rare-word neighbours change with the seed. Skip-gram costs '
-        f"{sg['examples_per_epoch'] / cb['examples_per_epoch']:.0f}× more updates but gives topical neighbours that are as stable for "
-        'rare terms as for frequent ones, which is what a small domain corpus with many rare scientific terms needs. '
-        'For this corpus Skip-gram is the better choice; CBOW is a reasonable fast choice when only frequent words matter.')
+    with st.expander(f"Scorecard: Skip-gram better on {wins['Skip-gram']} of {len(rows)} criteria, CBOW on {wins['CBOW']}"):
+        st.caption('Same corpus, dimensions 100, window 5, 15 epochs, seed 42; only the architecture differs. '
+                   '"—" means the two values cannot be ranked.')
+        st.dataframe(rows, hide_index=True, width='stretch')
+    with st.expander('Verdict: Skip-gram is the better choice for this corpus'):
+        st.markdown(
+            f"Skip-gram is better on {wins['Skip-gram']} of the measured criteria and CBOW on {wins['CBOW']}. "
+            f"CBOW is about {sg['seconds'] / cb['seconds']:.1f}× faster and gives tight, high-cosine clusters of interchangeable "
+            'frequent words (drug names, adverse events). But all its cosines are high (random pairs '
+            f"{d['baseline']['CBOW']['mean']:.2f} vs {d['baseline']['Skip-gram']['mean']:.2f}), so once that is accounted for its groups "
+            'separate less, and its rare-word neighbours change with the seed. Skip-gram costs '
+            f"{sg['examples_per_epoch'] / cb['examples_per_epoch']:.0f}× more updates but gives topical neighbours that are as stable for "
+            'rare terms as for frequent ones, which is what a small domain corpus with many rare scientific terms needs. '
+            'For this corpus Skip-gram is the better choice; CBOW is a reasonable fast choice when only frequent words matter.')
     with st.expander('Nearest neighbours of the query words and rare words, side by side'):
         neighbours = {}
         for r in d['neighbors'] + d['rare_neighbors']:

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T10:35:26.480589+00:00",
+  "generated_at": "2026-10-13T09:07:41.423611+00:00",
   "corpus": {
     "document_count": 1000,
     "query": "(\"GLP-1\"[Title/Abstract] OR \"glucagon-like peptide-1\"[Title/Abstract] OR \"glucagon like peptide 1\"[Title/Abstract]) AND hasabstract[text] AND english[lang]",
@@ -2082,19 +2082,19 @@
     "matplotlib": "3.11.2",
     "reportlab": "5.0.1"
   },
-  "elapsed_seconds": 117.48297939999975,
+  "elapsed_seconds": 66.99229300000297,
   "implementation_sha256": {
-    "scripts\\run_project2_part2.py": "df0440b572c5bd2c00c9598818b974d9e3cd3fd34ad22e8c7c115c2f48842867",
+    "scripts\\run_project2_part2.py": "8abfbed4857f2c45cf888f68f494da5f142a40e9d89a3ea4628bca674fd2f7b0",
     "src\\word2vec.py": "6256689a01e9400335abea38cb82aa12ce1a94c79f75865b058802ce1b87ec60",
-    "src\\embedding_study.py": "5b3f4eb381446499e000a2ec49cca38954bba5de84240b0398c0d865e1e5e00e",
+    "src\\embedding_study.py": "960b6019b220b86f89929dd8e91f065310370e373da131180fafda221677afac",
     "src\\tsne.py": "23654ed9f6f7610f2b0e5275261e221e90d5a99fb8f00f04367f4e9c55237d7a",
     "src\\embedding_view.py": "87008ccb101b7562b15cc8bd8ed11fa43b84154f4fc92629fbc6fb7a9e80614f",
-    "src\\project2_part2_report.py": "644c94182957f102c608f3ff552bbe499acf55bd1e44e2c5bb37ba728251e6b9",
+    "src\\project2_part2_report.py": "4febdf69e9176702680e5b05caf85d897cb8f43b151eec6078907c5ef4dd4133",
     "src\\project2_part2_figures.py": "32e0e0f9d3043b7e9ca5ed9d8d860a43c22e300dd5d2ae4a0b79e5002aaa55a1"
   },
   "reproduce": "python scripts/run_project2_part2.py --snapshot \"C:\\Users\\NCKU\\Desktop\\IIR\\Course\\Fall_2026\\BioIR\\Homework\\Hw_1\\biomedical-ir-project1\\output\\project2_glp1\\corpus_snapshot.json\" --epochs 15",
   "files": {
-    "experiments.json": "3c9b1d116fd843e665b3dd7318fbbfabffda824cb57d132223d1184f8b21632e",
+    "experiments.json": "028aa2e0e2fe96866f77a656536f5cb99d30e508c5c5818e71e2bd94dc49bd72",
     "figures\\group_cosines.png": "0754e215d328f7bc01f02aa1141dc7ef6bdccc11e593649536bfa20e804f4e20",
     "figures\\loss_curves.png": "58770d5be330575ef032d9695c40553ffae8ec1f1d6d7ffc1abab4fc67095660",
     "figures\\pca_main.png": "aebe3d0eee063e35a078563c51d52530da55210f95f4a5183bc522bf1798df37",
@@ -2112,9 +2112,10 @@
     "models\\skipgram_mincount5.npz": "81d13bdb04ec5871bd684422a1c55bf870dd583a4e8284eb4ee2c906f1b33fbe",
     "models\\skipgram_seed7.npz": "d19b0fd7751200a5e6307628b203daa09a34fbb6bd23bcce19c570eeec58ca7f",
     "models\\skipgram_window2.npz": "619d92bbce21988f08267775dc505efd426caab1c1b9ac23dc4363a1f97ba716",
-    "README.md": "54ca279063547a7f735132402444c0cc520dee5863e4c2d334e038964c510c04",
-    "report.md": "49eee76ce9f887c64df66273515feb6f670d6f263eb88310501d95e58f6ebb56",
-    "report.pdf": "5a460e919584ee0e88968db36640f10f8d2b0be08a9a94eabca1fbc60a2d0135",
+    "README.md": "2ea076d1d880539647d52d21f5589c3f4b9ed441476e8a7750bb91fdf44318c5",
+    "report.md": "2f5fe18fab71d378b8671fcd71cade97c9c6b12ccd1e0afaee9ea5c78d99679e",
+    "report.pdf": "c1287a7d47aae440e75c4cc84b7ce03d680122d030254a0dc8d66daa26898710",
+    "summary.pdf": "2801b066622752bf463f6b064941e669e01e9dcc477f1693ab342222712a7520",
     "tables\\group_cosines.csv": "9624d747a557317150e84961f512937278b061c3dcf5ef4e66eec858a8bc8b8a",
     "tables\\neighbor_cooccurrence.csv": "42f3d9a33ede3fda6cb8fadce6c8c33ea33cd0db69d080777a6bc8d64f2ae514",
     "tables\\neighbor_overlap.csv": "68235a6a2a3bbc957a0329dc52bb2414f26e0b7ca49b297207c06fc410a08343",

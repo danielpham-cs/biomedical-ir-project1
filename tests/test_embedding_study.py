@@ -107,6 +107,19 @@ class MeasurementTests(unittest.TestCase):
         self.assertGreaterEqual(len(study.QUERIES), 10)
         self.assertGreaterEqual(len(study.GROUPS), 5)
 
+    def test_training_samples_from_one_sentence(self):
+        sentences = [("1", "too short", ["glp-1", "x"]),
+                     ("2", "real", ["a", "b", "glp-1", "c", "d", "e", "f"])]
+        sample = study.training_samples(sentences, window=2)
+        self.assertEqual(sample["pmid"], "2")
+        # Skip-gram: one pair per (center, context in window); CBOW: one example per position.
+        self.assertEqual(len(sample["skipgram"]), 2 + 3 + 4 + 4 + 4 + 3 + 2)
+        self.assertEqual(len(sample["cbow"]), 7)
+        self.assertEqual(sample["cbow"][2], {"context": ["a", "b", "c", "d"], "target": "glp-1"})
+        self.assertIn(["glp-1", "a"], sample["skipgram"])
+        with self.assertRaises(ValueError):
+            study.training_samples(sentences[:1])
+
 
 if __name__ == "__main__":
     unittest.main()
